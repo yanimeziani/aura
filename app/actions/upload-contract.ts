@@ -27,7 +27,17 @@ export async function uploadContract(formData: FormData) {
       buffer[2] === 0x44 && buffer[3] === 0x46; 
     if (!isPdf) throw new Error('Only PDF files are accepted');
 
-    // Create a copy of the buffer for extraction to prevent detachment issues
+    const safeFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const filePath = `merchants/${merchantId}/${safeFileName}`;
+
+    // 1. Upload to Storage FIRST while the buffer is guaranteed to be intact
+    const { error: storageError } = await supabaseAdmin.storage
+      .from('contracts')
+      .upload(filePath, buffer, { contentType: 'application/pdf', upsert: true });
+
+    if (storageError) throw new Error(`Storage error: ${storageError.message}`);
+
+    // 2. Perform text extraction SECOND using a copy of the buffer
     const extractionBuffer = new Uint8Array(buffer.length);
     extractionBuffer.set(buffer);
     
@@ -42,15 +52,6 @@ export async function uploadContract(formData: FormData) {
     if (!rawText || rawText.trim().length === 0) {
       throw new Error('Could not extract text from PDF.');
     }
-
-    const safeFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-    const filePath = `merchants/${merchantId}/${safeFileName}`;
-
-    const { error: storageError } = await supabaseAdmin.storage
-      .from('contracts')
-      .upload(filePath, buffer, { contentType: 'application/pdf', upsert: true });
-
-    if (storageError) throw new Error(`Storage error: ${storageError.message}`);
 
     const { data: contract, error: contractError } = await supabaseAdmin
       .from('contracts')
