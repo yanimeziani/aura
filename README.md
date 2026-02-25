@@ -31,6 +31,9 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 OPENROUTER_API_KEY=your-openrouter-key
 GOOGLE_GENERATIVE_AI_API_KEY=your-gemini-key
 STRIPE_SECRET_KEY=your-stripe-key
+STRIPE_WEBHOOK_SECRET=your-stripe-webhook-secret
+SENTRY_DSN=your-sentry-dsn
+ARCJET_KEY=your-arcjet-key
 NEXT_PUBLIC_URL=http://localhost:3000
 ```
 

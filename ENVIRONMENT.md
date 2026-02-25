@@ -15,6 +15,8 @@ This document outlines all environment variables required for the Dragun applica
 | `GOOGLE_GENERATIVE_AI_API_KEY` | Private | Google Gemini API key (embeddings only) | `AIzaSyBxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx` |
 | `STRIPE_SECRET_KEY` | Private | Stripe secret key | `sk_test_51xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx` |
 | `STRIPE_WEBHOOK_SECRET` | Private | Stripe webhook signing secret | `whsec_1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx` |
+| `SENTRY_DSN` | Private | Sentry project DSN | `https://examplePublicKey@o0.ingest.sentry.io/0` |
+| `ARCJET_KEY` | Private | Arcjet API key | `aj_1234567890abcdef` |
 
 ## Local Development Setup
 
@@ -30,6 +32,8 @@ OPENROUTER_API_KEY=your_openrouter_api_key
 GOOGLE_GENERATIVE_AI_API_KEY=your_google_api_key
 STRIPE_SECRET_KEY=your_stripe_secret_key
 STRIPE_WEBHOOK_SECRET=your_webhook_secret
+SENTRY_DSN=your_sentry_dsn
+ARCJET_KEY=your_arcjet_key
 ```
 
 ### Option 2: Command Line
@@ -42,6 +46,8 @@ export OPENROUTER_API_KEY=your_openrouter_api_key
 export GOOGLE_GENERATIVE_AI_API_KEY=your_google_api_key
 export STRIPE_SECRET_KEY=your_stripe_secret_key
 export STRIPE_WEBHOOK_SECRET=your_webhook_secret
+export SENTRY_DSN=your_sentry_dsn
+export ARCJET_KEY=your_arcjet_key
 ```
 
 ## Vercel Deployment
@@ -65,7 +71,9 @@ The `vercel.json` file already includes environment variable mappings. Replace t
     "OPENROUTER_API_KEY": "@openrouter_api_key",
     "GOOGLE_GENERATIVE_AI_API_KEY": "@google_generative_ai_api_key",
     "STRIPE_SECRET_KEY": "@stripe_secret_key",
-    "STRIPE_WEBHOOK_SECRET": "@stripe_webhook_secret"
+    "STRIPE_WEBHOOK_SECRET": "@stripe_webhook_secret",
+    "SENTRY_DSN": "@sentry_dsn",
+    "ARCJET_KEY": "@arcjet_key"
   }
 }
 ```

@@ -10,12 +10,28 @@ export function validateEnv() {
     'STRIPE_WEBHOOK_SECRET',
   ];
 
-  const missing = required.filter((key) => !process.env[key]);
+  const productionOnly = ['ARCJET_KEY', 'SENTRY_DSN'];
+  const requiredInEnv =
+    process.env.NODE_ENV === 'production'
+      ? [...required, ...productionOnly]
+      : required;
+
+  const missing = requiredInEnv.filter((key) => !process.env[key]);
 
   if (missing.length > 0) {
     throw new Error(
       'Missing required environment variables:\n' + missing.map((m) => ' - ' + m).join('\n')
     );
+  }
+
+  if (process.env.NODE_ENV !== 'production') {
+    const optionalMissing = productionOnly.filter((key) => !process.env[key]);
+    if (optionalMissing.length > 0) {
+      console.warn(
+        'Missing production-only environment variables:\n' +
+          optionalMissing.map((m) => ' - ' + m).join('\n')
+      );
+    }
   }
 
   // specific checks
