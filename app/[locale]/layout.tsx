@@ -5,7 +5,6 @@ import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import '../globals.css';
-import DragunAvatar from '@/components/DragunAvatar';
 
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
 const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] });
@@ -51,7 +50,6 @@ export default async function LocaleLayout({
           <div className="relative z-0">
             {children}
           </div>
-          <DragunAvatar />
         </NextIntlClientProvider>
       </body>
     </html>
