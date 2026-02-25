@@ -145,7 +145,7 @@ export default function MobileBottomBar({ addDebtorAction }: Props) {
       </dialog>
 
       {/* Bottom Nav Bar */}
-      <div className="fixed bottom-0 left-0 right-0 md:hidden bg-[#0a0a0a]/80 backdrop-blur-3xl border-t border-white/5 z-30 px-10 flex justify-between items-center h-20 shadow-[0_-20px_50px_rgba(0,0,0,0.8)] pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]">
+      <div className="fixed bottom-0 left-0 right-0 md:hidden w-full max-w-[100vw] bg-[#0a0a0a]/80 backdrop-blur-3xl border-t border-white/5 z-30 px-6 flex justify-between items-center h-20 shadow-[0_-20px_50px_rgba(0,0,0,0.8)] pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]">
         {/* Overview */}
         <a
           href="#top"

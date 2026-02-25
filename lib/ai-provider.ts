@@ -9,6 +9,10 @@ import { embed } from 'ai';
 const openrouter = createOpenAI({
   apiKey: process.env.OPENROUTER_API_KEY,
   baseURL: 'https://openrouter.ai/api/v1',
+  headers: {
+    'HTTP-Referer': process.env.OPENROUTER_SITE_URL ?? 'https://dragun.app',
+    'X-Title': process.env.OPENROUTER_SITE_NAME ?? 'Dragun.app',
+  },
 });
 
 /**
@@ -21,7 +25,12 @@ const google = createGoogleGenerativeAI({
 /**
  * OpenRouter free router model.
  */
-export const getChatModel = () => openrouter('openrouter/free');
+export const getChatModel = () => {
+  if (!process.env.OPENROUTER_API_KEY) {
+    throw new Error('OPENROUTER_API_KEY is missing');
+  }
+  return openrouter(process.env.OPENROUTER_MODEL ?? 'openrouter/auto');
+};
 
 /**
  * Gemini Text-Embedding-004
