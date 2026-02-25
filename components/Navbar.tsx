@@ -30,9 +30,9 @@ export default function Navbar() {
     return () => subscription.unsubscribe();
   }, [supabase.auth]);
 
-  const isFrench = locale.startsWith('fr');
+  const isFrench = locale === 'fr';
 
-  const switchLocale = (target: 'en' | 'fr-CA') => {
+  const switchLocale = (target: 'en' | 'fr') => {
     router.replace(pathname, { locale: target });
   };
 
@@ -78,7 +78,7 @@ export default function Navbar() {
                 </button>
                 <span className="text-white/20">|</span>
                 <button
-                  onClick={() => switchLocale('fr-CA')}
+                  onClick={() => switchLocale('fr')}
                   className={`transition-colors ${isFrench ? 'text-accent-indigo' : 'text-text-muted hover:text-text-primary'}`}
                 >
                   FR
