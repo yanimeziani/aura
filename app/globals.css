@@ -2,38 +2,47 @@
 @plugin "daisyui";
 
 :root {
-  --background: #0b1b2b;
-  --foreground: #e6edf5;
+  --bg: #050A14;
+  --surface: #0D1520;
+  --glass: rgba(255, 255, 255, 0.04);
+  --border: rgba(255, 255, 255, 0.08);
+  --accent-indigo: #6366F1;
+  --accent-indigo-hover: #4F46E5;
+  --accent-emerald: #10B981;
+  --accent-emerald-hover: #059669;
+  --accent-red: #EF4444;
+  --text-primary: #F8FAFC;
+  --text-muted: #94A3B8;
+  --text-subtle: #475569;
+  --gradient-hero: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #10B981 100%);
+  --gradient-text: linear-gradient(135deg, #6366F1, #10B981);
+  --radius-card: 16px;
+  --radius-lg: 24px;
+  --shadow-glow-indigo: 0 0 40px rgba(99, 102, 241, 0.15);
+  --shadow-glow-emerald: 0 0 40px rgba(16, 185, 129, 0.15);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --color-navy-950: #0b1b2b;
-  --color-navy-900: #102235;
-  --color-charcoal-900: #111827;
-  --color-charcoal-800: #1f2937;
-  --color-slate-400: #94a3b8;
-  --color-slate-200: #e2e8f0;
-  --color-gold-400: #d4af37;
-  --color-gold-500: #b48b24;
-  --color-teal-400: #2fbf9a;
-  --color-teal-500: #199e82;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0b1b2b;
-    --foreground: #f8fafc;
-  }
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-accent-indigo: var(--accent-indigo);
+  --color-accent-emerald: var(--accent-emerald);
+  --color-accent-red: var(--accent-red);
+  --color-text-primary: var(--text-primary);
+  --color-text-muted: var(--text-muted);
+  --font-sans: 'Inter', sans-serif;
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+  --radius-card: var(--radius-card);
+  --radius-lg: var(--radius-lg);
+  --shadow-glow-indigo: var(--shadow-glow-indigo);
+  --shadow-glow-emerald: var(--shadow-glow-emerald);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg);
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
   overflow-x: hidden;
 
   /* Safe Area Padding for TVs and notched devices */
@@ -41,4 +50,24 @@ body {
   padding-right: env(safe-area-inset-right);
   padding-bottom: env(safe-area-inset-bottom);
   padding-left: env(safe-area-inset-left);
+}
+
+.dot-grid {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.glass-card {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.gradient-text {
+  background: var(--gradient-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }

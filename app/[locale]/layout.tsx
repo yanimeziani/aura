@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Geist, Geist_Mono, Inter, Space_Grotesk, Space_Mono } from 'next/font/google';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
@@ -9,6 +9,9 @@ import DragunAvatar from '@/components/DragunAvatar';
 
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
 const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] });
+const inter = Inter({ variable: '--font-inter', subsets: ['latin'] });
+const spaceGrotesk = Space_Grotesk({ variable: '--font-space-grotesk', subsets: ['latin'] });
+const spaceMono = Space_Mono({ variable: '--font-space-mono', subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Dragun.app | Intelligent Debt Recovery',
@@ -38,7 +41,7 @@ export default async function LocaleLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#050505] text-white relative`}
+        className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} ${spaceGrotesk.variable} ${spaceMono.variable} antialiased bg-bg text-text-primary relative`}
       >
         <NextIntlClientProvider messages={messages}>
           <div className="relative z-0">
