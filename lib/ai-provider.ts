@@ -25,11 +25,23 @@ const google = createGoogleGenerativeAI({
 /**
  * OpenRouter free router model.
  */
+const DEFAULT_OPENROUTER_FREE_MODEL = 'meta-llama/llama-3.1-8b-instruct:free';
+const isFreeOpenRouterModel = (model: string) => model.trim().endsWith(':free');
+
 export const getChatModel = () => {
   if (!process.env.OPENROUTER_API_KEY) {
     throw new Error('OPENROUTER_API_KEY is missing');
   }
-  return openrouter(process.env.OPENROUTER_MODEL ?? 'openrouter/auto');
+
+  const requestedModel = process.env.OPENROUTER_MODEL ?? DEFAULT_OPENROUTER_FREE_MODEL;
+  if (!isFreeOpenRouterModel(requestedModel)) {
+    console.warn(
+      `[ai-provider] Non-free OpenRouter model requested ("${requestedModel}"). Falling back to free model.`
+    );
+    return openrouter(DEFAULT_OPENROUTER_FREE_MODEL);
+  }
+
+  return openrouter(requestedModel);
 };
 
 /**

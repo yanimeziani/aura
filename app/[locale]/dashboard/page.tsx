@@ -177,7 +177,7 @@ export default async function DashboardPage({
 
       {/* Top Nav */}
       <nav className="border-b border-white/5 bg-black/40 backdrop-blur-2xl sticky top-0 z-30 pt-[env(safe-area-inset-top)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]">
-        <div className="w-full pl-0 pr-6 py-5 flex justify-between items-center">
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-5 flex justify-between items-center">
           <Link href="/" className="flex items-center gap-3 group">
             <div className="w-10 h-10 bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] border border-white/10 rounded-xl flex items-center justify-center font-bold text-[#D4AF37] shadow-2xl relative transition-all group-hover:scale-110 group-hover:border-[#D4AF37]/30">
                <div className="absolute inset-0 bg-[#D4AF37]/10 blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -193,7 +193,7 @@ export default async function DashboardPage({
         </div>
       </nav>
 
-      <main className="w-full pl-0 pr-6 py-12 space-y-16 relative z-10">
+      <main className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-16 relative z-10">
         {/* Stripe Success Alert */}
         {stripeSuccess && isOnboardingComplete && (
           <div className="bg-[#10b981]/10 border border-[#10b981]/20 rounded-2xl p-6 flex items-center justify-between group animate-in slide-in-from-top duration-500">

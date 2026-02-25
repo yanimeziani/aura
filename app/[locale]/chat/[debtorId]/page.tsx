@@ -69,12 +69,12 @@ export default function ChatPage({ params }: { params: Promise<{ debtorId: strin
   ];
 
   return (
-    <div className="flex flex-col h-screen bg-[#050505] text-white max-w-lg mx-auto border-x border-white/5 shadow-2xl relative selection:bg-[#D4AF37] selection:text-black">
+    <div className="flex flex-col min-h-[100dvh] bg-[#050505] text-white w-full md:max-w-lg mx-auto border-x border-white/5 shadow-2xl relative selection:bg-[#D4AF37] selection:text-black">
       {/* Premium Ambient Background */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gradient-to-b from-[#6419E6]/5 to-transparent pointer-events-none -z-10"></div>
 
       {/* Header */}
-      <header className="px-6 py-5 border-b border-white/5 bg-[#050505]/80 backdrop-blur-3xl flex items-center gap-4 sticky top-0 z-20">
+      <header className="px-6 pt-[calc(env(safe-area-inset-top)+1.25rem)] pb-5 border-b border-white/5 bg-[#050505]/80 backdrop-blur-3xl flex items-center gap-4 sticky top-0 z-20">
         <Link href="/" className="p-2 hover:bg-white/5 rounded-xl transition-all text-white/20 hover:text-white">
           <ChevronLeft className="w-5 h-5" />
         </Link>
@@ -172,7 +172,7 @@ export default function ChatPage({ params }: { params: Promise<{ debtorId: strin
       </section>
 
       {/* Input Area */}
-      <footer className="p-6 bg-[#050505] border-t border-white/5">
+      <footer className="pt-6 px-6 pb-[calc(env(safe-area-inset-bottom)+1.5rem)] bg-[#050505] border-t border-white/5">
         <form onSubmit={handleSubmit} className="relative flex items-center group">
           <input
             className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-6 py-4 text-sm font-medium text-white focus:border-[#D4AF37]/50 focus:outline-none transition-all placeholder:text-white/10 pr-16"

@@ -59,17 +59,16 @@ export async function POST(req: Request) {
     }
   } else if (event.type === 'account.updated') {
     const account = event.data.object as Stripe.Account;
-    
-    if (account.details_submitted) {
-      const { error: merchantError } = await supabaseAdmin
-        .from('merchants')
-        .update({ stripe_onboarding_complete: true })
-        .eq('stripe_account_id', account.id);
+    const onboardingComplete = !!account.charges_enabled && !!account.payouts_enabled;
 
-      if (merchantError) {
-        console.error('Error updating merchant onboarding status:', merchantError);
-        return new Response('Database error', { status: 500 });
-      }
+    const { error: merchantError } = await supabaseAdmin
+      .from('merchants')
+      .update({ stripe_onboarding_complete: onboardingComplete })
+      .eq('stripe_account_id', account.id);
+
+    if (merchantError) {
+      console.error('Error updating merchant onboarding status:', merchantError);
+      return new Response('Database error', { status: 500 });
     }
   }
 

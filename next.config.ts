@@ -22,7 +22,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       "frame-src https://js.stripe.com https://hooks.stripe.com",
-      "connect-src 'self' https://*.supabase.co https://gateway.vercel.ai",
+      "connect-src 'self' https://*.supabase.co https://gateway.vercel.ai https://*.ingest.sentry.io",
       "img-src 'self' data: blob:",
       "worker-src 'self' blob:",
     ].join('; '),
@@ -43,6 +43,9 @@ const nextConfig: NextConfig = {
 const sentryConfig = {
   silent: true,
   disableLogger: true,
+  org: 'meziani-ai',
+  project: 'javascript-nextjs',
+  authToken: process.env.SENTRY_AUTH_TOKEN,
 };
 
 export default withSentryConfig(withNextIntl(nextConfig), sentryConfig);
