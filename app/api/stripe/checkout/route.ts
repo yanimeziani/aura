@@ -30,13 +30,24 @@ export async function POST(req: Request) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const merchant = debtor.merchant as any; // Cast for access
 
+  const totalDebt = Number(debtor.total_debt);
+  if (!Number.isFinite(totalDebt) || totalDebt <= 0) {
+    return new Response('Invalid debtor balance', { status: 400 });
+  }
+
+  const settlementFloorRaw = Number(merchant?.settlement_floor);
+  const normalizedSettlementFloor = Number.isFinite(settlementFloorRaw)
+    ? settlementFloorRaw
+    : 0.8;
+  const settlementFloorRatio = Math.min(1, Math.max(0.7, normalizedSettlementFloor));
+
   // Server-side validation: amount must not be less than the settlement floor
-  const settlementFloor = debtor.total_debt * Math.max(0.7, merchant.settlement_floor);
+  const settlementFloor = totalDebt * settlementFloorRatio;
   if (amount < settlementFloor * 0.99) {
     // 1% tolerance for floating point rounding
     return new Response('Amount below settlement floor', { status: 400 });
   }
-  if (amount > debtor.total_debt * 1.01) {
+  if (amount > totalDebt * 1.01) {
     return new Response('Amount exceeds debt', { status: 400 });
   }
 
