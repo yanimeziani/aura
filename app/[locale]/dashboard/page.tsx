@@ -27,17 +27,20 @@ import {
 
 export default async function DashboardPage({
   searchParams,
+  params,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+  params: Promise<{ locale: string }>;
 }) {
   const t = await getTranslations('Dashboard');
   const merchantId = await getMerchantId();
   const search = await searchParams;
+  const { locale } = await params;
   const stripeSuccess = search.stripe_success === 'true';
   const forceDashboard = search.force_dashboard === 'true';
 
   if (!merchantId) {
-    redirect('/login');
+    redirect({ href: '/login', locale });
   }
 
   const initialResponse = await supabaseAdmin
@@ -121,7 +124,7 @@ export default async function DashboardPage({
 
   // Onboarding Check
   if (!merchant.onboarding_complete && !forceDashboard) {
-    redirect('/onboarding');
+    redirect({ href: '/onboarding', locale });
   }
 
   const hasStripeAccount = !!merchant.stripe_account_id;
