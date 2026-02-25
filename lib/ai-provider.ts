@@ -1,19 +1,27 @@
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
+import { createOpenAI } from '@ai-sdk/openai';
 import { embed } from 'ai';
 
 /**
- * Google AI — direct connection using GOOGLE_GENERATIVE_AI_API_KEY.
- * The Vercel AI Gateway (VERCEL_AI_GATEWAY_KEY) can be wired in here
- * as a proxy when deploying to Vercel production.
+ * OpenRouter — chat model routing using OPENROUTER_API_KEY.
+ * Base URL is required for the OpenRouter API compatibility layer.
+ */
+const openrouter = createOpenAI({
+  apiKey: process.env.OPENROUTER_API_KEY,
+  baseURL: 'https://openrouter.ai/api/v1',
+});
+
+/**
+ * Google AI — used for embeddings (768-dim) to match existing schema.
  */
 const google = createGoogleGenerativeAI({
   apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
 });
 
 /**
- * Gemini 2.0 Flash for sub-second latency and 1M context.
+ * OpenRouter free router model.
  */
-export const getChatModel = () => google('gemini-2.0-flash-001');
+export const getChatModel = () => openrouter('openrouter/free');
 
 /**
  * Gemini Text-Embedding-004

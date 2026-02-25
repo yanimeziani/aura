@@ -66,31 +66,31 @@
     "starter": {
       "name": "Démarrage",
       "description": "Pour les pilotes de petites entreprises",
-      "price": "0 $",
-      "feature1": "Jusqu’à 5 débiteurs actifs",
+      "price": "49 $",
+      "feature1": "Jusqu’à 50 dossiers débiteurs actifs",
       "feature2": "Frais de recouvrement de 5 %",
       "feature3": "Assistance standard",
-      "cta": "Démarrer le pilote"
+      "cta": "Choisir Démarrage"
     },
     "pro": {
-      "name": "Pro",
-      "description": "Pour les gyms et studios en croissance",
-      "price": "49 $",
-      "feature1": "Débiteurs actifs illimités",
+      "name": "Croissance",
+      "description": "Pour les équipes en croissance",
+      "price": "149 $",
+      "feature1": "Jusqu’à 250 dossiers débiteurs actifs",
       "feature2": "Frais de recouvrement de 5 %",
       "feature3": "Assistance prioritaire",
-      "feature4": "Base de connaissances RAG complète",
-      "cta": "Passer Pro"
+      "feature4": "Préréglages de tonalité personnalisés",
+      "cta": "Choisir Croissance"
     },
     "enterprise": {
-      "name": "Entreprise",
-      "description": "Pour les grands portefeuilles de créances",
-      "price": "Sur mesure",
-      "feature1": "Instance dédiée",
-      "feature2": "Formation IA personnalisée",
-      "feature3": "Intégration avec cabinet juridique",
-      "feature4": "Accès API",
-      "cta": "Contacter les ventes"
+      "name": "Échelle",
+      "description": "Pour les portefeuilles importants",
+      "price": "399 $",
+      "feature1": "Jusqu’à 1 000 dossiers débiteurs actifs",
+      "feature2": "Frais de recouvrement de 5 %",
+      "feature3": "Assistance prioritaire",
+      "feature4": "Analytique avancée",
+      "cta": "Choisir Échelle"
     }
   },
   "FAQ": {

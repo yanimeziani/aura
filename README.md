@@ -28,6 +28,7 @@ Create a `.env.local` file:
 NEXT_PUBLIC_SUPABASE_URL=your-project-url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+OPENROUTER_API_KEY=your-openrouter-key
 GOOGLE_GENERATIVE_AI_API_KEY=your-gemini-key
 STRIPE_SECRET_KEY=your-stripe-key
 NEXT_PUBLIC_URL=http://localhost:3000

@@ -66,31 +66,31 @@
     "starter": {
       "name": "Starter",
       "description": "For small business pilots",
-      "price": "$0",
-      "feature1": "Up to 5 active debtors",
+      "price": "$49",
+      "feature1": "Up to 50 active debtor cases",
       "feature2": "5% Recovery Fee",
       "feature3": "Standard Support",
-      "cta": "Start Pilot"
+      "cta": "Start Starter"
     },
     "pro": {
-      "name": "Pro",
-      "description": "For growing gyms & studios",
-      "price": "$49",
-      "feature1": "Unlimited active debtors",
+      "name": "Growth",
+      "description": "For growing teams",
+      "price": "$149",
+      "feature1": "Up to 250 active debtor cases",
       "feature2": "5% Recovery Fee",
       "feature3": "Priority Support",
-      "feature4": "Full RAG Knowledge Base",
-      "cta": "Go Pro"
+      "feature4": "Custom tone presets",
+      "cta": "Choose Growth"
     },
     "enterprise": {
-      "name": "Enterprise",
-      "description": "For large debt portfolios",
-      "price": "Custom",
-      "feature1": "Dedicated instance",
-      "feature2": "Custom AI training",
-      "feature3": "Legal firm integration",
-      "feature4": "API Access",
-      "cta": "Contact Sales"
+      "name": "Scale",
+      "description": "For larger portfolios",
+      "price": "$399",
+      "feature1": "Up to 1,000 active debtor cases",
+      "feature2": "5% Recovery Fee",
+      "feature3": "Priority Support",
+      "feature4": "Advanced analytics",
+      "cta": "Choose Scale"
     }
   },
   "FAQ": {

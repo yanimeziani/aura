@@ -11,7 +11,8 @@ This document outlines all environment variables required for the Dragun applica
 | `NEXT_PUBLIC_SUPABASE_URL` | Public | Supabase project URL | `https://xyzabcd.supabase.co` |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public | Supabase anonymous key | `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...` |
 | `SUPABASE_SERVICE_ROLE_KEY` | Private | Supabase service role key | `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...` |
-| `GOOGLE_GENERATIVE_AI_API_KEY` | Private | Google Gemini API key | `AIzaSyBxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx` |
+| `OPENROUTER_API_KEY` | Private | OpenRouter API key | `sk-or-v1-...` |
+| `GOOGLE_GENERATIVE_AI_API_KEY` | Private | Google Gemini API key (embeddings only) | `AIzaSyBxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx` |
 | `STRIPE_SECRET_KEY` | Private | Stripe secret key | `sk_test_51xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx` |
 | `STRIPE_WEBHOOK_SECRET` | Private | Stripe webhook signing secret | `whsec_1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx` |
 
@@ -25,6 +26,7 @@ NEXT_PUBLIC_URL=http://localhost:3000
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+OPENROUTER_API_KEY=your_openrouter_api_key
 GOOGLE_GENERATIVE_AI_API_KEY=your_google_api_key
 STRIPE_SECRET_KEY=your_stripe_secret_key
 STRIPE_WEBHOOK_SECRET=your_webhook_secret
@@ -36,6 +38,7 @@ export NEXT_PUBLIC_URL=http://localhost:3000
 export NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 export NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 export SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+export OPENROUTER_API_KEY=your_openrouter_api_key
 export GOOGLE_GENERATIVE_AI_API_KEY=your_google_api_key
 export STRIPE_SECRET_KEY=your_stripe_secret_key
 export STRIPE_WEBHOOK_SECRET=your_webhook_secret
@@ -59,6 +62,7 @@ The `vercel.json` file already includes environment variable mappings. Replace t
     "NEXT_PUBLIC_SUPABASE_URL": "@supabase_url",
     "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@supabase_anon_key",
     "SUPABASE_SERVICE_ROLE_KEY": "@supabase_service_role_key",
+    "OPENROUTER_API_KEY": "@openrouter_api_key",
     "GOOGLE_GENERATIVE_AI_API_KEY": "@google_generative_ai_api_key",
     "STRIPE_SECRET_KEY": "@stripe_secret_key",
     "STRIPE_WEBHOOK_SECRET": "@stripe_webhook_secret"
