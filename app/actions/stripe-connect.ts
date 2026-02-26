@@ -3,15 +3,54 @@
 import Stripe from 'stripe';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { redirect } from 'next/navigation';
+import { headers } from 'next/headers';
 import { ensureMerchant } from '@/lib/merchant';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2026-01-28.clover',
 });
 
-export async function createStripeConnectAccount() {
+function sanitizeLocale(value: unknown) {
+  return value === 'fr' ? 'fr' : 'en';
+}
+
+async function resolveBaseUrl() {
+  const configured = process.env.NEXT_PUBLIC_URL;
+  if (configured) {
+    try {
+      const parsed = new URL(configured);
+      if (parsed.protocol === 'https:' || parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1') {
+        return parsed.origin;
+      }
+    } catch {
+      // Fall through to request headers.
+    }
+  }
+
+  const h = await headers();
+  const origin = h.get('origin');
+  if (origin) {
+    try {
+      return new URL(origin).origin;
+    } catch {
+      // Fall through.
+    }
+  }
+
+  const host = h.get('x-forwarded-host') ?? h.get('host');
+  const proto = h.get('x-forwarded-proto') ?? 'https';
+  if (!host) {
+    throw new Error('Unable to resolve application base URL for Stripe onboarding redirects.');
+  }
+  return `${proto}://${host}`;
+}
+
+export async function createStripeConnectAccount(formData?: FormData) {
   const merchantId = await ensureMerchant();
   if (!merchantId) throw new Error('Unauthorized');
+  const locale = sanitizeLocale(formData?.get('locale'));
+  const baseUrl = await resolveBaseUrl();
+  const dashboardPath = `/${locale}/dashboard`;
 
   // 1. Get current merchant data
   const { data: merchant, error: merchantError } = await supabaseAdmin
@@ -57,8 +96,8 @@ export async function createStripeConnectAccount() {
   // 3. Create Account Link for onboarding
   const accountLink = await stripe.accountLinks.create({
     account: accountId,
-    refresh_url: `${process.env.NEXT_PUBLIC_URL}/dashboard`,
-    return_url: `${process.env.NEXT_PUBLIC_URL}/dashboard?stripe_success=true`,
+    refresh_url: `${baseUrl}${dashboardPath}`,
+    return_url: `${baseUrl}${dashboardPath}?stripe_success=true`,
     type: 'account_onboarding',
   });
 

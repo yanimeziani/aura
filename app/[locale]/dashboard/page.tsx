@@ -186,6 +186,7 @@ export default async function DashboardPage({
             merchantName={merchant.name} 
             hasStripeAccount={hasStripeAccount} 
             isOnboardingComplete={isOnboardingComplete} 
+            locale={locale}
           />
         </div>
       </nav>
@@ -227,6 +228,7 @@ export default async function DashboardPage({
                 </div>
               </div>
               <form action={createStripeConnectAccount}>
+                <input type="hidden" name="locale" value={locale} />
                 <button className="w-full md:w-auto bg-[#D4AF37] hover:bg-white text-black font-black text-xs px-10 py-5 rounded-2xl transition-all shadow-2xl uppercase tracking-widest flex items-center justify-center group/btn">
                   {hasStripeAccount ? 'Resume Onboarding' : 'Setup Stripe Connect'}
                   <ArrowRight className="w-4 h-4 ml-3 group-hover/btn:translate-x-1 transition-transform" />

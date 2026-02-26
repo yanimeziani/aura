@@ -10,9 +10,10 @@ interface Props {
   merchantName: string;
   hasStripeAccount: boolean;
   isOnboardingComplete: boolean;
+  locale: string;
 }
 
-export default function DashboardTopNav({ merchantName, hasStripeAccount, isOnboardingComplete }: Props) {
+export default function DashboardTopNav({ merchantName, hasStripeAccount, isOnboardingComplete, locale }: Props) {
   const t = useTranslations('Dashboard');
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -88,29 +89,34 @@ export default function DashboardTopNav({ merchantName, hasStripeAccount, isOnbo
               </a>
 
               {isOnboardingComplete ? (
-                <button
-                  onClick={() => createStripeLoginLink()}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-[11px] font-bold text-white/40 hover:text-blue-400 hover:bg-white/[0.03] rounded-xl transition-all group/item tracking-widest uppercase"
-                >
-                  <Wallet className="w-4 h-4" />
-                  <span>Stripe Dashboard</span>
-                </button>
+                <form action={createStripeLoginLink}>
+                  <button
+                    className="w-full flex items-center gap-3 px-4 py-3 text-[11px] font-bold text-white/40 hover:text-blue-400 hover:bg-white/[0.03] rounded-xl transition-all group/item tracking-widest uppercase"
+                  >
+                    <Wallet className="w-4 h-4" />
+                    <span>Stripe Dashboard</span>
+                  </button>
+                </form>
               ) : hasStripeAccount ? (
-                <button
-                  onClick={() => createStripeConnectAccount()}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-[11px] font-bold text-amber-500 hover:bg-white/[0.03] rounded-xl transition-all group/item tracking-widest uppercase"
-                >
-                  <Wallet className="w-4 h-4" />
-                  <span>Resume Setup</span>
-                </button>
+                <form action={createStripeConnectAccount}>
+                  <input type="hidden" name="locale" value={locale} />
+                  <button
+                    className="w-full flex items-center gap-3 px-4 py-3 text-[11px] font-bold text-amber-500 hover:bg-white/[0.03] rounded-xl transition-all group/item tracking-widest uppercase"
+                  >
+                    <Wallet className="w-4 h-4" />
+                    <span>Resume Setup</span>
+                  </button>
+                </form>
               ) : (
-                <button
-                  onClick={() => createStripeConnectAccount()}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-[11px] font-bold text-[#D4AF37] hover:text-white hover:bg-[#D4AF37]/10 rounded-xl transition-all group/item tracking-widest uppercase"
-                >
-                  <Wallet className="w-4 h-4" />
-                  <span>Connect Stripe</span>
-                </button>
+                <form action={createStripeConnectAccount}>
+                  <input type="hidden" name="locale" value={locale} />
+                  <button
+                    className="w-full flex items-center gap-3 px-4 py-3 text-[11px] font-bold text-[#D4AF37] hover:text-white hover:bg-[#D4AF37]/10 rounded-xl transition-all group/item tracking-widest uppercase"
+                  >
+                    <Wallet className="w-4 h-4" />
+                    <span>Connect Stripe</span>
+                  </button>
+                </form>
               )}
 
               <div className="h-px bg-white/5 mx-2 my-1" />
