@@ -30,6 +30,18 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      { source: '/dashboard', destination: '/en/dashboard', permanent: false },
+      { source: '/login', destination: '/en/login', permanent: false },
+      { source: '/register', destination: '/en/register', permanent: false },
+      {
+        source: '/onboarding/:path*',
+        destination: '/en/onboarding/:path*',
+        permanent: false,
+      },
+    ];
+  },
   async headers() {
     return [
       {
