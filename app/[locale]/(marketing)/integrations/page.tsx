@@ -4,50 +4,48 @@ export default function IntegrationsPage() {
   const t = useTranslations('Integrations');
 
   const integrations = [
-    { name: 'Stripe', description: t('stripeDesc'), status: 'Active', icon: '💳' },
-    { name: 'Supabase', description: t('supabaseDesc'), status: 'Active', icon: '⚡' },
-    { name: 'Gemini 2.0 Flash', description: t('geminiDesc'), status: 'Active', icon: '🐉' },
-    { name: t('mindbodyName'), description: t('mindbodyDesc'), status: 'Upcoming', icon: '🧘' },
+    { name: 'Stripe', description: t('stripeDesc'), status: 'active', icon: '💳' },
+    { name: 'Supabase', description: t('supabaseDesc'), status: 'active', icon: '⚡' },
+    { name: 'Gemini 2.0 Flash', description: t('geminiDesc'), status: 'active', icon: '🐉' },
+    { name: t('mindbodyName'), description: t('mindbodyDesc'), status: 'upcoming', icon: '🧘' },
   ];
 
   return (
-    <main className="relative isolate min-h-screen bg-[#0b1b2b] text-white overflow-hidden">
-      <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-15%] left-[-10%] w-[60%] h-[60%] bg-[#d4af37]/10 blur-[140px] rounded-full"></div>
-        <div className="absolute bottom-[-15%] right-[-10%] w-[55%] h-[55%] bg-[#2fbf9a]/10 blur-[140px] rounded-full"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.05)_0%,transparent_60%)]"></div>
-      </div>
-
-      <div className="max-w-6xl mx-auto px-6 pt-32 pb-36 space-y-12 relative z-10">
-        <div className="text-center space-y-4">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-xl text-white/60 text-[10px] font-black tracking-[0.3em] uppercase mx-auto">
+    <main className="bg-background text-foreground">
+      <section className="border-b border-border">
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 pb-16 pt-20 sm:px-6 lg:px-8 lg:pt-24">
+          <div className="inline-flex w-fit items-center rounded-full border border-border bg-card px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
             {t('subtitle')}
           </div>
-          <h1 className="text-5xl md:text-7xl font-black tracking-[-0.04em] leading-none text-white uppercase">
-            {t('title')} <span className="italic font-serif tracking-tight lowercase text-[#d4af37]">{t('titleHighlight')}</span>
+          <h1 className="max-w-4xl text-4xl font-semibold tracking-tightest sm:text-6xl">
+            {t('title')} <span className="text-muted-foreground">{t('titleHighlight')}</span>
           </h1>
-          <p className="text-base md:text-lg text-white/60 max-w-2xl mx-auto leading-relaxed font-medium tracking-tight">
-            {t('supporting')}
-          </p>
+          <p className="max-w-3xl text-base text-muted-foreground sm:text-lg">{t('supporting')}</p>
         </div>
+      </section>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 pt-12">
-          {integrations.map((integration, i) => (
-            <div key={i} className="group relative rounded-[2.5rem] border border-white/10 bg-white/[0.03] p-6 space-y-4 overflow-hidden transition-all hover:border-[#d4af37]/40 shadow-xl">
-              {integration.status === 'Upcoming' && (
-                <div className="absolute top-0 right-0 bg-[#2fbf9a]/20 text-[#2fbf9a] text-[8px] px-2 py-1 font-bold uppercase tracking-widest rounded-bl-lg">
-                  {t('upcoming')}
-                </div>
-              )}
-              <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center text-2xl border border-white/10">
-                {integration.icon}
+      <section>
+        <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-6 px-4 py-16 sm:px-6 md:grid-cols-2 lg:grid-cols-4 lg:px-8">
+          {integrations.map((integration) => (
+            <article key={integration.name} className="rounded-2xl border border-border bg-card p-6 shadow-elev-1">
+              <div className="flex items-center justify-between">
+                <span className="text-2xl">{integration.icon}</span>
+                <span
+                  className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] ${
+                    integration.status === 'upcoming'
+                      ? 'border-border bg-background text-muted-foreground'
+                      : 'border-ring bg-popover text-foreground'
+                  }`}
+                >
+                  {integration.status === 'upcoming' ? t('upcoming') : 'Active'}
+                </span>
               </div>
-              <h3 className="text-lg font-black text-white uppercase tracking-widest">{integration.name}</h3>
-              <p className="text-white/60 text-xs leading-relaxed font-medium">{integration.description}</p>
-            </div>
+              <h2 className="mt-4 text-lg font-semibold">{integration.name}</h2>
+              <p className="mt-3 text-sm text-muted-foreground">{integration.description}</p>
+            </article>
           ))}
         </div>
-      </div>
+      </section>
     </main>
   );
 }
