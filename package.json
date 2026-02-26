@@ -17,6 +17,7 @@
     "@sentry/nextjs": "^10.40.0",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.96.0",
+    "@vercel/analytics": "^1.6.1",
     "ai": "^6.0.90",
     "daisyui": "^5.5.18",
     "framer-motion": "^12.34.2",
