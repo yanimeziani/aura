@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { signInWithGoogle } from '@/app/actions/auth';
 import { ChevronRight } from 'lucide-react';
+import Logo from '@/components/Logo';
 
 export default function LoginPage() {
   const t = useTranslations('Auth');
@@ -34,13 +35,9 @@ export default function LoginPage() {
       <div className="w-full max-w-[400px] z-10">
         {/* Logo/Brand Area */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] border border-white/10 mb-6 shadow-2xl relative group">
-             <div className="absolute inset-0 bg-[#D4AF37]/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-             <span className="relative z-10 text-[10px] font-black text-[#D4AF37]">DRGN</span>
+          <div className="mb-6 inline-flex items-center justify-center">
+            <Logo className="h-8 w-auto" priority />
           </div>
-          <h1 className="text-3xl font-black tracking-[0.2em] text-white mb-2 uppercase">
-            DRAGUN<span className="text-[#D4AF37]">.</span>
-          </h1>
           <p className="text-white/40 text-[10px] font-black tracking-[0.3em] uppercase">
             {t('signIn')} TO YOUR EMPIRE
           </p>

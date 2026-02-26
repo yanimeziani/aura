@@ -1,6 +1,7 @@
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { ArrowRight, Bot, ShieldCheck, Zap, BarChart3, Globe, Sparkles, ChevronRight } from 'lucide-react';
+import Logo from '@/components/Logo';
 
 export default function LandingPage() {
   const t = useTranslations('Home');
@@ -51,10 +52,7 @@ export default function LandingPage() {
             <div className="bg-white/[0.02] rounded-[2.8rem] p-8 md:p-10 h-[500px] flex flex-col">
               <div className="flex items-center justify-between mb-12">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-[#1B2333] to-[#0D1520] border border-white/10 rounded-2xl flex items-center justify-center text-text-primary shadow-2xl relative">
-                    <div className="absolute inset-0 bg-accent-indigo/10 blur-lg" />
-                    <span className="relative z-10 text-[10px] font-black">DRGN</span>
-                  </div>
+                  <Logo className="h-8 w-auto" />
                   <div>
                     <div className="text-xs font-black text-text-primary uppercase tracking-[0.2em]">{t('agentName')}</div>
                     <div className="text-[9px] text-accent-emerald font-black flex items-center gap-1.5 uppercase tracking-widest mt-1">

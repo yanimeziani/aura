@@ -8,6 +8,7 @@ import { Link, redirect } from '@/i18n/navigation';
 import { getTranslations } from 'next-intl/server';
 import MobileBottomBar from '@/components/dashboard/MobileBottomBar';
 import DashboardTopNav from '@/components/dashboard/DashboardTopNav';
+import Logo from '@/components/Logo';
 import { getMerchantId } from '@/lib/auth';
 import { createStripeConnectAccount } from '@/app/actions/stripe-connect';
 import {
@@ -181,12 +182,8 @@ export default async function DashboardPage({
       {/* Top Nav */}
       <nav className="border-b border-white/5 bg-black/40 backdrop-blur-2xl sticky top-0 z-30 pt-[env(safe-area-inset-top)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]">
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-5 flex justify-between items-center">
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] border border-white/10 rounded-xl flex items-center justify-center font-bold text-[#D4AF37] shadow-2xl relative transition-all group-hover:scale-110 group-hover:border-[#D4AF37]/30">
-               <div className="absolute inset-0 bg-[#D4AF37]/10 blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
-               <span className="relative z-10 text-xs font-black">DRGN</span>
-            </div>
-            <h1 className="text-xl font-black tracking-[0.15em] uppercase hidden sm:block">DRAGUN<span className="text-[#D4AF37]">.</span></h1>
+          <Link href="/" className="flex items-center">
+            <Logo className="h-8 w-auto" />
           </Link>
           <DashboardTopNav 
             merchantName={merchant.name} 
