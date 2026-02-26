@@ -17,8 +17,19 @@ const aj = arcjetKey
     })
   : null;
 
+const PROTECTED_PREFIXES = ['/dashboard', '/chat', '/pay', '/onboarding'];
+
+function normalizePath(pathname: string) {
+  return pathname.replace(/^\/(en|fr)(?=\/|$)/, '') || '/';
+}
+
+function isProtectedPath(pathname: string) {
+  const normalized = normalizePath(pathname);
+  return PROTECTED_PREFIXES.some((prefix) => normalized === prefix || normalized.startsWith(`${prefix}/`));
+}
+
 export default async function middleware(request: NextRequest) {
-  if (aj) {
+  if (aj && isProtectedPath(request.nextUrl.pathname)) {
     const decision = await aj.protect(request);
     if (decision.isDenied()) {
       return new Response(null, { status: 403 });

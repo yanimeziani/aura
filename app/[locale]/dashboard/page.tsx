@@ -109,14 +109,14 @@ export default async function DashboardPage({
 
   if (!merchant) {
     return (
-      <div className="p-10 bg-[#050505] min-h-screen text-white flex flex-col items-center justify-center space-y-6">
-        <div className="w-20 h-20 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center shadow-2xl">
-          <ShieldCheck className="w-10 h-10 text-[#D4AF37]" />
+      <div className="min-h-screen space-y-6 bg-background p-10 text-foreground">
+        <div className="mx-auto flex w-20 h-20 items-center justify-center rounded-2xl border border-border bg-card shadow-elev-1">
+          <ShieldCheck className="h-10 w-10 text-foreground" />
         </div>
-        <div className="text-center space-y-2">
+        <div className="space-y-2 text-center">
           <h1 className="text-2xl font-black uppercase tracking-widest">{t('notFound')}</h1>
-          <p className="text-white/40 text-sm font-medium">
-            {t('notFoundHint')} <code className="bg-white/5 px-2 py-0.5 rounded text-[#D4AF37]">seed.sql</code>
+          <p className="text-sm text-muted-foreground">
+            {t('notFoundHint')} <code className="rounded bg-accent px-2 py-0.5 text-foreground">seed.sql</code>
           </p>
         </div>
       </div>
@@ -174,13 +174,10 @@ export default async function DashboardPage({
   const totalRecovered = debtors?.reduce((acc, d) => acc + (d.status === 'paid' ? d.total_debt : 0), 0) || 0;
 
   return (
-    <div id="top" className="bg-[#050505] min-h-screen text-white selection:bg-[#D4AF37] selection:text-black pb-24 md:pb-12 relative">
-      {/* Premium Background Elements */}
-      <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-[#D4AF37]/5 to-transparent pointer-events-none" />
-      <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#6419E6]/5 blur-[120px] rounded-full pointer-events-none" />
+    <div id="top" className="relative min-h-screen bg-background pb-24 text-foreground selection:bg-primary selection:text-primary-foreground md:pb-12">
 
       {/* Top Nav */}
-      <nav className="border-b border-white/5 bg-black/40 backdrop-blur-2xl sticky top-0 z-30 pt-[env(safe-area-inset-top)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]">
+      <nav className="sticky top-0 z-30 border-b border-border bg-background/90 pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] pt-[env(safe-area-inset-top)] backdrop-blur-xl">
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-5 flex justify-between items-center">
           <Link href="/" className="flex items-center">
             <Logo className="h-8 w-auto" />
@@ -193,7 +190,7 @@ export default async function DashboardPage({
         </div>
       </nav>
 
-      <main className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-16 relative z-10">
+      <main className="relative z-10 mx-auto w-full max-w-7xl space-y-16 px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
         {/* Stripe Success Alert */}
         {stripeSuccess && isOnboardingComplete && (
           <div className="bg-[#10b981]/10 border border-[#10b981]/20 rounded-2xl p-6 flex items-center justify-between group animate-in slide-in-from-top duration-500">

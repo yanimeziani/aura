@@ -18,6 +18,7 @@ const config: Config = {
     extend: {
       fontFamily: {
         sans: ['Geist', 'Inter', 'system-ui', 'sans-serif'],
+        mono: ['Geist Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
       },
       colors: {
         background: 'hsl(var(--background))',
@@ -76,6 +77,11 @@ const config: Config = {
         sm: 'var(--shadow-sm)',
         md: 'var(--shadow-md)',
         lg: 'var(--shadow-lg)',
+        'elev-1': '0 1px 0 hsl(var(--border) / 0.6), 0 8px 24px rgba(0,0,0,0.35)',
+        'elev-2': '0 1px 0 hsl(var(--border) / 0.7), 0 18px 50px rgba(0,0,0,0.55)',
+      },
+      letterSpacing: {
+        tightest: '-0.04em',
       },
       height: {
         btn: '40px',

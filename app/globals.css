@@ -4,118 +4,77 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Base */
-  --background: 0 0% 98%;
+  --background: 0 0% 100%;
   --foreground: 0 0% 6%;
-
-  /* Card / surface */
-  --card: 0 0% 100%;
-  --card-foreground: 0 0% 6%;
-
-  /* Popover */
-  --popover: 0 0% 100%;
-  --popover-foreground: 0 0% 6%;
-
-  /* Primary — deep ink */
-  --primary: 0 0% 9%;
-  --primary-foreground: 0 0% 97%;
-
-  /* Secondary — light neutral surface */
-  --secondary: 0 0% 94%;
-  --secondary-foreground: 0 0% 12%;
-
-  /* Muted */
-  --muted: 0 0% 92%;
-  --muted-foreground: 0 0% 40%;
-
-  /* Accent — cool graphite steel */
-  --accent: 210 8% 88%;
-  --accent-foreground: 210 8% 18%;
-
-  /* Destructive — restrained red */
-  --destructive: 0 62% 44%;
-  --destructive-foreground: 0 0% 98%;
-
-  /* Border / Input / Ring */
-  --border: 0 0% 88%;
-  --input: 0 0% 88%;
-  --ring: 0 0% 9%;
-
-  /* Radius */
-  --radius: 0.9rem;
-  --radius-sm: 0.5rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1.0rem;
-  --radius-xl: 1.25rem;
-
-  /* Success — restrained green for "recovered" financial states */
-  --success: 152 40% 32%;
-  --success-foreground: 0 0% 98%;
-
-  /* Chart tokens — monochrome-safe */
-  --chart-1: 0 0% 9%;
-  --chart-2: 0 0% 28%;
-  --chart-3: 0 0% 47%;
-  --chart-4: 0 0% 66%;
-  --chart-5: 0 0% 85%;
-
-  /* Shadows / elevation */
-  --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.05);
-  --shadow-md: 0 4px 12px 0 hsl(0 0% 0% / 0.08);
-  --shadow-lg: 0 8px 24px 0 hsl(0 0% 0% / 0.10);
 }
 
 .dark {
-  --background: 0 0% 7%;
-  --foreground: 0 0% 95%;
+  --background: 0 0% 3%;
+  --foreground: 0 0% 96%;
 
-  --card: 0 0% 10%;
-  --card-foreground: 0 0% 95%;
+  --card: 0 0% 5%;
+  --card-foreground: 0 0% 96%;
+  --popover: 0 0% 6%;
+  --popover-foreground: 0 0% 96%;
 
-  --popover: 0 0% 10%;
-  --popover-foreground: 0 0% 95%;
+  --primary: 0 0% 96%;
+  --primary-foreground: 0 0% 6%;
 
-  /* Primary — near-white in dark */
-  --primary: 0 0% 95%;
-  --primary-foreground: 0 0% 7%;
+  --secondary: 0 0% 10%;
+  --secondary-foreground: 0 0% 96%;
 
-  --secondary: 0 0% 15%;
-  --secondary-foreground: 0 0% 90%;
+  --muted: 0 0% 9%;
+  --muted-foreground: 0 0% 68%;
 
-  --muted: 0 0% 16%;
-  --muted-foreground: 0 0% 58%;
+  --accent: 0 0% 12%;
+  --accent-foreground: 0 0% 96%;
 
-  --accent: 210 8% 22%;
-  --accent-foreground: 210 8% 82%;
-
-  --destructive: 0 58% 52%;
+  --destructive: 0 72% 52%;
   --destructive-foreground: 0 0% 98%;
 
-  --border: 0 0% 18%;
-  --input: 0 0% 18%;
-  --ring: 0 0% 90%;
+  --border: 0 0% 14%;
+  --input: 0 0% 14%;
+  --ring: 0 0% 92%;
 
-  --success: 152 38% 42%;
+  --radius: 1rem;
+  --glow: 0 0% 98%;
+
+  --surface-0: 0 0% 3%;
+  --surface-1: 0 0% 5%;
+  --surface-2: 0 0% 7%;
+  --surface-3: 0 0% 9%;
+
+  --text-1: 0 0% 96%;
+  --text-2: 0 0% 78%;
+  --text-3: 0 0% 62%;
+
+  --stroke-soft: 0 0% 12%;
+  --stroke-strong: 0 0% 18%;
+
+  --success: 145 63% 42%;
   --success-foreground: 0 0% 98%;
+  --chart-1: 0 0% 96%;
+  --chart-2: 0 0% 78%;
+  --chart-3: 0 0% 62%;
+  --chart-4: 0 0% 44%;
+  --chart-5: 0 0% 30%;
 
-  --chart-1: 0 0% 95%;
-  --chart-2: 0 0% 76%;
-  --chart-3: 0 0% 57%;
-  --chart-4: 0 0% 38%;
-  --chart-5: 0 0% 22%;
+  --shadow-sm: 0 1px 0 hsl(var(--border) / 0.6), 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 1px 0 hsl(var(--border) / 0.7), 0 18px 50px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 1px 0 hsl(var(--border) / 0.8), 0 24px 72px rgba(0, 0, 0, 0.65);
 }
 
 @layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+
   body {
-    background-color: hsl(var(--background));
+    background: hsl(var(--background));
     color: hsl(var(--foreground));
     font-feature-settings: "rlig" 1, "calt" 1;
   }
-  /* Tabular nums for financial data */
-  .tabular {
-    font-variant-numeric: tabular-nums;
-  }
-  /* Headings */
+
   h1,
   h2,
   h3,
@@ -123,27 +82,12 @@
   h5,
   h6 {
     letter-spacing: -0.02em;
-    line-height: 1.2;
-  }
-  /* Body comfortable leading */
-  p,
-  li {
-    line-height: 1.65;
+    line-height: 1.15;
   }
 }
 
-/* Motion */
 @layer utilities {
-  .transition-fast {
-    transition-duration: 150ms;
-    transition-timing-function: ease-out;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-      animation-duration: 0.01ms !important;
-      transition-duration: 0.01ms !important;
-    }
+  .tabular {
+    font-variant-numeric: tabular-nums;
   }
 }
