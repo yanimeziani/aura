@@ -1,6 +1,30 @@
-# Manual Deployment Guide
+# Deployment Guide
 
-Since GitHub requires workflow permissions for automated deployment, here's how to deploy manually:
+This repo now includes an automated GitHub → Vercel CI/CD pipeline (`.github/workflows/ci-cd-vercel.yml`).
+
+- Pull Requests to `main` → CI + **Preview deploy**
+- Pushes to `main` → CI + **Production deploy**
+
+If you need fallback, manual deployment steps remain below.
+
+## Required GitHub Secrets (for CI/CD)
+
+Add these in **GitHub → Settings → Secrets and variables → Actions**:
+
+- `VERCEL_TOKEN`
+- `VERCEL_ORG_ID`
+- `VERCEL_PROJECT_ID`
+
+## Minimal Safe Branch Policy
+
+Recommended branch protection for `main`:
+
+- Require pull request before merging
+- Require status check: `Lint + Build`
+- Block force pushes
+- Restrict who can push directly to main
+
+# Manual Deployment Guide
 
 ## Prerequisites
 
