@@ -60,7 +60,16 @@ export async function GET(request: Request) {
         }
       }
 
-      return NextResponse.redirect(`${origin}${next}`);
+      const { data: merchantData } = await supabaseAdmin
+        .from('merchants')
+        .select('onboarding_complete, onboarding_completed')
+        .eq('id', user.id)
+        .single();
+
+      const onboardingCompleted = merchantData?.onboarding_completed ?? merchantData?.onboarding_complete ?? false;
+      const redirectPath = onboardingCompleted ? '/dashboard' : '/onboarding/profile';
+
+      return NextResponse.redirect(`${origin}${redirectPath}`);
     }
   }
 

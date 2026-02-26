@@ -309,5 +309,42 @@
     "uploadDesc": "Upload your base service agreement. Our AI will cite specific clauses to debtors.",
     "finishTitle": "Profile Ready",
     "finishDesc": "Your profile is configured. You can now start adding debtors to your recovery pipeline."
+  },
+  "OnboardingProfile": {
+    "eyebrow": "Profile setup",
+    "title": "Tell us about your business",
+    "subtitle": "We use this to personalize your Dragun workspace and generate your default settings.",
+    "businessNameLabel": "Business name",
+    "businessNamePlaceholder": "e.g. Venice Luxury Gym",
+    "countryLabel": "Country",
+    "countrySearchPlaceholder": "Search country",
+    "countryHelper": "Select the country where you operate.",
+    "currencyLabel": "Currency preference",
+    "phoneLabel": "Phone (optional)",
+    "phonePlaceholder": "+1 555 000 0000",
+    "continue": "Continue",
+    "saving": "Saving...",
+    "errorRequired": "Please fill in all required fields.",
+    "errorGeneric": "Something went wrong. Please try again."
+  },
+  "OnboardingTutorial": {
+    "eyebrow": "Quick walkthrough",
+    "title": "Set up your first recovery flow",
+    "subtitle": "A quick tour of the essentials before you launch.",
+    "skip": "Skip tutorial",
+    "back": "Back",
+    "next": "Next",
+    "finish": "Finish",
+    "finishing": "Finishing...",
+    "footer": "You can revisit this walkthrough anytime from settings.",
+    "stepLabel": "Step {count}",
+    "step1Title": "Welcome to Dragun — here's what you can do",
+    "step1Desc": "Centralize your recovery workflows, build compliant outreach, and track outcomes in one place.",
+    "step2Title": "Create your first menu / product",
+    "step2Desc": "Upload a policy, define your recovery tone, and create the workflow that matches your brand.",
+    "step3Title": "Share your link with customers",
+    "step3Desc": "Send secure payment and settlement links that keep debtors informed and protected.",
+    "step4Title": "You're ready to go live",
+    "step4Desc": "Launch your first campaign and let Dragun handle the heavy lifting."
   }
 }

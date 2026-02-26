@@ -35,21 +35,40 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  const path = request.nextUrl.pathname;
+  const localePrefix = path.split('/')[1];
+  const withLocale = (target: string) => (localePrefix ? `/${localePrefix}${target}` : target);
+
   if (
     !user &&
-    !request.nextUrl.pathname.includes('/login') &&
-    !request.nextUrl.pathname.includes('/auth') &&
-    request.nextUrl.pathname.includes('/dashboard')
+    !path.includes('/login') &&
+    !path.includes('/auth') &&
+    path.includes('/dashboard')
   ) {
-    // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone();
-    // We need to account for the [locale] prefix if it exists
-    // But for now let's just try to redirect to /login
-    // next-intl handles the locale prefix usually.
-    const path = request.nextUrl.pathname;
-    const localePrefix = path.split('/')[1];
-    url.pathname = localePrefix ? `/${localePrefix}/login` : '/login';
+    url.pathname = withLocale('/login');
     return NextResponse.redirect(url);
+  }
+
+  if (!user && path.includes('/onboarding')) {
+    const url = request.nextUrl.clone();
+    url.pathname = withLocale('/login');
+    return NextResponse.redirect(url);
+  }
+
+  if (user && path.includes('/dashboard')) {
+    const { data: merchant } = await supabase
+      .from('merchants')
+      .select('onboarding_complete, onboarding_completed')
+      .eq('id', user.id)
+      .single();
+
+    const onboardingDone = merchant?.onboarding_completed ?? merchant?.onboarding_complete ?? false;
+    if (!onboardingDone) {
+      const url = request.nextUrl.clone();
+      url.pathname = withLocale('/onboarding/profile');
+      return NextResponse.redirect(url);
+    }
   }
 
   // IMPORTANT: You *must* return the supabaseResponse object as is. If you're creating a

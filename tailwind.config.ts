@@ -1,37 +1,88 @@
-import type { Config } from 'tailwindcss';
+import type { Config } from 'tailwindcss'
 
 const config: Config = {
+  darkMode: ['class', '.dark'],
   content: [
-    './app/**/*.{js,ts,jsx,tsx}',
-    './components/**/*.{js,ts,jsx,tsx}',
+    './pages/**/*.{ts,tsx}',
+    './components/**/*.{ts,tsx}',
+    './app/**/*.{ts,tsx}',
+    './src/**/*.{ts,tsx}',
   ],
   theme: {
+    container: {
+      center: true,
+      padding: '2rem',
+      screens: { '2xl': '1400px' },
+    },
     extend: {
-      colors: {
-        bg: '#050A14',
-        surface: '#0D1520',
-        'accent-indigo': '#6366F1',
-        'accent-emerald': '#10B981',
-        'accent-red': '#EF4444',
-        'text-primary': '#F8FAFC',
-        'text-muted': '#94A3B8',
-      },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        display: ['Space Grotesk', 'sans-serif'],
-        mono: ['Space Mono', 'monospace'],
+        sans: ['Geist', 'Inter', 'system-ui', 'sans-serif'],
+      },
+      colors: {
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
+        card: {
+          DEFAULT: 'hsl(var(--card))',
+          foreground: 'hsl(var(--card-foreground))',
+        },
+        popover: {
+          DEFAULT: 'hsl(var(--popover))',
+          foreground: 'hsl(var(--popover-foreground))',
+        },
+        primary: {
+          DEFAULT: 'hsl(var(--primary))',
+          foreground: 'hsl(var(--primary-foreground))',
+        },
+        secondary: {
+          DEFAULT: 'hsl(var(--secondary))',
+          foreground: 'hsl(var(--secondary-foreground))',
+        },
+        muted: {
+          DEFAULT: 'hsl(var(--muted))',
+          foreground: 'hsl(var(--muted-foreground))',
+        },
+        accent: {
+          DEFAULT: 'hsl(var(--accent))',
+          foreground: 'hsl(var(--accent-foreground))',
+        },
+        destructive: {
+          DEFAULT: 'hsl(var(--destructive))',
+          foreground: 'hsl(var(--destructive-foreground))',
+        },
+        success: {
+          DEFAULT: 'hsl(var(--success))',
+          foreground: 'hsl(var(--success-foreground))',
+        },
+        border: 'hsl(var(--border))',
+        input: 'hsl(var(--input))',
+        ring: 'hsl(var(--ring))',
+        chart: {
+          '1': 'hsl(var(--chart-1))',
+          '2': 'hsl(var(--chart-2))',
+          '3': 'hsl(var(--chart-3))',
+          '4': 'hsl(var(--chart-4))',
+          '5': 'hsl(var(--chart-5))',
+        },
       },
       borderRadius: {
-        card: '16px',
-        lg: '24px',
+        lg: 'var(--radius-lg)',
+        md: 'var(--radius-md)',
+        sm: 'var(--radius-sm)',
+        xl: 'var(--radius-xl)',
+        DEFAULT: 'var(--radius)',
       },
       boxShadow: {
-        'glow-indigo': '0 0 40px rgba(99, 102, 241, 0.15)',
-        'glow-emerald': '0 0 40px rgba(16, 185, 129, 0.15)',
+        sm: 'var(--shadow-sm)',
+        md: 'var(--shadow-md)',
+        lg: 'var(--shadow-lg)',
+      },
+      height: {
+        btn: '40px',
+        'btn-primary': '44px',
       },
     },
   },
-  plugins: [require('daisyui')],
-};
+  plugins: [require('tailwindcss-animate')],
+}
 
-export default config;
+export default config

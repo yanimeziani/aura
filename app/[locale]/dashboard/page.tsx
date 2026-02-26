@@ -123,8 +123,9 @@ export default async function DashboardPage({
   }
 
   // Onboarding Check
-  if (!merchant.onboarding_complete && !forceDashboard) {
-    redirect({ href: '/onboarding', locale });
+  const onboardingDone = merchant.onboarding_completed ?? merchant.onboarding_complete;
+  if (!onboardingDone && !forceDashboard) {
+    redirect({ href: '/onboarding/profile', locale });
   }
 
   const hasStripeAccount = !!merchant.stripe_account_id;
