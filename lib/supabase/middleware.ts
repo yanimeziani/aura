@@ -38,6 +38,22 @@ export async function updateSession(request: NextRequest) {
 
   const path = request.nextUrl.pathname;
   const firstSegment = path.split('/')[1];
+  const isLocalizedPath = routing.locales.includes(firstSegment as (typeof routing.locales)[number]);
+
+  // Normalize non-localized app routes to the default locale so links like
+  // /dashboard and /login do not fall through to a 404 locale segment.
+  if (!isLocalizedPath) {
+    const localeRootPaths = ['/dashboard', '/login', '/onboarding', '/register'];
+    const shouldNormalize = localeRootPaths.some(
+      (base) => path === base || path.startsWith(`${base}/`)
+    );
+    if (shouldNormalize) {
+      const url = request.nextUrl.clone();
+      url.pathname = `/${routing.defaultLocale}${path}`;
+      return NextResponse.redirect(url);
+    }
+  }
+
   const localePrefix = routing.locales.includes(firstSegment as (typeof routing.locales)[number])
     ? firstSegment
     : '';
