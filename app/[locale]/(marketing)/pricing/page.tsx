@@ -102,7 +102,7 @@ export default function PricingPage() {
                     </li>
                   ))}
                 </ul>
-                <Link href="/login" className={`btn mt-6 w-full gap-2 ${plan.highlight ? 'btn-primary' : 'btn-outline'}`}>
+                <Link href={`/login?plan=${plan.name.toLowerCase()}`} className={`btn mt-6 w-full gap-2 ${plan.highlight ? 'btn-primary' : 'btn-outline'}`}>
                   {plan.cta} <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>

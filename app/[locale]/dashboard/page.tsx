@@ -27,6 +27,7 @@ import Logo from '@/components/Logo';
 import DashboardTopNav from '@/components/dashboard/DashboardTopNav';
 import MobileBottomBar from '@/components/dashboard/MobileBottomBar';
 import PaywallBanner from '@/components/dashboard/PaywallBanner';
+import PendingSubscription from '@/components/dashboard/PendingSubscription';
 import StatsGrid from '@/components/dashboard/StatsGrid';
 import DebtorTable, { getRecoveryScore } from '@/components/dashboard/DebtorTable';
 import DebtorFilters from '@/components/dashboard/DebtorFilters';
@@ -371,6 +372,8 @@ export default async function DashboardPage({
             </Link>
           </div>
         )}
+
+        <PendingSubscription subscribeAction={handleSubscribe} />
 
         <PaywallBanner
           currentCount={paywall.currentCount}
