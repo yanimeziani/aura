@@ -41,7 +41,7 @@ export default function TutorialClient() {
         <button
           type="button"
           onClick={handleComplete}
-          className="btn btn-ghost btn-sm text-xs uppercase tracking-widest self-start"
+          className="btn btn-ghost text-xs uppercase tracking-widest self-start"
         >
           {t('skip')}
         </button>
@@ -80,7 +80,7 @@ export default function TutorialClient() {
             type="button"
             disabled={activeStep === 0}
             onClick={() => setActiveStep((prev) => Math.max(prev - 1, 0))}
-            className="btn btn-ghost btn-sm text-xs uppercase tracking-widest disabled:opacity-40"
+            className="btn btn-ghost text-xs uppercase tracking-widest disabled:opacity-40"
           >
             {t('back')}
           </button>

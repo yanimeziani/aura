@@ -54,14 +54,14 @@ export default function PendingSubscription({ subscribeAction }: Props) {
       <div className="flex gap-2">
         <button
           onClick={() => setPendingPlan(null)}
-          className="btn btn-ghost btn-sm"
+          className="btn btn-ghost"
         >
           {t('dismiss')}
         </button>
         <button
           onClick={handleSubmit}
           disabled={submitting}
-          className="btn btn-primary btn-sm gap-1.5"
+          className="btn btn-primary gap-1.5"
         >
           {submitting ? (
             <span className="loading loading-spinner loading-xs" />

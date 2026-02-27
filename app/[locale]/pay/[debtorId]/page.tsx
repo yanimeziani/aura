@@ -135,7 +135,7 @@ export default function PaymentPage({ params }: { params: Promise<{ debtorId: st
         {/* Back */}
         <Link
           href={`/chat/${debtorId}`}
-          className="btn btn-ghost btn-sm gap-2 mb-10"
+          className="btn btn-ghost gap-2 mb-10"
         >
           <ChevronLeft className="w-4 h-4" />
           {t('returnToChat')}
@@ -160,7 +160,7 @@ export default function PaymentPage({ params }: { params: Promise<{ debtorId: st
           <div className="alert alert-error mb-8 max-w-2xl mx-auto shadow-warm">
             <AlertCircle className="w-5 h-5 shrink-0" />
             <span className="text-sm">{payError}</span>
-            <button className="btn btn-ghost btn-sm" onClick={() => setPayError(null)}>
+            <button className="btn btn-ghost" onClick={() => setPayError(null)}>
               Dismiss
             </button>
           </div>

@@ -351,7 +351,7 @@ export default async function DashboardPage({
                 {t('gatewayActivatedDesc')}
               </p>
             </div>
-            <Link href="/dashboard" className="btn btn-ghost btn-sm">
+            <Link href="/dashboard" className="btn btn-ghost">
               {t('dismiss')}
             </Link>
           </div>
@@ -366,7 +366,7 @@ export default async function DashboardPage({
                 {t('subscriptionActivatedDesc', { plan: paywall.plan, limit: String(paywall.limit) })}
               </p>
             </div>
-            <Link href="/dashboard" className="btn btn-ghost btn-sm">
+            <Link href="/dashboard" className="btn btn-ghost">
               {t('dismiss')}
             </Link>
           </div>
@@ -399,7 +399,7 @@ export default async function DashboardPage({
             </div>
             <form action={createStripeConnectAccount}>
               <input type="hidden" name="locale" value={locale} />
-              <button className="btn btn-primary btn-sm gap-1">
+              <button className="btn btn-primary gap-1">
                 {hasStripeAccount ? t('resume') : t('setupStripe')}
                 <ArrowRight className="h-3.5 w-3.5" />
               </button>

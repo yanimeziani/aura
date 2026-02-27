@@ -66,7 +66,7 @@ export default function SettingsPanel({ merchant, handleUpdateSettings, t }: Pro
             />
           </div>
 
-          <button className="btn btn-primary btn-sm w-full">
+          <button className="btn btn-primary w-full">
             {t('applyUpdates')}
           </button>
         </form>

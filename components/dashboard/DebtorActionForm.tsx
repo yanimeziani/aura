@@ -89,7 +89,7 @@ export default function DebtorActionForm({ debtor, handleRecoveryAction }: Props
             <button
               onClick={() => handleEmail(sendInitialOutreach)}
               disabled={isPending}
-              className="btn btn-sm btn-outline flex-1 gap-1.5"
+              className="btn btn-outline flex-1 gap-1.5"
             >
               {isPending ? (
                 <span className="loading loading-spinner loading-xs" />
@@ -101,7 +101,7 @@ export default function DebtorActionForm({ debtor, handleRecoveryAction }: Props
             <button
               onClick={() => handleEmail(sendFollowUp)}
               disabled={isPending}
-              className="btn btn-sm btn-outline flex-1 gap-1.5"
+              className="btn btn-outline flex-1 gap-1.5"
             >
               {isPending ? (
                 <span className="loading loading-spinner loading-xs" />
@@ -126,7 +126,7 @@ export default function DebtorActionForm({ debtor, handleRecoveryAction }: Props
             <button
               onClick={handleSms}
               disabled={isPending || !hasPhone}
-              className="btn btn-sm btn-outline gap-1.5"
+              className="btn btn-outline gap-1.5"
               title={hasPhone ? t('sendSmsTitle') : t('noPhoneWarning')}
             >
               {isPending ? (
@@ -204,7 +204,7 @@ export default function DebtorActionForm({ debtor, handleRecoveryAction }: Props
               </span>
             </label>
 
-            <button type="submit" className="btn btn-primary btn-sm w-full mt-2">
+            <button type="submit" className="btn btn-primary w-full mt-2">
               {t('save')}
             </button>
           </form>
