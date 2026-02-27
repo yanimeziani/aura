@@ -42,3 +42,4 @@ yarn-error.log*
 _bmad-output/
 *.tgz
 design-inspiration.png
+.vercel

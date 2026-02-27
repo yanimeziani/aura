@@ -1,6 +1,4 @@
 import { useTranslations } from 'next-intl';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
 
 export default function IntegrationsPage() {
   const t = useTranslations('Integrations');
@@ -13,37 +11,33 @@ export default function IntegrationsPage() {
   ];
 
   return (
-    <main className="bg-background text-foreground">
-      <section className="hero-glow border-b border-border">
-        <div className="section-shell section-gap">
-          <div className="max-w-5xl space-y-7">
-            <Badge>{t('subtitle')}</Badge>
-            <h1 className="text-4xl font-semibold tracking-tightest sm:text-6xl">
-              {t('title')} <span className="text-muted-foreground">{t('titleHighlight')}</span>
-            </h1>
-            <p className="max-w-3xl text-base text-muted-foreground sm:text-lg">{t('supporting')}</p>
-          </div>
+    <main>
+      <section className="hero-gradient py-16 sm:py-20">
+        <div className="app-shell max-w-3xl space-y-5">
+          <span className="badge badge-primary badge-outline text-[10px] font-bold uppercase tracking-widest">{t('subtitle')}</span>
+          <h1 className="text-4xl font-bold sm:text-5xl">
+            {t('title')} <span className="text-base-content/40">{t('titleHighlight')}</span>
+          </h1>
+          <p className="max-w-2xl text-base text-base-content/60 leading-relaxed">{t('supporting')}</p>
         </div>
       </section>
 
-      <section>
-        <div className="section-shell section-gap">
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {integrations.map((integration) => (
-              <Card key={integration.name} className="card-pep">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <span className="text-2xl" aria-hidden>{integration.icon}</span>
-                    <Badge variant={integration.status === 'upcoming' ? 'outline' : 'secondary'}>
-                      {integration.status === 'upcoming' ? t('upcoming') : 'Active'}
-                    </Badge>
-                  </div>
-                  <h2 className="mt-4 text-lg font-semibold">{integration.name}</h2>
-                  <p className="mt-3 text-sm text-muted-foreground">{integration.description}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+      <section className="py-16">
+        <div className="app-shell grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {integrations.map((item) => (
+            <article key={item.name} className="surface-card">
+              <div className="card-body p-6">
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl">{item.icon}</span>
+                  <span className={`badge badge-sm ${item.status === 'upcoming' ? 'badge-outline' : 'badge-success badge-outline'}`}>
+                    {item.status === 'upcoming' ? t('upcoming') : 'Active'}
+                  </span>
+                </div>
+                <h2 className="mt-4 text-lg font-bold">{item.name}</h2>
+                <p className="mt-2 text-sm text-base-content/60 leading-relaxed">{item.description}</p>
+              </div>
+            </article>
+          ))}
         </div>
       </section>
     </main>

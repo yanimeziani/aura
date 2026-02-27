@@ -1,163 +1,146 @@
 import { useTranslations } from 'next-intl';
-import { Check } from 'lucide-react';
-import { Section, SectionHeader } from '@/components/daisyui';
+import { Link } from '@/i18n/navigation';
+import { Check, ArrowRight, Zap } from 'lucide-react';
 
 export default function PricingPage() {
   const t = useTranslations('Pricing');
 
   const plans = [
     {
-      key: 'starter',
-      name: t('starter.name'),
-      description: t('starter.description'),
-      price: t('starter.price'),
-      period: t('perMonth'),
-      features: [t('starter.feature1'), t('starter.feature2'), t('starter.feature3')],
-      cta: t('starter.cta'),
-      featured: false,
+      name: 'Starter',
+      price: '$49',
+      period: '/mo',
+      description: 'For small business pilots validating automated recovery.',
+      highlight: false,
+      features: [
+        'Up to 50 active debtor accounts',
+        '5% recovery fee on collected funds',
+        'AI negotiation with contract citation',
+        'Stripe Connect settlement links',
+        'Standard email support',
+      ],
+      cta: 'Start Pilot',
     },
     {
-      key: 'pro',
-      name: t('pro.name'),
-      description: t('pro.description'),
-      price: t('pro.price'),
-      period: t('perMonth'),
-      features: [t('pro.feature1'), t('pro.feature2'), t('pro.feature3'), t('pro.feature4')],
-      cta: t('pro.cta'),
-      featured: true,
+      name: 'Growth',
+      price: '$149',
+      period: '/mo',
+      description: 'For teams scaling recovery operations across portfolios.',
+      highlight: true,
+      features: [
+        'Up to 250 active debtor accounts',
+        '5% recovery fee on collected funds',
+        'Custom tone and escalation presets',
+        'Priority queue scoring algorithm',
+        'CSV export and audit trail access',
+        'Priority support with SLA',
+      ],
+      cta: 'Choose Growth',
     },
     {
-      key: 'enterprise',
-      name: t('enterprise.name'),
-      description: t('enterprise.description'),
-      price: t('enterprise.price'),
-      period: '',
-      features: [t('enterprise.feature1'), t('enterprise.feature2'), t('enterprise.feature3'), t('enterprise.feature4')],
-      cta: t('enterprise.cta'),
-      featured: false,
+      name: 'Scale',
+      price: '$399',
+      period: '/mo',
+      description: 'For larger portfolios requiring full operational control.',
+      highlight: false,
+      features: [
+        'Up to 1,000 active debtor accounts',
+        '5% recovery fee on collected funds',
+        'Advanced analytics dashboard',
+        'Multi-user team access',
+        'API access for integrations',
+        'Dedicated account manager',
+        'Custom SLA and compliance review',
+      ],
+      cta: 'Choose Scale',
     },
   ];
 
   return (
     <main>
-      {/* Header */}
-      <Section padding="xl">
-        <div className="text-center max-w-3xl mx-auto">
-          <p className="text-sm font-medium tracking-widest uppercase text-base-content/50 mb-4">
-            Pricing plans
-          </p>
-          <h1 className="text-4xl md:text-5xl font-semibold tracking-tight mb-4">
-            {t('title')} <span className="text-base-content/50">{t('titleHighlight')}</span>
+      <section className="hero-gradient py-16 sm:py-20">
+        <div className="app-shell max-w-2xl space-y-5">
+          <span className="badge badge-primary badge-outline text-[10px] font-bold uppercase tracking-widest">Pricing</span>
+          <h1 className="text-4xl font-bold sm:text-5xl">
+            Simple, <span className="text-base-content/40">transparent</span> pricing
           </h1>
-          <p className="text-lg text-base-content/70">{t('subtitle')}</p>
+          <p className="text-base text-base-content/60 leading-relaxed">
+            Performance-based model. You only pay the recovery fee when funds are actually collected. No recovery, no fee.
+          </p>
         </div>
-      </Section>
+      </section>
 
-      {/* Pricing Cards */}
-      <Section variant="muted" padding="xl">
-        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+      <section className="py-16">
+        <div className="app-shell grid gap-5 md:grid-cols-3">
           {plans.map((plan) => (
             <article
-              key={plan.key}
-              className={`border bg-base-100 px-6 py-8 ${
-                plan.featured ? 'border-primary/30' : ''
-              }`}
+              key={plan.name}
+              className={`surface-card relative ${plan.highlight ? 'border-primary/40 shadow-lg shadow-primary/5' : ''}`}
             >
-              {plan.featured && (
-                <p className="text-xs font-semibold tracking-widest uppercase text-primary mb-4">
-                  Popular choice
-                </p>
+              {plan.highlight && (
+                <div className="absolute -top-3 left-6">
+                  <span className="badge badge-primary gap-1 text-[10px] font-bold uppercase tracking-widest">
+                    <Zap className="h-3 w-3" /> Most Popular
+                  </span>
+                </div>
               )}
-              <h3 className="text-xl font-semibold mb-2">{plan.name}</h3>
-              <p className="text-sm text-base-content/60 mb-6">{plan.description}</p>
-              <div className="mb-6">
-                <span className="text-4xl font-semibold tracking-tight">{plan.price}</span>
-                {plan.period && <span className="text-base-content/60"> {plan.period}</span>}
+              <div className="card-body p-6">
+                <div>
+                  <p className="text-label">{plan.name}</p>
+                  <p className="mt-1 text-sm text-base-content/55">{plan.description}</p>
+                </div>
+                <div className="mt-4 flex items-baseline gap-1">
+                  <span className="text-4xl font-bold">{plan.price}</span>
+                  <span className="text-label">{plan.period}</span>
+                </div>
+                <div className="divider my-3" />
+                <ul className="space-y-2.5">
+                  {plan.features.map((feature) => (
+                    <li key={feature} className="flex items-start gap-2.5 text-sm text-base-content/65">
+                      <Check className="mt-0.5 h-4 w-4 text-success shrink-0" />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+                <Link href="/login" className={`btn mt-6 w-full gap-2 ${plan.highlight ? 'btn-primary' : 'btn-outline'}`}>
+                  {plan.cta} <ArrowRight className="h-4 w-4" />
+                </Link>
               </div>
-              <ul className="space-y-3 mb-8">
-                {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-start gap-3 text-sm">
-                    <Check className="w-4 h-4 text-success flex-shrink-0 mt-0.5" aria-hidden="true" />
-                    <span className="text-base-content/80">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-              <button className={`btn w-full ${plan.featured ? 'btn-primary' : 'btn-outline'}`}>
-                {plan.cta}
-              </button>
             </article>
           ))}
         </div>
-      </Section>
+      </section>
 
-      {/* Pricing Note */}
-      <Section>
-        <div className="border border-base-200 bg-base-50 px-8 py-6 max-w-4xl mx-auto">
-          <p className="text-sm font-medium tracking-widest uppercase text-base-content/50 mb-4">
-            Global Platform Protocol
-          </p>
-          <p className="text-base-content/70 leading-relaxed">
-            Dragun operates on a performance-based resolution model. A{' '}
-            <span className="font-semibold">5% platform fee</span> applies only to successfully recovered funds.
-            No recovery, no fee. Secure gateway payments processed via Stripe Connect.
-          </p>
-        </div>
-      </Section>
-
-      {/* FAQ */}
-      <Section variant="muted" padding="xl">
-        <SectionHeader
-          title="Frequently asked questions"
-          description="Everything you need to know about our pricing"
-        />
-        <div className="max-w-3xl mx-auto space-y-4">
-          {[
-            {
-              question: 'When is the platform fee charged?',
-              answer: 'The 5% platform fee is only deducted when a debt is successfully recovered through our platform. There are no upfront costs or hidden fees.',
-            },
-            {
-              question: 'Can I change my plan?',
-              answer: 'Yes. You can upgrade or downgrade your plan at any time. Changes take effect immediately, and we prorate billing adjustments.',
-            },
-            {
-              question: 'What payment methods do you accept?',
-              answer: 'We accept all major credit cards through our secure Stripe integration. Enterprise customers can also pay via invoice.',
-            },
-            {
-              question: 'Is there a free trial?',
-              answer: 'We offer a 14-day pilot program for qualifying businesses. Contact our sales team to check eligibility.',
-            },
-          ].map((faq, index) => (
-            <details
-              key={index}
-              className="border border-base-200 bg-base-100 group"
-              defaultOpen={index === 0}
-            >
-              <summary className="px-6 py-4 cursor-pointer font-medium hover:bg-base-50 focus:outline-none focus:bg-base-50">
-                {faq.question}
-              </summary>
-              <div className="px-6 pb-4 pt-0 border-t border-base-100">
-                <p className="text-base-content/70 leading-relaxed">{faq.answer}</p>
-              </div>
-            </details>
-          ))}
-        </div>
-      </Section>
-
-      {/* CTA */}
-      <Section padding="xl">
-        <div className="text-center">
-          <h2 className="text-3xl font-semibold tracking-tight mb-4">Ready to get started?</h2>
-          <p className="text-lg text-base-content/70 mb-8 max-w-2xl mx-auto">
-            Join the pilot program and start recovering more debt
-          </p>
-          <div className="flex flex-wrap gap-4 justify-center">
-            <button className="btn btn-primary btn-lg">Start Free Pilot</button>
-            <button className="btn btn-outline btn-lg">Contact Sales</button>
+      <section className="py-8">
+        <div className="app-shell">
+          <div className="surface-card">
+            <div className="card-body p-6 sm:p-8 text-center">
+              <span className="text-label">Performance-Based Model</span>
+              <p className="mx-auto mt-3 max-w-3xl text-sm text-base-content/60 leading-relaxed">
+                Dragun operates on a <span className="font-bold text-base-content">5% platform fee</span> applied only to
+                successfully recovered funds processed through Stripe Connect. Monthly subscription covers platform access,
+                AI compute, and support. No hidden fees. No long-term contracts. Cancel anytime.
+              </p>
+            </div>
           </div>
         </div>
-      </Section>
+      </section>
+
+      <section className="py-12">
+        <div className="app-shell">
+          <div className="surface-card-elevated gradient-mesh">
+            <div className="card-body p-8 sm:p-12 text-center">
+              <h2 className="text-2xl font-bold sm:text-3xl">Need a custom plan?</h2>
+              <p className="mx-auto mt-2 max-w-xl text-sm text-base-content/60">
+                For portfolios exceeding 1,000 accounts, white-label requirements, or specific compliance needs.
+              </p>
+              <Link href="/contact" className="btn btn-primary btn-lg mt-6 gap-2">
+                Contact Sales <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
   );
 }

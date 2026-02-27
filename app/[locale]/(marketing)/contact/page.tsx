@@ -1,55 +1,49 @@
 import { useTranslations } from 'next-intl';
-import { Sparkles, Send, Mail, User, Tag, MessageSquare } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import { Send, Mail, User, Tag, MessageSquare } from 'lucide-react';
 
 export default function ContactPage() {
   const t = useTranslations('Contact');
 
   return (
-    <main className="bg-background text-foreground">
-      <section className="hero-glow border-b border-border">
-        <div className="section-shell section-gap">
-          <div className="max-w-5xl space-y-7">
-            <Badge><Sparkles className="h-3.5 w-3.5" /> Direct channel</Badge>
-            <h1 className="text-4xl font-semibold tracking-tightest sm:text-6xl">
-              {t('title')} <span className="text-muted-foreground">{t('titleHighlight')}</span>
-            </h1>
-            <p className="max-w-3xl text-base text-muted-foreground sm:text-lg">{t('subtitle')}</p>
-          </div>
+    <main>
+      <section className="hero-gradient py-16 sm:py-20">
+        <div className="app-shell max-w-3xl space-y-5">
+          <span className="badge badge-primary badge-outline text-[10px] font-bold uppercase tracking-widest">Direct channel</span>
+          <h1 className="text-4xl font-bold sm:text-5xl">
+            {t('title')} <span className="text-base-content/40">{t('titleHighlight')}</span>
+          </h1>
+          <p className="max-w-2xl text-base text-base-content/60 leading-relaxed">{t('subtitle')}</p>
         </div>
       </section>
 
-      <section>
-        <div className="section-shell section-gap">
-          <Card className="mx-auto max-w-4xl shadow-md">
-            <CardContent className="p-8 sm:p-10">
-              <form className="space-y-8">
-                <div className="grid gap-6 md:grid-cols-2">
+      <section className="py-16">
+        <div className="app-shell">
+          <div className="surface-card-elevated mx-auto max-w-3xl">
+            <div className="card-body p-8 sm:p-10">
+              <form className="space-y-6">
+                <div className="grid gap-5 md:grid-cols-2">
                   <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                    <label className="flex items-center gap-2 text-label">
                       <User className="h-3.5 w-3.5" />
                       {t('fullName')}
                     </label>
-                    <Input type="text" placeholder={t('fullNamePlaceholder')} />
+                    <input type="text" placeholder={t('fullNamePlaceholder')} className="input input-bordered w-full" />
                   </div>
                   <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                    <label className="flex items-center gap-2 text-label">
                       <Mail className="h-3.5 w-3.5" />
                       {t('emailAddress')}
                     </label>
-                    <Input type="email" placeholder={t('emailPlaceholder')} />
+                    <input type="email" placeholder={t('emailPlaceholder')} className="input input-bordered w-full" />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                  <label className="flex items-center gap-2 text-label">
                     <Tag className="h-3.5 w-3.5" />
                     {t('subject')}
                   </label>
-                  <select className="focus-ring h-12 w-full rounded-md border border-input bg-background px-4 text-sm text-foreground">
+                  <select className="select select-bordered w-full">
                     <option>{t('subjectGeneral')}</option>
                     <option>{t('subjectSales')}</option>
                     <option>{t('subjectSupport')}</option>
@@ -58,24 +52,20 @@ export default function ContactPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                  <label className="flex items-center gap-2 text-label">
                     <MessageSquare className="h-3.5 w-3.5" />
                     {t('message')}
                   </label>
-                  <textarea
-                    rows={6}
-                    placeholder={t('messagePlaceholder')}
-                    className="focus-ring w-full rounded-md border border-input bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground"
-                  />
+                  <textarea rows={6} placeholder={t('messagePlaceholder')} className="textarea textarea-bordered w-full" />
                 </div>
 
-                <Button fullWidth className="uppercase tracking-[0.14em]">
+                <button type="submit" className="btn btn-primary w-full gap-2 text-xs font-bold uppercase tracking-widest">
                   {t('sendMessage')}
                   <Send className="h-4 w-4" />
-                </Button>
+                </button>
               </form>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </section>
     </main>

@@ -1,40 +1,34 @@
 import { useTranslations } from 'next-intl';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
 
 export default function AboutPage() {
   const t = useTranslations('About');
 
   return (
-    <main className="bg-background text-foreground">
-      <section className="hero-glow border-b border-border">
-        <div className="section-shell section-gap">
-          <div className="max-w-5xl space-y-7">
-            <Badge>{t('badge')}</Badge>
-            <h1 className="text-4xl font-semibold tracking-tightest sm:text-6xl">
-              {t('title')} <span className="text-muted-foreground">{t('titleHighlight')}</span>
-            </h1>
-            <p className="max-w-3xl text-base text-muted-foreground sm:text-lg">{t('paragraph')}</p>
-          </div>
+    <main>
+      <section className="hero-gradient py-16 sm:py-20">
+        <div className="app-shell max-w-3xl space-y-5">
+          <span className="badge badge-outline text-[10px] font-bold uppercase tracking-widest">{t('badge')}</span>
+          <h1 className="text-4xl font-bold sm:text-5xl">
+            {t('title')} <span className="text-base-content/40">{t('titleHighlight')}</span>
+          </h1>
+          <p className="max-w-2xl text-base text-base-content/60 leading-relaxed">{t('paragraph')}</p>
         </div>
       </section>
 
-      <section>
-        <div className="section-shell section-gap">
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-12">
-            <Card className="card-pep md:col-span-6">
-              <CardContent className="p-8">
-                <h2 className="text-lg font-semibold">{t('speedTitle')}</h2>
-                <p className="mt-3 text-sm text-muted-foreground">{t('speedDesc')}</p>
-              </CardContent>
-            </Card>
-            <Card className="card-pep md:col-span-6">
-              <CardContent className="p-8">
-                <h2 className="text-lg font-semibold">{t('foundedTitle')}</h2>
-                <p className="mt-3 text-sm text-muted-foreground">{t('foundedDesc')}</p>
-              </CardContent>
-            </Card>
-          </div>
+      <section className="py-16">
+        <div className="app-shell grid gap-5 md:grid-cols-2">
+          <article className="surface-card">
+            <div className="card-body p-7">
+              <h2 className="text-lg font-bold">{t('speedTitle')}</h2>
+              <p className="mt-3 text-sm text-base-content/60 leading-relaxed">{t('speedDesc')}</p>
+            </div>
+          </article>
+          <article className="surface-card">
+            <div className="card-body p-7">
+              <h2 className="text-lg font-bold">{t('foundedTitle')}</h2>
+              <p className="mt-3 text-sm text-base-content/60 leading-relaxed">{t('foundedDesc')}</p>
+            </div>
+          </article>
         </div>
       </section>
     </main>
