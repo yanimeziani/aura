@@ -4,7 +4,7 @@ import { supabaseAdmin } from '@/lib/supabase-admin';
 import { getMerchantId } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
 import * as Sentry from '@sentry/nextjs';
-import { toCollectionStatus } from '@/lib/recovery-types';
+import { toCollectionStatus, CollectionStatus } from '@/lib/recovery-types';
 
 export async function updateRecoveryStatus(formData: FormData) {
   try {
