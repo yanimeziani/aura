@@ -57,7 +57,7 @@ export async function POST(req: Request) {
   const normalizedCurrency = currency.toLowerCase();
   const amountCents = Math.round(amount * 100);
   const feeCents = Math.round(amountCents * PLATFORM_FEE_PERCENT);
-  const baseUrl = process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
+  const baseUrl = process.env.NEXT_PUBLIC_URL || `https://${process.env.VERCEL_URL}` || 'https://www.dragun.app';
 
   const paymentType = isInstallment ? 'installment' : (amount < totalDebt * 0.99 ? 'settlement' : 'full');
 
