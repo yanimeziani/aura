@@ -420,7 +420,8 @@
     "settlementPlans": "Plans de Règlement Disponibles",
     "secureGateway": "Passerelle Sécurisée",
     "support": "Assistance",
-    "notFound": "Dossier du débiteur introuvable."
+    "notFound": "Dossier du débiteur introuvable.",
+    "agentUnavailable": "L'agent de recouvrement est indisponible pour le moment. Veuillez réessayer."
   },
   "Pay": {
     "returnToChat": "Retourner au Clavardage",
@@ -448,7 +449,11 @@
     "benefit2Install": "0 % de TPA (intérêt)",
     "startInstallments": "Commencer les Versements",
     "disclaimer": "Paiement sécurisé traité via Stripe. En procédant, vous acceptez les termes du règlement. Dragun.app agit comme agent de recouvrement pour {merchant}.",
-    "notFound": "Débiteur introuvable."
+    "notFound": "Débiteur introuvable.",
+    "paymentError": "Le paiement n'a pas pu être initié. Veuillez réessayer.",
+    "networkError": "Erreur réseau. Veuillez vérifier votre connexion et réessayer.",
+    "dismiss": "Fermer",
+    "protocolDisclosure": "Divulgation du Protocole"
   },
   "Success": {
     "finalizing": "Finalisation...",
@@ -462,7 +467,9 @@
     "signIn": "Se connecter",
     "signUp": "S'inscrire",
     "errorTitle": "Erreur d'authentification",
-    "successTitle": "Succès"
+    "successTitle": "Succès",
+    "continueGoogle": "Continuer avec Google",
+    "secureAccess": "Accès sécurisé, de niveau entreprise"
   },
   "Onboarding": {
     "title": "Bienvenue sur",

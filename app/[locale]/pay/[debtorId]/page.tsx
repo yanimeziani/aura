@@ -58,13 +58,13 @@ export default function PaymentPage({ params }: { params: Promise<{ debtorId: st
       });
       const data = await res.json();
       if (!res.ok || !data.url) {
-        setPayError(data.error || 'Payment could not be initiated. Please try again.');
+        setPayError(data.error || t('paymentError'));
         setPaying(false);
         return;
       }
       window.location.href = data.url;
     } catch {
-      setPayError('Network error. Please check your connection and try again.');
+      setPayError(t('networkError'));
       setPaying(false);
     }
   };
@@ -161,7 +161,7 @@ export default function PaymentPage({ params }: { params: Promise<{ debtorId: st
             <AlertCircle className="w-5 h-5 shrink-0" />
             <span className="text-sm">{payError}</span>
             <button className="btn btn-ghost" onClick={() => setPayError(null)}>
-              Dismiss
+              {t('dismiss')}
             </button>
           </div>
         )}
@@ -239,7 +239,7 @@ export default function PaymentPage({ params }: { params: Promise<{ debtorId: st
           <div className="card bg-base-200/30 border border-base-300/30">
             <div className="card-body p-6 items-center text-center">
               <ShieldCheck className="w-5 h-5 text-base-content/20 mb-1" />
-              <p className="text-label mb-2">Protocol Disclosure</p>
+              <p className="text-label mb-2">{t('protocolDisclosure')}</p>
               <p className="text-xs text-base-content/40 leading-relaxed max-w-md">
                 {t('disclaimer', { merchant: debtor.merchant.name })}
               </p>

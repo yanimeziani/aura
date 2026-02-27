@@ -16,8 +16,10 @@ const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin']
 const inter = Inter({ variable: '--font-inter', subsets: ['latin'] });
 const spaceGrotesk = Space_Grotesk({ variable: '--font-space-grotesk', subsets: ['latin'] });
 
+const baseUrl = process.env.NEXT_PUBLIC_URL ?? 'https://www.dragun.app';
+
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_URL ?? 'https://www.dragun.app'),
+  metadataBase: new URL(baseUrl),
   title: 'Dragun.app | Intelligent Debt Recovery',
   description: 'Automated, empathetic, and firm debt recovery powered by AI negotiation workflows.',
   openGraph: {
@@ -31,6 +33,14 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Dragun.app | Intelligent Debt Recovery',
     description: 'Automated, empathetic, and firm debt recovery powered by AI negotiation workflows.',
+  },
+  alternates: {
+    canonical: `${baseUrl}/en`,
+    languages: {
+      en: `${baseUrl}/en`,
+      fr: `${baseUrl}/fr`,
+      'x-default': `${baseUrl}/en`,
+    },
   },
 };
 

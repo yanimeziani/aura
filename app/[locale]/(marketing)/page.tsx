@@ -24,11 +24,37 @@ import {
 import InteractiveRecoveryDemo from '@/components/InteractiveRecoveryDemo';
 import HeroGlow from '@/components/landing/HeroGlow';
 
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'Dragun.app',
+  applicationCategory: 'BusinessApplication',
+  operatingSystem: 'Web',
+  description: 'AI-powered debt recovery platform with empathetic negotiation, contract intelligence, and Stripe settlement links.',
+  url: 'https://www.dragun.app',
+  offers: {
+    '@type': 'AggregateOffer',
+    lowPrice: '49',
+    highPrice: '399',
+    priceCurrency: 'USD',
+    offerCount: 3,
+  },
+  creator: {
+    '@type': 'Organization',
+    name: 'Meziani AI',
+    url: 'https://meziani.ai',
+  },
+};
+
 export default function LandingPage() {
   const t = useTranslations('Home');
 
   return (
     <main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <a href="#main-content" className="skip-link">Skip to main content</a>
 
       {/* ─── Hero: funky, visual, not cluttered ─── */}

@@ -32,7 +32,7 @@ export default function ChatPage({ params }: { params: Promise<{ debtorId: strin
     body: { debtorId },
     onError: (err) => {
       console.error('[chat]', err);
-      setChatError('The recovery agent is unavailable right now. Please try again.');
+      setChatError(t('agentUnavailable'));
     },
   });
 

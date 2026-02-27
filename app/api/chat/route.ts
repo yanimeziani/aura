@@ -5,6 +5,19 @@ import { generateEmbedding, getChatModel } from '@/lib/ai-provider';
 export const runtime = 'nodejs';
 export const maxDuration = 30;
 
+const RATE_WINDOW_MS = 60_000;
+const RATE_LIMIT = 15;
+const hits = new Map<string, number[]>();
+
+function isRateLimited(key: string): boolean {
+  const now = Date.now();
+  const timestamps = (hits.get(key) ?? []).filter((t) => now - t < RATE_WINDOW_MS);
+  if (timestamps.length >= RATE_LIMIT) return true;
+  timestamps.push(now);
+  hits.set(key, timestamps);
+  return false;
+}
+
 function buildSystemPrompt(
   merchant: { name: string; strictness_level: number; settlement_floor: number },
   debtor: { name: string; email: string; currency: string; total_debt: number; status: string; days_overdue?: number },
@@ -99,6 +112,13 @@ export async function POST(req: Request) {
 
     if (!debtorId || typeof debtorId !== 'string') {
       return Response.json({ error: 'Invalid request' }, { status: 400 });
+    }
+
+    if (isRateLimited(debtorId)) {
+      return Response.json(
+        { error: 'Too many messages. Please wait a moment.' },
+        { status: 429, headers: { 'Retry-After': '60' } },
+      );
     }
     if (!Array.isArray(messages) || messages.length === 0) {
       return Response.json({ error: 'Invalid messages' }, { status: 400 });
