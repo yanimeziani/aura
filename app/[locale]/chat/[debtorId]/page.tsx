@@ -1,7 +1,7 @@
 'use client';
 
 import { useChat } from '@ai-sdk/react';
-import { use, useEffect, useState } from 'react';
+import { use, useEffect, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { createClient } from '@/lib/supabase/client';
@@ -23,7 +23,7 @@ export default function ChatPage({ params }: { params: Promise<{ debtorId: strin
   const t = useTranslations('Chat');
   const [debtor, setDebtor] = useState<Debtor | null>(null);
   const [loading, setLoading] = useState(true);
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   const [chatError, setChatError] = useState<string | null>(null);
   const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({

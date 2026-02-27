@@ -3,54 +3,58 @@
 import { useEffect, useState } from 'react';
 import { Sun, Moon, Monitor } from 'lucide-react';
 
+type Theme = 'light' | 'dark' | 'system';
+
+function resolveTheme(value: Theme): 'acid' | 'business' {
+  if (value === 'dark') return 'business';
+  if (value === 'light') return 'acid';
+  if (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    return 'business';
+  }
+  return 'acid';
+}
+
+function applyTheme(value: Theme) {
+  document.documentElement.setAttribute('data-theme', resolveTheme(value));
+}
+
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system');
-
-  const applyTheme = (value: 'light' | 'dark' | 'system') => {
-    const isDark =
-      value === 'dark' ||
-      (value === 'system' &&
-        typeof window !== 'undefined' &&
-        window.matchMedia('(prefers-color-scheme: dark)').matches);
-
-    document.documentElement.classList.toggle('dark', isDark);
-    document.documentElement.setAttribute('data-theme', isDark ? 'dragun-dark' : 'dragun');
-  };
+  const [theme, setTheme] = useState<Theme>('system');
 
   useEffect(() => {
-    const saved = (localStorage.getItem('theme') as 'light' | 'dark' | 'system') || 'system';
+    const saved = (localStorage.getItem('theme') as Theme) || 'system';
     setTheme(saved);
     applyTheme(saved);
 
     const media = window.matchMedia('(prefers-color-scheme: dark)');
     const handleSystemChange = () => {
-      const current = (localStorage.getItem('theme') as 'light' | 'dark' | 'system') || 'system';
+      const current = (localStorage.getItem('theme') as Theme) || 'system';
       if (current === 'system') applyTheme('system');
     };
-
     media.addEventListener('change', handleSystemChange);
     return () => media.removeEventListener('change', handleSystemChange);
   }, []);
 
-  const toggle = () => {
-    const order: Array<'system' | 'dark' | 'light'> = ['system', 'dark', 'light'];
+  const cycle = () => {
+    const order: Theme[] = ['system', 'dark', 'light'];
     const next = order[(order.indexOf(theme) + 1) % order.length];
     setTheme(next);
     localStorage.setItem('theme', next);
     applyTheme(next);
   };
 
+  const icons = { light: Moon, dark: Sun, system: Monitor };
+  const Icon = icons[theme];
+
   return (
     <button
       type="button"
-      onClick={toggle}
+      onClick={cycle}
       className="btn btn-ghost btn-square btn-sm"
-      aria-label={`Theme: ${theme}. Click to switch`}
+      aria-label={`Theme: ${theme}. Click to switch.`}
       title={`Theme: ${theme}`}
     >
-      {theme === 'dark' && <Sun className="h-4 w-4" />}
-      {theme === 'light' && <Moon className="h-4 w-4" />}
-      {theme === 'system' && <Monitor className="h-4 w-4" />}
+      <Icon className="h-4 w-4" />
     </button>
   );
 }

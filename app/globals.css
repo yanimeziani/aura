@@ -1,5 +1,7 @@
 @import "tailwindcss";
-@plugin "daisyui";
+@plugin "daisyui" {
+  themes: acid --default, business --prefersdark;
+}
 
 @theme {
   --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -12,14 +14,11 @@
   }
 
   body {
-    background-color: oklch(var(--b1));
-    color: oklch(var(--bc));
     font-feature-settings: "rlig" 1, "calt" 1, "ss01" on, "ss02" on;
     -webkit-font-smoothing: antialiased;
     line-height: 1.6;
   }
 
-  /* Skip link - visible only when focused */
   .skip-link:not(:focus) {
     position: absolute;
     width: 1px;
@@ -39,20 +38,10 @@
     transform: translateX(-50%);
     z-index: 9999;
     padding: 1rem 2rem;
-    background: oklch(var(--n));
-    color: oklch(var(--nc));
   }
 
-  :focus-visible {
-    outline: 2px solid oklch(var(--p));
-    outline-offset: 3px;
-  }
-
-  /* Respect reduced motion preference */
   @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
+    *, *::before, *::after {
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
@@ -60,56 +49,15 @@
   }
 }
 
-/* Dragun's soul - warm, professional, human */
-[data-theme="dragun"] {
-  --p: 55% 0.14 208; /* Deep, thoughtful blue */
-  --pf: 55% 0.12 208;
-  --pc: 100% 0 0;
-  --s: 58% 0.18 220; /* Calm secondary */
-  --sf: 58% 0.15 220;
-  --sc: 100% 0 0;
-  --a: 62% 0.12 38; /* Warm accent */
-  --af: 62% 0.1 38;
-  --ac: 100% 0 0;
-  --n: 28% 0.06 230; /* Soft dark */
-  --nf: 28% 0.05 230;
-  --nc: 100% 0 0;
-  --b1: 99% 0.002 250; /* Paper white */
-  --b2: 97% 0.004 250;
-  --b3: 94% 0.006 250;
-  --bc: 18% 0.04 230; /* Warm dark text */
-  --in: 55% 0.12 208;
-  --su: 58% 0.18 155;
-  --wa: 62% 0.12 45;
-  --er: 58% 0.18 15;
-}
-
-/* Dragun's soul - dark mode */
-[data-theme="dragun-dark"] {
-  --p: 65% 0.14 208; /* Brighter blue for dark mode */
-  --pf: 65% 0.12 208;
-  --pc: 100% 0 0;
-  --s: 68% 0.18 220;
-  --sf: 68% 0.15 220;
-  --sc: 100% 0 0;
-  --a: 72% 0.12 38;
-  --af: 72% 0.1 38;
-  --ac: 100% 0 0;
-  --n: 85% 0.06 230; /* Darker background */
-  --nf: 85% 0.05 230;
-  --nc: 100% 0 0;
-  --b1: 15% 0.02 250; /* Deep dark background */
-  --b2: 20% 0.02 250;
-  --b3: 25% 0.02 250;
-  --bc: 85% 0.04 230; /* Light text for dark mode */
-  --in: 65% 0.12 208;
-  --su: 68% 0.18 155;
-  --wa: 72% 0.12 45;
-  --er: 68% 0.18 15;
-}
-
-/* Typography-driven utilities */
 @layer utilities {
+  .text-label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    opacity: 0.5;
+  }
+
   .app-shell {
     margin-left: auto;
     margin-right: auto;
@@ -119,11 +67,9 @@
     padding-right: 1.5rem;
   }
 
-  /* Respectful, breathable prose */
   .prose-dragun {
     max-width: 65ch;
     line-height: 1.7;
-    color: oklch(var(--bc));
   }
 
   .prose-dragun > * + * {
@@ -131,116 +77,51 @@
   }
 
   .prose-dragun h1, .prose-dragun h2, .prose-dragun h3 {
-    color: oklch(var(--n));
     font-weight: 500;
     letter-spacing: -0.02em;
     line-height: 1.3;
   }
 
-  .prose-dragun h1 {
-    font-size: 2.5rem;
-    margin-top: 2.5em;
-  }
+  .prose-dragun h1 { font-size: 2.5rem; margin-top: 2.5em; }
+  .prose-dragun h2 { font-size: 2rem; margin-top: 2em; }
+  .prose-dragun p { opacity: 0.9; }
+  .prose-dragun strong { font-weight: 600; }
 
-  .prose-dragun h2 {
-    font-size: 2rem;
-    margin-top: 2em;
-  }
-
-  .prose-dragun p {
-    color: oklch(var(--bc));
-    opacity: 0.9;
-  }
-
-  .prose-dragun strong {
-    color: oklch(var(--n));
-    font-weight: 600;
-  }
-
-  /* Human-tuned hover states */
   .hover-lift {
     transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
   }
-
   .hover-lift:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgb(0 0 0 / 0.08);
   }
 
-  /* Subtle borders that don't shout */
-  .border-quiet {
-    border-color: oklch(var(--b3));
-  }
-
-  .border-quiet:hover {
-    border-color: oklch(var(--b2));
-  }
-
-  /* Warm, professional shadows */
   .shadow-warm {
     box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.04), 0 1px 2px 0 rgb(0 0 0 / 0.02);
   }
-
   .shadow-elevated {
     box-shadow: 0 4px 12px rgb(0 0 0 / 0.06), 0 2px 6px rgb(0 0 0 / 0.03);
   }
 
-  /* Subtle link styles */
-  .link-subtle {
-    color: oklch(var(--p));
-    text-decoration: underline;
-    text-underline-offset: 3px;
-    text-decoration-color: oklch(var(--p) / 0.2);
-    transition: text-decoration-color 0.2s ease-out;
-  }
-
-  .link-subtle:hover {
-    text-decoration-color: oklch(var(--p));
-  }
-
-  /* Button styles that feel hand-crafted */
   .btn-dragun {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
     padding: 0.75rem 1.5rem;
-    background: oklch(var(--n));
-    color: oklch(var(--nc));
     border: none;
     font-weight: 500;
     letter-spacing: -0.01em;
-    transition: background 0.2s ease-out;
+    transition: opacity 0.2s ease-out;
   }
+  .btn-dragun:hover { opacity: 0.85; }
 
-  .btn-dragun:hover {
-    background: oklch(var(--p));
-  }
-
-  .btn-dragun:focus-visible {
-    outline: 2px solid oklch(var(--p));
-    outline-offset: 3px;
-  }
-
-  /* Secondary button */
   .btn-dragun-ghost {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
     padding: 0.75rem 1.5rem;
     background: transparent;
-    color: oklch(var(--p));
-    border: 1px solid oklch(var(--b3));
     font-weight: 500;
     transition: all 0.2s ease-out;
   }
-
-  .btn-dragun-ghost:hover {
-    background: oklch(var(--b2));
-    border-color: oklch(var(--b2));
-  }
-
-  .btn-dragun-ghost:focus-visible {
-    outline: 2px solid oklch(var(--p));
-    outline-offset: 3px;
-  }
+  .btn-dragun-ghost:hover { opacity: 0.7; }
 }

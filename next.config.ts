@@ -24,7 +24,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       "frame-src https://js.stripe.com https://hooks.stripe.com",
-      "connect-src 'self' https://*.supabase.co https://gateway.vercel.ai https://*.ingest.sentry.io",
+      "connect-src 'self' https://*.supabase.co https://gateway.vercel.ai https://*.ingest.sentry.io https://api.stripe.com https://q.stripe.com https://checkout.stripe.com",
       "img-src 'self' data: blob:",
       "object-src 'none'",
       "base-uri 'self'",
