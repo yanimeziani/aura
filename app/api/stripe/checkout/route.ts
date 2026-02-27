@@ -1,7 +1,6 @@
 import Stripe from 'stripe';
 import { supabaseAdmin } from '@/lib/supabase-admin';
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+import { stripe } from '@/lib/stripe';
 
 const PLATFORM_FEE_PERCENT = 0.05;
 

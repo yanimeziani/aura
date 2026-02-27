@@ -2,8 +2,7 @@ import Stripe from 'stripe';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { headers } from 'next/headers';
 import { getDebtorLimit, type PlanTier } from '@/lib/paywall';
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+import { stripe } from '@/lib/stripe';
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {

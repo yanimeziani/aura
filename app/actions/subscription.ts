@@ -1,11 +1,9 @@
 'use server';
 
-import Stripe from 'stripe';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { redirect } from 'next/navigation';
 import { ensureMerchant } from '@/lib/merchant';
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+import { stripe } from '@/lib/stripe';
 
 const PLAN_PRICE_MAP: Record<string, string> = {
   starter: process.env.STRIPE_PRICE_STARTER || '',

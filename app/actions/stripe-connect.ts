@@ -1,12 +1,10 @@
 'use server';
 
-import Stripe from 'stripe';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
 import { ensureMerchant } from '@/lib/merchant';
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+import { stripe } from '@/lib/stripe';
 
 function sanitizeLocale(value: unknown) {
   return value === 'fr' ? 'fr' : 'en';
