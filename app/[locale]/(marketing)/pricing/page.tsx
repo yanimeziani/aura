@@ -1,5 +1,15 @@
+import type { Metadata } from 'next';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
+
+export const metadata: Metadata = {
+  title: 'Pricing | Dragun.app — Simple, Transparent Recovery Pricing',
+  description: 'Performance-based pricing from $49/mo. 5% fee only on recovered funds. No recovery, no fee. Starter, Growth, and Scale plans.',
+  openGraph: {
+    title: 'Pricing | Dragun.app',
+    description: 'Performance-based pricing from $49/mo. 5% fee only on recovered funds.',
+  },
+};
 import { Check, ArrowRight, Zap } from 'lucide-react';
 
 export default function PricingPage() {

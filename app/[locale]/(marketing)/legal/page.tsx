@@ -1,4 +1,14 @@
+import type { Metadata } from 'next';
 import { useTranslations } from 'next-intl';
+
+export const metadata: Metadata = {
+  title: 'Legal | Dragun.app — Privacy Policy, Terms of Service, Compliance',
+  description: 'Privacy policy, terms of service, and regulatory stance for Dragun.app by Meziani AI. GDPR-aware, Quebec law governed.',
+  openGraph: {
+    title: 'Legal | Dragun.app',
+    description: 'Privacy policy, terms of service, and regulatory compliance information.',
+  },
+};
 
 export default function LegalPage() {
   const t = useTranslations('Legal');

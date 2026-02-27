@@ -1,4 +1,14 @@
+import type { Metadata } from 'next';
 import { useTranslations } from 'next-intl';
+
+export const metadata: Metadata = {
+  title: 'FAQ | Dragun.app — Common Questions About AI Debt Recovery',
+  description: 'How does the AI handle disputes? Is it legal? What payment methods are supported? Everything you need to know about Dragun.',
+  openGraph: {
+    title: 'FAQ | Dragun.app',
+    description: 'Common questions about AI-powered debt recovery with Dragun.',
+  },
+};
 import { HelpCircle, ChevronRight } from 'lucide-react';
 
 export default function FAQPage() {

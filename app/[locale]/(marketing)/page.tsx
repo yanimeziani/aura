@@ -1,5 +1,15 @@
+import type { Metadata } from 'next';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
+
+export const metadata: Metadata = {
+  title: 'Dragun.app | AI-Powered Debt Recovery',
+  description: 'Recover debt without burning relationships. Dragun negotiates with empathy, cites your contracts, and sends settlement links instantly.',
+  openGraph: {
+    title: 'Dragun.app | AI-Powered Debt Recovery',
+    description: 'Recover debt without burning relationships. Empathetic AI negotiation with Stripe settlement links.',
+  },
+};
 import {
   ArrowRight,
   CheckCircle2,

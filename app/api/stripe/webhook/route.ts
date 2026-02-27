@@ -39,6 +39,14 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const debtorId = session.metadata?.debtor_id;
   if (!debtorId) return;
 
+  const { data: existing } = await supabaseAdmin
+    .from('payments')
+    .select('id')
+    .eq('stripe_session_id', session.id)
+    .maybeSingle();
+
+  if (existing) return;
+
   const paymentType = session.metadata?.payment_type || 'full';
   const amountPaid = session.amount_total ? session.amount_total / 100 : 0;
   const feeCents = parseInt(session.metadata?.platform_fee_cents || '0', 10);
@@ -56,6 +64,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     });
 
   if (paymentError) {
+    if (paymentError.code === '23505') return;
     console.error('Error recording payment:', paymentError);
     throw new Error('Database error recording payment');
   }

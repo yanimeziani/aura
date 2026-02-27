@@ -1,4 +1,14 @@
+import type { Metadata } from 'next';
 import { useTranslations } from 'next-intl';
+
+export const metadata: Metadata = {
+  title: 'Contact | Dragun.app — Get in Touch',
+  description: 'Questions about AI debt recovery? Contact the Dragun team for sales, support, or partnership inquiries.',
+  openGraph: {
+    title: 'Contact | Dragun.app',
+    description: 'Reach the Dragun team for sales, support, or partnership inquiries.',
+  },
+};
 import { Send, Mail, User, Tag, MessageSquare } from 'lucide-react';
 
 export default function ContactPage() {

@@ -1,4 +1,14 @@
+import type { Metadata } from 'next';
 import { useTranslations } from 'next-intl';
+
+export const metadata: Metadata = {
+  title: 'About | Dragun.app — Built by Meziani AI',
+  description: 'Dragun.app is a Meziani AI product combining sub-second intelligence with empathetic debt recovery. Founded 2026.',
+  openGraph: {
+    title: 'About | Dragun.app',
+    description: 'Built by Meziani AI — sub-second intelligence meets empathetic debt recovery.',
+  },
+};
 
 export default function AboutPage() {
   const t = useTranslations('About');
