@@ -2,171 +2,133 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { ArrowRight, CheckCircle2, ShieldCheck, Gauge, Wallet } from 'lucide-react';
 import InteractiveRecoveryDemo from '@/components/InteractiveRecoveryDemo';
-import { Badge } from '@/components/ui/badge';
-import { buttonVariants } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 
 export default function LandingPage() {
   const t = useTranslations('Home');
 
   return (
-    <main className="bg-background text-foreground">
-      <section className="hero-glow border-b border-border">
-        <div className="section-shell section-gap">
-          <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
-            <div className="space-y-7 lg:col-span-8">
-              <Badge>{t('badge')}</Badge>
-              <h1 className="max-w-5xl text-4xl font-semibold tracking-tightest sm:text-6xl">
-                {t('heroLine1')}
-              </h1>
-              <p className="max-w-3xl text-base text-muted-foreground sm:text-lg">{t('heroParagraph')}</p>
-              <p className="text-sm text-muted-foreground">{t('trustLine')}</p>
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <Link href="/login" className={buttonVariants({ size: 'lg', className: 'uppercase tracking-[0.14em]' })}>
-                  {t('startPilot')}
-                </Link>
-                <Link
-                  href="#demo"
-                  className={buttonVariants({ variant: 'secondary', size: 'lg', className: 'uppercase tracking-[0.14em]' })}
-                >
-                  {t('watchDemo')}
-                </Link>
-              </div>
-            </div>
-
-            <Card className="lg:col-span-4">
-              <CardContent className="p-6">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Launch Checklist</p>
-                <ul className="mt-5 space-y-3 text-sm text-muted-foreground">
-                  <li className="flex items-start gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 text-foreground" />Stripe connect configured</li>
-                  <li className="flex items-start gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 text-foreground" />Contract clauses indexed</li>
-                  <li className="flex items-start gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 text-foreground" />Escalation policy defined</li>
-                </ul>
-                <Separator className="my-5" />
-                <p className="text-xs text-muted-foreground">{t('metricsFootnote')}</p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      <section id="demo" className="border-b border-border bg-grid-soft">
-        <div className="section-shell section-gap">
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-            <InteractiveRecoveryDemo />
-
-            <div className="grid grid-cols-1 gap-4 lg:col-span-4">
-              <Card className="card-pep">
-                <CardContent className="p-6">
-                  <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">{t('recoveryRateLabel')}</p>
-                  <p className="mt-2 text-4xl font-semibold tabular">82%</p>
-                  <p className="mt-2 text-xs text-muted-foreground">Pilot median across accounts aged 30-90 days.</p>
-                </CardContent>
-              </Card>
-              <Card className="card-pep">
-                <CardContent className="p-6">
-                  <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">{t('latencyLabel')}</p>
-                  <p className="mt-2 text-4xl font-semibold tabular">2.1s</p>
-                  <p className="mt-2 text-xs text-muted-foreground">Measured at p50 in active pilot environments.</p>
-                </CardContent>
-              </Card>
-              <p className="text-xs text-muted-foreground">{t('metricsFootnote')}</p>
+    <main>
+      <section className="app-shell py-10 sm:py-16">
+        <div className="grid gap-6 lg:grid-cols-12">
+          <div className="space-y-6 lg:col-span-8">
+            <span className="badge badge-accent badge-outline">{t('badge')}</span>
+            <h1 className="text-4xl font-semibold leading-tight sm:text-5xl lg:text-6xl">{t('heroLine1')}</h1>
+            <p className="max-w-3xl text-base text-base-content/72 sm:text-lg">{t('heroParagraph')}</p>
+            <p className="text-sm text-base-content/60">{t('trustLine')}</p>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Link href="/login" className="btn btn-primary">{t('startPilot')}</Link>
+              <Link href="#demo" className="btn btn-outline">{t('watchDemo')}</Link>
             </div>
           </div>
+
+          <aside className="surface-card lg:col-span-4">
+            <div className="card-body">
+              <p className="text-sm font-semibold">Launch Checklist</p>
+              <ul className="space-y-3 text-sm text-base-content/70">
+                <li className="flex items-start gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 text-success" />Stripe connect configured</li>
+                <li className="flex items-start gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 text-success" />Contract clauses indexed</li>
+                <li className="flex items-start gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 text-success" />Escalation policy defined</li>
+              </ul>
+              <div className="divider my-1" />
+              <p className="text-xs text-base-content/60">{t('metricsFootnote')}</p>
+            </div>
+          </aside>
         </div>
       </section>
 
-      <section className="border-b border-border">
-        <div className="section-shell section-gap">
-          <p className="text-sm text-muted-foreground">{t('socialProof')}</p>
-          <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {['NORTH POINT FITNESS', 'LUMEN DENTAL', 'ATLAS SERVICES', 'WELLSPRING CLINIC'].map((name) => (
-              <Card key={name} className="card-pep rounded-md">
-                <CardContent className="px-4 py-4 text-center text-xs font-medium tracking-[0.12em] text-muted-foreground">
-                  {name}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="border-b border-border">
-        <div className="section-shell section-gap">
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+      <section id="demo" className="border-y border-base-300/70 bg-base-200/50 py-10 sm:py-16">
+        <div className="app-shell grid gap-6 lg:grid-cols-12">
+          <InteractiveRecoveryDemo />
+          <div className="grid gap-4 lg:col-span-4">
             {[
-              { icon: ShieldCheck, title: t('legalTitle'), desc: t('legalDesc') },
-              { icon: Wallet, title: t('stripeTitle'), desc: t('stripeDesc') },
-              { icon: Gauge, title: t('knowledgeTitle'), desc: t('knowledgeDesc') },
-            ].map((feature) => (
-              <Card key={feature.title} className="card-pep">
-                <CardContent className="p-8">
-                  <feature.icon className="h-6 w-6 text-foreground" />
-                  <h2 className="mt-4 text-lg font-semibold">{feature.title}</h2>
-                  <p className="mt-3 text-sm text-muted-foreground">{feature.desc}</p>
-                </CardContent>
-              </Card>
+              { label: t('recoveryRateLabel'), value: '82%', note: 'Pilot median across accounts aged 30-90 days.' },
+              { label: t('latencyLabel'), value: '2.1s', note: 'Measured at p50 in active pilot environments.' },
+            ].map((metric) => (
+              <article key={metric.label} className="surface-card">
+                <div className="card-body">
+                  <p className="text-xs uppercase tracking-wide text-base-content/60">{metric.label}</p>
+                  <p className="text-4xl font-semibold">{metric.value}</p>
+                  <p className="text-xs text-base-content/60">{metric.note}</p>
+                </div>
+              </article>
             ))}
+            <p className="text-xs text-base-content/60">{t('metricsFootnote')}</p>
           </div>
         </div>
       </section>
 
-      <section className="border-b border-border">
-        <div className="section-shell section-gap">
-          <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">{t('howTitle')}</h2>
-          <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-3">
-            {[1, 2, 3].map((index) => (
-              <Card key={index} className="card-pep">
-                <CardContent className="p-6">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">0{index}</p>
-                  <h3 className="mt-3 text-lg font-semibold">{t(`howStep${index}`)}</h3>
-                  <p className="mt-2 text-sm text-muted-foreground">{t(`howStep${index}Desc`)}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+      <section className="app-shell py-10 sm:py-16">
+        <p className="text-sm text-base-content/70">{t('socialProof')}</p>
+        <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {['NORTH POINT FITNESS', 'LUMEN DENTAL', 'ATLAS SERVICES', 'WELLSPRING CLINIC'].map((name) => (
+            <div key={name} className="rounded-box border border-base-300 bg-base-100 p-4 text-center text-xs font-semibold tracking-wide text-base-content/70">
+              {name}
+            </div>
+          ))}
         </div>
       </section>
 
-      <section className="border-b border-border">
-        <div className="section-shell section-gap">
-          <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">{t('securityTitle')}</h2>
-          <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2">
-            {[t('securityPoint1'), t('securityPoint2'), t('securityPoint3'), t('securityPoint4')].map((point) => (
-              <Card key={point} className="card-pep rounded-md">
-                <CardContent className="flex items-start gap-3 p-5 text-sm text-muted-foreground">
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 text-foreground" />
-                  <span>{point}</span>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="border-b border-border">
-        <div className="section-shell section-gap">
-          <Card className="shadow-md">
-            <CardContent className="p-8 sm:p-12">
-              <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">{t('ctaTitle1')}</p>
-              <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-5xl">{t('ctaTitle2')}</h2>
-              <p className="mt-4 max-w-2xl text-sm text-muted-foreground sm:text-base">{t('ctaSubtitle')}</p>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <Link href="/login" className={buttonVariants({ size: 'lg', className: 'uppercase tracking-[0.14em]' })}>
-                  {t('ctaButton')}
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-                <Link
-                  href="/pricing"
-                  className={buttonVariants({ variant: 'outline', size: 'lg', className: 'uppercase tracking-[0.14em]' })}
-                >
-                  {t('seePricing')}
-                </Link>
+      <section className="border-y border-base-300/70 bg-base-200/45 py-10 sm:py-16">
+        <div className="app-shell grid gap-4 md:grid-cols-3">
+          {[
+            { icon: ShieldCheck, title: t('legalTitle'), desc: t('legalDesc') },
+            { icon: Wallet, title: t('stripeTitle'), desc: t('stripeDesc') },
+            { icon: Gauge, title: t('knowledgeTitle'), desc: t('knowledgeDesc') },
+          ].map((feature) => (
+            <article key={feature.title} className="surface-card">
+              <div className="card-body">
+                <feature.icon className="h-6 w-6 text-primary" />
+                <h2 className="card-title text-xl">{feature.title}</h2>
+                <p className="text-sm text-base-content/70">{feature.desc}</p>
               </div>
-            </CardContent>
-          </Card>
+            </article>
+          ))}
         </div>
+      </section>
+
+      <section className="app-shell py-10 sm:py-16">
+        <h2 className="text-3xl font-semibold sm:text-4xl">{t('howTitle')}</h2>
+        <div className="mt-6 grid gap-4 md:grid-cols-3">
+          {[1, 2, 3].map((index) => (
+            <article key={index} className="surface-card">
+              <div className="card-body">
+                <p className="text-xs uppercase tracking-wide text-base-content/55">Step 0{index}</p>
+                <h3 className="text-lg font-semibold">{t(`howStep${index}`)}</h3>
+                <p className="text-sm text-base-content/70">{t(`howStep${index}Desc`)}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="border-y border-base-300/70 bg-base-200/45 py-10 sm:py-16">
+        <div className="app-shell">
+          <h2 className="text-3xl font-semibold sm:text-4xl">{t('securityTitle')}</h2>
+          <div className="mt-6 grid gap-3 md:grid-cols-2">
+            {[t('securityPoint1'), t('securityPoint2'), t('securityPoint3'), t('securityPoint4')].map((point) => (
+              <div key={point} className="rounded-box border border-base-300 bg-base-100 p-4 text-sm text-base-content/72">
+                <span className="inline-flex items-start gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 text-success" />{point}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="app-shell py-12 sm:py-20">
+        <article className="surface-card">
+          <div className="card-body p-6 sm:p-10">
+            <p className="text-xs uppercase tracking-wide text-base-content/55">{t('ctaTitle1')}</p>
+            <h2 className="mt-2 text-3xl font-semibold sm:text-5xl">{t('ctaTitle2')}</h2>
+            <p className="mt-4 max-w-2xl text-sm text-base-content/70 sm:text-base">{t('ctaSubtitle')}</p>
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+              <Link href="/login" className="btn btn-primary">
+                {t('ctaButton')}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link href="/pricing" className="btn btn-outline">{t('seePricing')}</Link>
+            </div>
+          </div>
+        </article>
       </section>
     </main>
   );

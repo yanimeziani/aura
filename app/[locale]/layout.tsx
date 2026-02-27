@@ -47,9 +47,8 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html lang={locale} data-theme="dragun" suppressHydrationWarning>
       <head>
-        {/* Apply persisted theme before hydration to avoid flash */}
         <script
           dangerouslySetInnerHTML={{
             __html:
@@ -57,17 +56,16 @@ export default async function LocaleLayout({
               `var t=localStorage.getItem('theme')||'system';` +
               `var dark=t==='dark'||(t==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);` +
               `document.documentElement.classList.toggle('dark',dark);` +
+              `document.documentElement.setAttribute('data-theme',dark?'dragun-dark':'dragun');` +
               `}catch(e){}})();`,
           }}
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} ${spaceGrotesk.variable} font-sans antialiased bg-background text-foreground relative`}
+        className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} ${spaceGrotesk.variable} min-h-screen font-sans antialiased`}
       >
         <NextIntlClientProvider messages={messages}>
-          <div className="relative z-0">
-            {children}
-          </div>
+          {children}
         </NextIntlClientProvider>
         <Analytics />
       </body>

@@ -1,24 +1,26 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "../styles/theme.css";
 
 @custom-variant dark (&:is(.dark *));
 
 @layer base {
-  * {
-    border-color: hsl(var(--border));
-  }
-
   html,
   body {
     min-height: 100%;
   }
 
   body {
-    background: hsl(var(--background));
-    color: hsl(var(--foreground));
+    @apply bg-base-100 text-base-content;
+    background-image:
+      radial-gradient(85rem 40rem at 8% -20%, color-mix(in srgb, oklch(var(--p)) 10%, transparent), transparent 60%),
+      radial-gradient(80rem 36rem at 96% 0%, color-mix(in srgb, oklch(var(--s)) 10%, transparent), transparent 58%),
+      linear-gradient(180deg, color-mix(in srgb, oklch(var(--b2)) 65%, transparent) 0%, transparent 40%);
     font-feature-settings: "rlig" 1, "calt" 1;
     text-rendering: optimizeLegibility;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-base-100;
   }
 
   h1,
@@ -27,8 +29,6 @@
   h4,
   h5,
   h6 {
-    letter-spacing: -0.02em;
-    line-height: 1.1;
     text-wrap: balance;
   }
 
@@ -38,47 +38,19 @@
 }
 
 @layer utilities {
-  .tabular {
-    font-variant-numeric: tabular-nums;
-  }
-
-  .section-shell {
+  .app-shell {
     @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
   }
 
-  .section-gap {
-    @apply py-16 lg:py-24;
+  .surface-card {
+    @apply card border border-base-300/70 bg-base-100/90 shadow-sm backdrop-blur;
   }
 
-  .bg-grid-soft {
-    background-image:
-      linear-gradient(to right, hsl(var(--border) / 0.35) 1px, transparent 1px),
-      linear-gradient(to bottom, hsl(var(--border) / 0.35) 1px, transparent 1px);
-    background-size: 36px 36px;
+  .muted-dot {
+    @apply h-2 w-2 rounded-full bg-base-content/35;
   }
 
-  .hero-glow {
-    background:
-      radial-gradient(circle at 15% 16%, hsl(var(--primary) / 0.12), transparent 40%),
-      radial-gradient(circle at 86% 24%, hsl(var(--accent) / 0.12), transparent 32%),
-      linear-gradient(180deg, hsl(var(--bg-1) / 0.5), transparent 55%);
-  }
-
-  .card-pep {
-    transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
-  }
-
-  .card-pep:hover {
-    transform: translateY(-2px);
-    border-color: hsl(var(--ring) / 0.7);
-    box-shadow: var(--shadow-md);
-  }
-
-  .focus-ring {
-    @apply outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
-  }
-
-  .surface-2 {
-    background-color: hsl(var(--bg-2));
+  .tap-safe {
+    min-height: 44px;
   }
 }

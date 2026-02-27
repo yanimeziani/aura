@@ -1,43 +1,33 @@
 import { useTranslations } from 'next-intl';
-import { Bot, FileText, BadgeDollarSign, Sparkles } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
+import { Bot, FileText, BadgeDollarSign } from 'lucide-react';
 
 export default function FeaturesPage() {
   const t = useTranslations('Features');
 
   return (
-    <main className="bg-background text-foreground">
-      <section className="hero-glow border-b border-border">
-        <div className="section-shell section-gap">
-          <div className="max-w-5xl space-y-7">
-            <Badge><Sparkles className="h-3.5 w-3.5" /> Platform capabilities</Badge>
-            <h1 className="text-4xl font-semibold tracking-tightest sm:text-6xl">
-              {t('title')} <span className="text-muted-foreground">{t('titleHighlight')}</span>
-            </h1>
-            <p className="max-w-3xl text-base text-muted-foreground sm:text-lg">{t('subtitle')}</p>
-          </div>
-        </div>
+    <main className="app-shell space-y-10 py-10 sm:space-y-16 sm:py-16">
+      <section className="space-y-5">
+        <span className="badge badge-outline badge-secondary">Platform capabilities</span>
+        <h1 className="text-4xl font-semibold leading-tight sm:text-6xl">
+          {t('title')} <span className="text-base-content/55">{t('titleHighlight')}</span>
+        </h1>
+        <p className="max-w-3xl text-base text-base-content/72 sm:text-lg">{t('subtitle')}</p>
       </section>
 
-      <section>
-        <div className="section-shell section-gap">
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            {[
-              { icon: Bot, title: t('geminiTitle'), desc: t('geminiDesc') },
-              { icon: FileText, title: t('contractTitle'), desc: t('contractDesc') },
-              { icon: BadgeDollarSign, title: t('stripeTitle'), desc: t('stripeDesc') },
-            ].map((feature) => (
-              <Card key={feature.title} className="card-pep">
-                <CardContent className="p-8">
-                  <feature.icon className="h-6 w-6 text-foreground" />
-                  <h2 className="mt-4 text-lg font-semibold">{feature.title}</h2>
-                  <p className="mt-3 text-sm text-muted-foreground">{feature.desc}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
+      <section className="grid gap-4 md:grid-cols-3">
+        {[
+          { icon: Bot, title: t('geminiTitle'), desc: t('geminiDesc') },
+          { icon: FileText, title: t('contractTitle'), desc: t('contractDesc') },
+          { icon: BadgeDollarSign, title: t('stripeTitle'), desc: t('stripeDesc') },
+        ].map((feature) => (
+          <article key={feature.title} className="surface-card">
+            <div className="card-body">
+              <feature.icon className="h-6 w-6 text-primary" />
+              <h2 className="card-title text-xl">{feature.title}</h2>
+              <p className="text-sm text-base-content/70">{feature.desc}</p>
+            </div>
+          </article>
+        ))}
       </section>
     </main>
   );

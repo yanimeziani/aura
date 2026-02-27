@@ -6,12 +6,17 @@ import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { signOut } from '@/app/actions/auth';
 import type { User } from '@supabase/supabase-js';
-import { Globe } from 'lucide-react';
+import { Globe, Menu } from 'lucide-react';
 import Logo from '@/components/Logo';
 import ThemeToggle from '@/components/ThemeToggle';
-import { Button, buttonVariants } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
+
+const links = [
+  { key: 'features', href: '/features' },
+  { key: 'pricing', href: '/pricing' },
+  { key: 'faq', href: '/faq' },
+  { key: 'security', href: '/legal' },
+  { key: 'contact', href: '/contact' },
+] as const;
 
 export default function Navbar() {
   const t = useTranslations('Navbar');
@@ -40,90 +45,78 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/80 bg-background/95 backdrop-blur-xl">
-      <div className="section-shell">
-        <nav className="flex h-20 items-center justify-between">
-          <Link href="/" className="focus-ring rounded-md">
-            <Logo className="h-8 w-auto" />
+    <header className="sticky top-0 z-50 border-b border-base-300/70 bg-base-100/85 backdrop-blur">
+      <div className="app-shell navbar min-h-16 px-0 sm:min-h-20">
+        <div className="navbar-start gap-2">
+          <div className="dropdown lg:hidden">
+            <label tabIndex={0} className="btn btn-ghost btn-square btn-sm" aria-label="Open menu">
+              <Menu className="h-5 w-5" />
+            </label>
+            <ul tabIndex={0} className="menu dropdown-content z-20 mt-3 w-56 rounded-box border border-base-300 bg-base-100 p-2 shadow-lg">
+              {links.map((item) => (
+                <li key={item.href}>
+                  <Link href={item.href}>{t(item.key)}</Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <Link href="/" className="tap-safe inline-flex items-center" aria-label="Dragun home">
+            <Logo className="h-8 w-auto sm:h-9" />
           </Link>
+        </div>
 
-          <div className="hidden items-center gap-7 lg:flex">
-            {[
-              { label: t('features'), href: '/features' },
-              { label: t('pricing'), href: '/pricing' },
-              { label: t('faq'), href: '/faq' },
-              { label: t('security'), href: '/legal' },
-              { label: t('contact'), href: '/contact' },
-            ].map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="focus-ring rounded-md text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground transition-colors hover:text-foreground"
-              >
-                {item.label}
-              </Link>
+        <div className="navbar-center hidden lg:flex">
+          <ul className="menu menu-horizontal rounded-box border border-base-300/60 bg-base-200/50 px-2 text-sm">
+            {links.map((item) => (
+              <li key={item.href}>
+                <Link href={item.href}>{t(item.key)}</Link>
+              </li>
             ))}
+          </ul>
+        </div>
+
+        <div className="navbar-end gap-1 sm:gap-2">
+          <div className="hidden items-center gap-1 rounded-box border border-base-300/70 bg-base-200/60 p-1 sm:flex">
+            <Globe className="ml-1 h-3.5 w-3.5 text-base-content/55" />
+            <button
+              onClick={() => switchLocale('en')}
+              className={`btn btn-xs ${locale === 'en' ? 'btn-primary' : 'btn-ghost'}`}
+              type="button"
+            >
+              EN
+            </button>
+            <button
+              onClick={() => switchLocale('fr')}
+              className={`btn btn-xs ${locale === 'fr' ? 'btn-primary' : 'btn-ghost'}`}
+              type="button"
+            >
+              FR
+            </button>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="hidden items-center gap-2 rounded-md border border-border bg-card px-2 py-1.5 sm:flex">
-              <Globe className="h-3.5 w-3.5 text-muted-foreground" />
+          <ThemeToggle />
+
+          {user ? (
+            <>
+              <Link href="/dashboard" className="btn btn-sm btn-outline">{t('dashboard')}</Link>
               <button
-                onClick={() => switchLocale('en')}
-                className={cn(
-                  'focus-ring rounded px-1.5 text-[10px] font-bold uppercase tracking-widest',
-                  locale === 'en' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
-                )}
+                onClick={async () => {
+                  await signOut();
+                  window.location.href = '/';
+                }}
+                className="btn btn-sm btn-primary"
+                type="button"
               >
-                EN
+                {t('signOut')}
               </button>
-              <span className="text-muted-foreground">/</span>
-              <button
-                onClick={() => switchLocale('fr')}
-                className={cn(
-                  'focus-ring rounded px-1.5 text-[10px] font-bold uppercase tracking-widest',
-                  locale === 'fr' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
-                )}
-              >
-                FR
-              </button>
-            </div>
-
-            <ThemeToggle />
-
-            {user ? (
-              <div className="flex items-center gap-2">
-                <Link href="/dashboard" className={buttonVariants({ variant: 'secondary', size: 'sm', className: 'h-10' })}>
-                  {t('dashboard')}
-                </Link>
-                <Button
-                  onClick={async () => {
-                    await signOut();
-                    window.location.href = '/';
-                  }}
-                  size="sm"
-                  className="h-10"
-                >
-                  {t('signOut')}
-                </Button>
-              </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <Link
-                  href="/#demo"
-                  className={buttonVariants({ variant: 'secondary', size: 'sm', className: 'hidden h-10 sm:inline-flex' })}
-                >
-                  {t('watchDemo')}
-                </Link>
-                <Link href="/login" className={buttonVariants({ size: 'sm', className: 'h-10' })}>
-                  {t('startPilot')}
-                </Link>
-              </div>
-            )}
-
-            <Badge variant="outline" className="hidden lg:inline-flex">v1 pilot</Badge>
-          </div>
-        </nav>
+            </>
+          ) : (
+            <>
+              <Link href="/#demo" className="btn btn-sm btn-ghost hidden sm:inline-flex">{t('watchDemo')}</Link>
+              <Link href="/login" className="btn btn-sm btn-primary">{t('startPilot')}</Link>
+            </>
+          )}
+        </div>
       </div>
     </header>
   );
