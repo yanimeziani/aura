@@ -156,3 +156,32 @@
     background-size: 48px 48px;
   }
 }
+
+@keyframes money-fall {
+  0% {
+    transform: translateY(-8%) translateX(0) rotate(var(--start-rot, 0deg));
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.06;
+  }
+  85% {
+    opacity: 0.06;
+  }
+  100% {
+    transform: translateY(108%) translateX(var(--drift, 0px)) rotate(calc(var(--start-rot, 0deg) + 180deg));
+    opacity: 0;
+  }
+}
+
+.money-particle {
+  animation: money-fall linear infinite;
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .money-particle {
+    animation: none !important;
+    display: none;
+  }
+}

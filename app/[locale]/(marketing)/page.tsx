@@ -12,6 +12,7 @@ import {
   Lock,
 } from 'lucide-react';
 import InteractiveRecoveryDemo from '@/components/InteractiveRecoveryDemo';
+import MoneyRain from '@/components/landing/MoneyRain';
 
 export default function LandingPage() {
   const t = useTranslations('Home');
@@ -26,6 +27,7 @@ export default function LandingPage() {
         <div className="absolute inset-0 grid-pattern text-base-content/[0.03] pointer-events-none" />
         <div className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
         <div className="absolute bottom-[-10%] left-[-10%] w-[400px] h-[400px] rounded-full bg-accent/5 blur-[120px] pointer-events-none" />
+        <MoneyRain />
 
         <div className="app-shell relative z-10 pt-24 pb-20 sm:pt-32 sm:pb-28">
           <div className="max-w-3xl">
