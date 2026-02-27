@@ -10,6 +10,7 @@ const REQUIRED_VARS = [
 const PRODUCTION_VARS = [
   'ARCJET_KEY',
   'SENTRY_DSN',
+  'NEXT_PUBLIC_SENTRY_DSN',
 ] as const;
 
 export function validateEnv() {
