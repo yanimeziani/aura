@@ -1,7 +1,16 @@
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
-import { ArrowRight, CheckCircle2 } from 'lucide-react';
-import { Heading, Text, Section, SectionHeader, Card, List, ListItem, Button, Divider, Grid } from '@/components/daisyui';
+import {
+  ArrowRight,
+  CheckCircle2,
+  Shield,
+  Zap,
+  FileText,
+  MessageSquare,
+  CreditCard,
+  BarChart3,
+  Lock,
+} from 'lucide-react';
 import InteractiveRecoveryDemo from '@/components/InteractiveRecoveryDemo';
 
 export default function LandingPage() {
@@ -11,188 +20,181 @@ export default function LandingPage() {
     <main>
       <a href="#main-content" className="skip-link">Skip to main content</a>
 
-      {/* Hero */}
-      <section className="min-h-[60vh] flex items-center py-20" id="main-content">
-        <div className="app-shell max-w-3xl">
-          <Heading size="xl" as="h1">
-            {t('heroLine1')}
-          </Heading>
-          <Text size="lg" muted className="mt-6 mb-10 max-w-2xl">
-            {t('heroParagraph')}
-          </Text>
-          <div className="flex flex-wrap gap-4">
-            <Link href="/login">
-              <Button icon={<ArrowRight size={20} />}>{t('startPilot')}</Button>
-            </Link>
-            <Button variant="secondary" href="#demo">{t('watchDemo')}</Button>
+      {/* ─── Hero: funky, visual, not cluttered ─── */}
+      <section className="relative overflow-hidden" id="main-content">
+        {/* Background grid + gradient orbs */}
+        <div className="absolute inset-0 grid-pattern text-base-content/[0.03] pointer-events-none" />
+        <div className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[400px] h-[400px] rounded-full bg-accent/5 blur-[120px] pointer-events-none" />
+
+        <div className="app-shell relative z-10 pt-24 pb-20 sm:pt-32 sm:pb-28">
+          <div className="max-w-3xl">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 mb-8">
+              <Zap className="w-3.5 h-3.5 text-primary" />
+              <span className="text-xs font-semibold text-primary">{t('badge')}</span>
+            </div>
+
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1]">
+              {t('heroLine1')}
+            </h1>
+
+            <p className="mt-6 text-lg text-base-content/55 max-w-2xl leading-relaxed">
+              {t('heroParagraph')}
+            </p>
+
+            <div className="flex flex-wrap gap-3 mt-10">
+              <Link href="/login" className="btn btn-primary gap-2 px-6">
+                {t('startPilot')}
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <a href="#demo" className="btn btn-ghost border border-base-300/60 gap-2">
+                {t('watchDemo')}
+              </a>
+            </div>
+          </div>
+
+          {/* Floating stat cards beside hero -- Von Restorff: make key metrics stand out */}
+          <div className="mt-16 grid grid-cols-2 sm:grid-cols-3 gap-3 max-w-2xl">
+            {[
+              { label: t('recoveryRateLabel'), value: '82%', sub: 'Pilot median' },
+              { label: t('latencyLabel'), value: '2.1s', sub: 'p50 latency' },
+              { label: 'Active Pilots', value: '24+', sub: 'Live deployments' },
+            ].map((stat) => (
+              <div key={stat.label} className="card bg-base-200/50 border border-base-300/30 shadow-warm hover-lift">
+                <div className="card-body p-4">
+                  <p className="text-label">{stat.label}</p>
+                  <p className="text-2xl sm:text-3xl font-bold tracking-tight">{stat.value}</p>
+                  <p className="text-xs text-base-content/40">{stat.sub}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <p className="text-[10px] text-base-content/25 mt-4 max-w-lg">{t('metricsFootnote')}</p>
+        </div>
+      </section>
+
+      {/* ─── Social proof ticker ─── */}
+      <section className="border-y border-base-300/30 bg-base-200/20 py-6 overflow-hidden">
+        <div className="app-shell">
+          <p className="text-label text-center mb-4">Trusted by professional services</p>
+          <div className="flex flex-wrap justify-center gap-x-10 gap-y-3">
+            {['North Point Fitness', 'Lumen Dental', 'Atlas Services', 'Wellspring Clinic', 'Urban Physio', 'Metro Legal', 'Apex Dental', 'City Fitness'].map((name) => (
+              <span key={name} className="text-sm text-base-content/30 font-medium whitespace-nowrap">
+                {name}
+              </span>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Metrics */}
-      <Section variant="muted" padding="md">
-        <Grid cols={3} gap="sm">
-          <div>
-            <Text muted className="text-sm mb-1">Recovery Rate</Text>
-            <Heading size="lg">82%</Heading>
-            <Text muted className="text-sm">Pilot median</Text>
+      {/* ─── Demo: interactive, the peak experience (Peak-End Rule) ─── */}
+      <section className="py-20 sm:py-28" id="demo">
+        <div className="app-shell max-w-5xl">
+          <div className="text-center mb-14">
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">See how it works</h2>
+            <p className="text-base-content/50 mt-3 max-w-xl mx-auto">
+              Try the live agent demo below. Type anything -- it responds in real time.
+            </p>
           </div>
-          <div>
-            <Text muted className="text-sm mb-1">Response Time</Text>
-            <Heading size="lg">2.1s</Heading>
-            <Text muted className="text-sm">p50 latency</Text>
-          </div>
-          <div>
-            <Text muted className="text-sm mb-1">Active Pilots</Text>
-            <Heading size="lg">24+</Heading>
-            <Text muted className="text-sm">Live deployments</Text>
-          </div>
-        </Grid>
-      </Section>
-
-      {/* Demo */}
-      <Section>
-        <SectionHeader
-          title="See how it works"
-          description="Experience our platform through an interactive demonstration"
-        />
-        <Grid cols={2}>
-          <div className="border border-base-200 bg-base-50 p-6">
-            <InteractiveRecoveryDemo />
-          </div>
-          <div className="space-y-8">
-            <Text size="lg" className="text-base-content/80 leading-relaxed">
-              Our platform combines intelligent automation with respectful, professional communication.
-            </Text>
-            <List>
-              <ListItem>
-                <Text>AI-powered analysis suggests optimal recovery strategies based on debtor behavior</Text>
-              </ListItem>
-              <ListItem>
-                <Text>Multi-channel communication reaches debtors through their preferred method</Text>
-              </ListItem>
-              <ListItem>
-                <Text>Enterprise-grade encryption ensures your data remains secure and compliant</Text>
-              </ListItem>
-            </List>
-          </div>
-        </Grid>
-      </Section>
-
-      <Divider text="Platform" />
-
-      {/* Features */}
-      <Section>
-        <SectionHeader
-          title="Built for professional recovery"
-          description="Tools designed for efficiency while maintaining respect"
-        />
-        <Grid cols={2}>
-          <Card>
-            <Heading size="md">Contract Intelligence</Heading>
-            <Text muted className="mt-4">Automatically parse and understand contract terms, payment schedules, and legal requirements.</Text>
-          </Card>
-          <Card>
-            <Heading size="md">Compliance Automation</Heading>
-            <Text muted className="mt-4">Built-in regulatory checks ensure all communications meet legal requirements automatically.</Text>
-          </Card>
-          <Card>
-            <Heading size="md">Analytics</Heading>
-            <Text muted className="mt-4">Real-time insights into recovery rates, team performance, and payment trends.</Text>
-          </Card>
-          <Card>
-            <Heading size="md">Team Collaboration</Heading>
-            <Text muted className="mt-4">Assign cases, track progress, and coordinate across your recovery team.</Text>
-          </Card>
-        </Grid>
-      </Section>
-
-      {/* Social Proof */}
-      <Section variant="border">
-        <div className="text-center mb-12">
-          <Text muted className="text-sm tracking-widest uppercase">Trusted by professional services</Text>
+          <InteractiveRecoveryDemo />
         </div>
-        <Grid cols={4}>
-          {['North Point Fitness', 'Lumen Dental', 'Atlas Services', 'Wellspring Clinic', 'Urban Physio', 'Metro Legal', 'Apex Dental', 'City Fitness'].map((name) => (
-            <div key={name} className="text-center py-6 border-b border-r border-base-100 last:border-r-0">
-              <Text muted>{name}</Text>
-            </div>
-          ))}
-        </Grid>
-      </Section>
+      </section>
 
-      <Divider text="How It Works" />
+      {/* ─── Features: chunked into 3 (Miller's Law), grouped by region (Law of Common Region) ─── */}
+      <section className="py-20 bg-base-200/20 border-y border-base-300/20">
+        <div className="app-shell max-w-5xl">
+          <div className="text-center mb-14">
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">Built for professional recovery</h2>
+            <p className="text-base-content/50 mt-3 max-w-xl mx-auto">
+              Tools designed for efficiency while maintaining respect.
+            </p>
+          </div>
 
-      {/* Steps */}
-      <Section variant="muted">
-        <SectionHeader title="Get started in three steps" />
-        <div className="max-w-2xl mx-auto space-y-16">
-          <div className="flex gap-8">
-            <span className="text-5xl font-medium text-base-content/10 flex-shrink-0">01</span>
-            <div>
-              <Heading size="md">{t('howStep1')}</Heading>
-              <Text muted className="mt-2">{t('howStep1Desc')}</Text>
-            </div>
-          </div>
-          <div className="flex gap-8">
-            <span className="text-5xl font-medium text-base-content/10 flex-shrink-0">02</span>
-            <div>
-              <Heading size="md">{t('howStep2')}</Heading>
-              <Text muted className="mt-2">{t('howStep2Desc')}</Text>
-            </div>
-          </div>
-          <div className="flex gap-8">
-            <span className="text-5xl font-medium text-base-content/10 flex-shrink-0">03</span>
-            <div>
-              <Heading size="md">{t('howStep3')}</Heading>
-              <Text muted className="mt-2">{t('howStep3Desc')}</Text>
-            </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              { icon: MessageSquare, title: 'AI Negotiation', desc: 'Empathetic, context-aware conversations powered by Gemini 2.5 Flash with sub-2s latency.' },
+              { icon: FileText, title: 'Contract Intelligence', desc: 'Upload your terms and the agent cites specific clauses during recovery.' },
+              { icon: CreditCard, title: 'Stripe Integration', desc: 'Settlement links and payment plans embedded directly in the chat flow.' },
+              { icon: BarChart3, title: 'Recovery Analytics', desc: 'Real-time insights into rates, team performance, and payment trends.' },
+              { icon: Shield, title: 'Compliance Built-in', desc: 'Guardrails prevent threatening language. Full audit trail on every interaction.' },
+              { icon: Lock, title: 'Enterprise Security', desc: 'Encryption in transit and at rest, role-based access, configurable retention.' },
+            ].map((f) => (
+              <div key={f.title} className="card bg-base-100 border border-base-300/40 shadow-warm hover-lift">
+                <div className="card-body p-6">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary mb-2">
+                    <f.icon className="w-5 h-5" />
+                  </div>
+                  <h3 className="font-bold text-lg">{f.title}</h3>
+                  <p className="text-sm text-base-content/50 leading-relaxed">{f.desc}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-      </Section>
+      </section>
 
-      {/* Security */}
-      <Section>
-        <SectionHeader
-          title="Security & Compliance"
-          description="Enterprise-grade protection for sensitive financial data"
-        />
-        <div className="max-w-2xl mx-auto">
-          <List>
-            <ListItem icon={<CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />}>
-              <Text>All data encrypted at rest and in transit using AES-256 encryption</Text>
-            </ListItem>
-            <ListItem icon={<CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />}>
-              <Text>Full compliance with GDPR, CCPA, and international data protection regulations</Text>
-            </ListItem>
-            <ListItem icon={<CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />}>
-              <Text>Enterprise-grade security with annual SOC 2 Type II audits</Text>
-            </ListItem>
-            <ListItem icon={<CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />}>
-              <Text>Complete audit logging for all user actions and communications</Text>
-            </ListItem>
-          </List>
+      {/* ─── How it works: 3 steps (Chunking, Goal-Gradient) ─── */}
+      <section className="py-20 sm:py-28">
+        <div className="app-shell max-w-3xl">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">{t('howTitle')}</h2>
+          </div>
+
+          <div className="space-y-12">
+            {[
+              { n: '01', title: t('howStep1'), desc: t('howStep1Desc') },
+              { n: '02', title: t('howStep2'), desc: t('howStep2Desc') },
+              { n: '03', title: t('howStep3'), desc: t('howStep3Desc') },
+            ].map((step) => (
+              <div key={step.n} className="flex gap-6 items-start">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary font-bold text-sm">
+                  {step.n}
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold">{step.title}</h3>
+                  <p className="text-base-content/50 mt-1 leading-relaxed">{step.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-      </Section>
+      </section>
 
-      {/* CTA */}
-      <Section variant="muted" padding="lg">
-        <div className="text-center max-w-2xl mx-auto">
-          <Heading size="xl" as="h2">{t('ctaTitle2')}</Heading>
-          <Text size="lg" muted className="mt-4 mb-8">{t('ctaSubtitle')}</Text>
-          <div className="flex flex-wrap gap-4 justify-center">
-            <Link href="/login">
-              <Button size="lg" icon={<ArrowRight size={20} />}>{t('ctaButton')}</Button>
+      {/* ─── Security ─── */}
+      <section className="py-16 bg-base-200/20 border-y border-base-300/20">
+        <div className="app-shell max-w-3xl">
+          <h2 className="text-2xl font-bold tracking-tight mb-8">{t('securityTitle')}</h2>
+          <div className="space-y-4">
+            {[t('securityPoint1'), t('securityPoint2'), t('securityPoint3'), t('securityPoint4')].map((point) => (
+              <div key={point} className="flex items-start gap-3">
+                <CheckCircle2 className="w-5 h-5 text-success shrink-0 mt-0.5" />
+                <p className="text-base-content/70">{point}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── CTA: clean, single focus (Hick's Law -- reduce choices) ─── */}
+      <section className="py-20 sm:py-28">
+        <div className="app-shell max-w-2xl text-center">
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
+            {t('ctaTitle2')}
+          </h2>
+          <p className="text-base-content/50 mt-4 mb-10 text-lg">{t('ctaSubtitle')}</p>
+          <div className="flex flex-wrap gap-3 justify-center">
+            <Link href="/login" className="btn btn-primary btn-lg gap-2 px-8">
+              {t('ctaButton')}
+              <ArrowRight className="w-5 h-5" />
             </Link>
-            <Button variant="secondary" size="lg" href="/pricing">{t('seePricing')}</Button>
+            <Link href="/pricing" className="btn btn-ghost btn-lg border border-base-300/60">
+              {t('seePricing')}
+            </Link>
           </div>
         </div>
-      </Section>
-
-      {/* Footer Note */}
-      <Section padding="sm">
-        <Text muted className="text-center text-sm">{t('metricsFootnote')}</Text>
-      </Section>
+      </section>
     </main>
   );
 }

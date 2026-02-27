@@ -47,7 +47,7 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} data-theme="acid" suppressHydrationWarning>
+    <html lang={locale} data-theme="dragun" suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -55,7 +55,7 @@ export default async function LocaleLayout({
               `(function(){try{`,
               `var t=localStorage.getItem('theme')||'system';`,
               `var dark=t==='dark'||(t==='system'&&window.matchMedia('(prefers-color-scheme:dark)').matches);`,
-              `document.documentElement.setAttribute('data-theme',dark?'business':'acid');`,
+              `document.documentElement.setAttribute('data-theme',dark?'dragun-dark':'dragun');`,
               `}catch(e){}})();`,
             ].join(''),
           }}

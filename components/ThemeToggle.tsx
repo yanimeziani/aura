@@ -5,13 +5,13 @@ import { Sun, Moon, Monitor } from 'lucide-react';
 
 type Theme = 'light' | 'dark' | 'system';
 
-function resolveTheme(value: Theme): 'acid' | 'business' {
-  if (value === 'dark') return 'business';
-  if (value === 'light') return 'acid';
+function resolveTheme(value: Theme): 'dragun' | 'dragun-dark' {
+  if (value === 'dark') return 'dragun-dark';
+  if (value === 'light') return 'dragun';
   if (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    return 'business';
+    return 'dragun-dark';
   }
-  return 'acid';
+  return 'dragun';
 }
 
 function applyTheme(value: Theme) {

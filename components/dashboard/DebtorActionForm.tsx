@@ -1,8 +1,9 @@
 'use client';
 
-import { useRef } from 'react';
-import { MoreHorizontal, X } from 'lucide-react';
+import { useRef, useTransition } from 'react';
+import { MoreHorizontal, X, Mail, MailPlus } from 'lucide-react';
 import { COLLECTION_STATUSES } from '@/lib/recovery-types';
+import { sendInitialOutreach, sendFollowUp } from '@/app/actions/send-outreach';
 import type { DebtorRow } from './dashboard-types';
 
 const OPERATOR_ACTION_TYPES = [
@@ -19,6 +20,7 @@ interface Props {
 
 export default function DebtorActionForm({ debtor, handleRecoveryAction }: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const [isPending, startTransition] = useTransition();
 
   function handleOpen() {
     dialogRef.current?.showModal();
@@ -26,6 +28,17 @@ export default function DebtorActionForm({ debtor, handleRecoveryAction }: Props
 
   function handleClose() {
     dialogRef.current?.close();
+  }
+
+  function handleEmail(action: typeof sendInitialOutreach | typeof sendFollowUp) {
+    startTransition(async () => {
+      const fd = new FormData();
+      fd.set('debtor_id', debtor.id);
+      const result = await action(fd);
+      if (!result.success) {
+        alert(result.error || 'Email failed');
+      }
+    });
   }
 
   return (
@@ -43,12 +56,42 @@ export default function DebtorActionForm({ debtor, handleRecoveryAction }: Props
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="font-bold text-lg">{debtor.name}</h3>
-              <p className="text-sm text-base-content/50">Update recovery status</p>
+              <p className="text-sm text-base-content/50">{debtor.email}</p>
             </div>
             <button onClick={handleClose} className="btn btn-ghost btn-circle btn-sm">
               <X className="h-4 w-4" />
             </button>
           </div>
+
+          {/* Email outreach buttons */}
+          <div className="flex gap-2 mb-4">
+            <button
+              onClick={() => handleEmail(sendInitialOutreach)}
+              disabled={isPending}
+              className="btn btn-sm btn-outline flex-1 gap-1.5"
+            >
+              {isPending ? (
+                <span className="loading loading-spinner loading-xs" />
+              ) : (
+                <Mail className="h-3.5 w-3.5" />
+              )}
+              Initial Outreach
+            </button>
+            <button
+              onClick={() => handleEmail(sendFollowUp)}
+              disabled={isPending}
+              className="btn btn-sm btn-outline flex-1 gap-1.5"
+            >
+              {isPending ? (
+                <span className="loading loading-spinner loading-xs" />
+              ) : (
+                <MailPlus className="h-3.5 w-3.5" />
+              )}
+              Follow Up
+            </button>
+          </div>
+
+          <div className="divider text-label my-2">Update Status</div>
 
           <form
             action={async (fd) => {

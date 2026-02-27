@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useEffect, useState } from 'react';
+import { use, useEffect, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
 
@@ -16,7 +16,7 @@ export default function SuccessPage({ params }: { params: Promise<{ debtorId: st
   const { debtorId } = use(params);
   const t = useTranslations('Success');
   const [debtor, setDebtor] = useState<Debtor | null>(null);
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     async function fetchDebtor() {
