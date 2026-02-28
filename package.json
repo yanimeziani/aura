@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:check": "bash -c 'source ~/.config/meziani/mcp.env 2>/dev/null; node scripts/supabase-migrate-and-check.mjs'"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.29",

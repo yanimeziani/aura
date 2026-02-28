@@ -34,7 +34,9 @@ function parseCSVLine(line: string): string[] {
   return result;
 }
 
-export async function importDebtors(formData: FormData): Promise<{ success: boolean; imported: number; errors: string[] }> {
+export async function importDebtors(
+  formData: FormData
+): Promise<{ success: boolean; imported: number; errors: string[]; outreachSent?: number }> {
   const merchantId = await getMerchantId();
   if (!merchantId) throw new Error('Unauthorized');
 
@@ -106,23 +108,43 @@ export async function importDebtors(formData: FormData): Promise<{ success: bool
     return { success: false, imported: 0, errors: ['Debtor limit reached. Upgrade your plan to import debtors.'] };
   }
 
-  const { error: insertError } = await supabaseAdmin.from('debtors').insert(
-    toInsert.map(d => ({
-      merchant_id: merchantId,
-      name: d.name,
-      email: d.email,
-      phone: d.phone,
-      total_debt: d.total_debt,
-      currency: d.currency,
-      days_overdue: d.days_overdue,
-      status: 'pending',
-    }))
-  );
+  const { data: inserted, error: insertError } = await supabaseAdmin
+    .from('debtors')
+    .insert(
+      toInsert.map((d) => ({
+        merchant_id: merchantId,
+        name: d.name,
+        email: d.email,
+        phone: d.phone,
+        total_debt: d.total_debt,
+        currency: d.currency,
+        days_overdue: d.days_overdue,
+        status: 'pending',
+      }))
+    )
+    .select('id');
 
   if (insertError) {
     return { success: false, imported: 0, errors: [insertError.message] };
   }
 
+  const autoSend = formData.get('auto_send_outreach') === 'true';
+  let outreachSent = 0;
+  if (autoSend && inserted?.length) {
+    const { sendInitialOutreach } = await import('@/app/actions/send-outreach');
+    for (const row of inserted) {
+      const fd = new FormData();
+      fd.set('debtor_id', row.id);
+      const res = await sendInitialOutreach(fd);
+      if (res.success) outreachSent++;
+    }
+  }
+
   revalidatePath('/[locale]/dashboard', 'page');
-  return { success: true, imported: toInsert.length, errors };
+  return {
+    success: true,
+    imported: inserted?.length ?? 0,
+    errors,
+    outreachSent: autoSend ? outreachSent : undefined,
+  };
 }

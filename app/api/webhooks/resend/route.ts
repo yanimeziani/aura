@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
-import { Resend } from 'resend';
 import crypto from 'crypto';
+import { supabaseAdmin } from '@/lib/supabase-admin';
+import * as Sentry from '@sentry/nextjs';
 
 export const runtime = 'nodejs';
 
@@ -19,6 +20,7 @@ interface ResendWebhookEvent {
     html?: string;
     text?: string;
     headers?: Record<string, string>;
+    tags?: Array<{ name: string; value: string }>;
   };
 }
 
@@ -91,14 +93,13 @@ export async function POST(request: Request) {
         break;
 
       case 'email.complained':
-        // Recipient marked as spam
         console.warn('[webhook] Email complained (spam):', event.data.id);
+        await updateDebtorOnBounceOrComplaint(event.data.to);
         break;
 
       case 'email.bounced':
-        // Email bounced
         console.error('[webhook] Email bounced:', event.data);
-        // TODO: Update debtor status or record bounce
+        await updateDebtorOnBounceOrComplaint(event.data.to);
         break;
 
       case 'email.deferred':
@@ -118,5 +119,31 @@ export async function POST(request: Request) {
       { error: 'Failed to process webhook' },
       { status: 500 }
     );
+  }
+}
+
+async function updateDebtorOnBounceOrComplaint(to: string[]) {
+  if (!to?.length) return;
+  const email = to[0];
+  try {
+    const { data: debtor } = await supabaseAdmin
+      .from('debtors')
+      .select('id, merchant_id, status')
+      .eq('email', email)
+      .single();
+
+    if (debtor) {
+      await supabaseAdmin
+        .from('recovery_actions')
+        .insert({
+          debtor_id: debtor.id,
+          merchant_id: debtor.merchant_id,
+          action_type: 'email_bounce',
+          status_after: debtor.status,
+          note: 'Email bounced or marked as spam',
+        });
+    }
+  } catch (err) {
+    Sentry.captureException(err);
   }
 }

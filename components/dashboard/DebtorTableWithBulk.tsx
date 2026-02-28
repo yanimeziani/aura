@@ -1,8 +1,13 @@
+'use client';
+
+import { useState } from 'react';
 import { Link } from '@/i18n/navigation';
 import { ArrowUpRight } from 'lucide-react';
 import { createDebtorToken } from '@/lib/debtor-token';
+import { getNextAction } from '@/lib/next-action';
 import type { DebtorRow, RecoveryActionRow } from './dashboard-types';
 import DebtorActionForm from './DebtorActionForm';
+import BulkActionsBar from './BulkActionsBar';
 
 function getStatusBadge(status: string) {
   const map: Record<string, string> = {
@@ -26,32 +31,43 @@ function getStatusLabel(status: string, t: (key: string) => string) {
   return map[status] ?? t('statusPending');
 }
 
-export function getRecoveryScore(d: DebtorRow): number {
-  const amountScore = Math.min(60, d.total_debt / 50);
-  const overdueDays = Math.max(0, d.days_overdue ?? 0);
-  const overdueScore = Math.min(30, overdueDays * 0.75);
-  const contactPenalty = d.last_contacted ? 10 : 0;
-  const statusBoost =
-    d.status === 'promise_to_pay' ? 8 : d.status === 'escalated' ? 12 : 0;
-  return Math.max(
-    0,
-    Math.round(amountScore + overdueScore + statusBoost - contactPenalty),
-  );
-}
-
 interface Props {
   debtors: DebtorRow[];
   actionTimeline: Record<string, RecoveryActionRow[]>;
   handleRecoveryAction: (formData: FormData) => Promise<void>;
+  getRecoveryScore: (d: DebtorRow) => number;
   t: (key: string, values?: Record<string, string | number>) => string;
 }
 
-export default function DebtorTable({
+export default function DebtorTableWithBulk({
   debtors,
   actionTimeline,
   handleRecoveryAction,
+  getRecoveryScore,
   t,
 }: Props) {
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  function toggle(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function toggleAll() {
+    if (selectedIds.size === debtors.length) setSelectedIds(new Set());
+    else setSelectedIds(new Set(debtors.map((d) => d.id)));
+  }
+
+  function clearSelection() {
+    setSelectedIds(new Set());
+  }
+
+  const actionableDebtors = debtors.filter((d) => d.status !== 'paid');
+
   if (!debtors.length) {
     return (
       <div className="py-16 text-center">
@@ -66,6 +82,14 @@ export default function DebtorTable({
 
   return (
     <>
+      {selectedIds.size > 0 && (
+        <BulkActionsBar
+          selectedIds={Array.from(selectedIds)}
+          onClear={clearSelection}
+          onDone={clearSelection}
+        />
+      )}
+
       {/* Mobile cards */}
       <div className="space-y-3 p-4 md:hidden">
         {debtors.map((d) => (
@@ -74,8 +98,16 @@ export default function DebtorTable({
             className="card bg-base-100 border border-base-300/50 shadow-warm"
           >
             <div className="card-body p-4 gap-3">
-              <div className="flex items-start justify-between">
-                <div>
+              <div className="flex items-start justify-between gap-2">
+                {d.status !== 'paid' && (
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.has(d.id)}
+                    onChange={() => toggle(d.id)}
+                    className="checkbox checkbox-sm checkbox-primary"
+                  />
+                )}
+                <div className="flex-1 min-w-0">
                   <p className="font-semibold text-sm">{d.name}</p>
                   <p className="text-xs text-base-content/50">{d.email}</p>
                 </div>
@@ -99,12 +131,14 @@ export default function DebtorTable({
                   {actionTimeline[d.id][0].status_after}
                 </p>
               )}
+              {d.status !== 'paid' && (
+                <p className="text-[10px] text-primary/80 font-medium">
+                  {t(`nextAction_${getNextAction(d).key}`)}
+                </p>
+              )}
 
               <div className="flex items-center gap-2 pt-1">
-                <DebtorActionForm
-                  debtor={d}
-                  handleRecoveryAction={handleRecoveryAction}
-                />
+                <DebtorActionForm debtor={d} handleRecoveryAction={handleRecoveryAction} />
                 <Link
                   href={`/chat/${d.id}?token=${createDebtorToken(d.id)}`}
                   className="btn btn-sm btn-primary btn-outline gap-1 ml-auto min-h-9"
@@ -123,6 +157,16 @@ export default function DebtorTable({
         <table className="table table-sm">
           <thead>
             <tr className="text-label">
+              <th>
+                {actionableDebtors.length > 0 && (
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.size === actionableDebtors.length && actionableDebtors.length > 0}
+                    onChange={toggleAll}
+                    className="checkbox checkbox-sm checkbox-primary"
+                  />
+                )}
+              </th>
               <th>{t('debtorDetails')}</th>
               <th>{t('exposure')}</th>
               <th>{t('agentStatus')}</th>
@@ -133,6 +177,16 @@ export default function DebtorTable({
             {debtors.map((d) => (
               <tr key={d.id} className="hover">
                 <td>
+                  {d.status !== 'paid' && (
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(d.id)}
+                      onChange={() => toggle(d.id)}
+                      className="checkbox checkbox-sm checkbox-primary"
+                    />
+                  )}
+                </td>
+                <td>
                   <div>
                     <p className="font-semibold text-sm">{d.name}</p>
                     <p className="text-xs text-base-content/50">{d.email}</p>
@@ -142,6 +196,11 @@ export default function DebtorTable({
                         {actionTimeline[d.id][0].status_after}
                       </p>
                     )}
+                    {d.status !== 'paid' && (
+                      <p className="mt-0.5 text-[10px] text-primary/80 font-medium">
+                        {t(`nextAction_${getNextAction(d).key}`)}
+                      </p>
+                    )}
                   </div>
                 </td>
                 <td>
@@ -149,7 +208,10 @@ export default function DebtorTable({
                     {d.currency} {d.total_debt.toLocaleString()}
                   </p>
                   <p className="text-xs text-base-content/40">
-                    {t('dScore', { days: String(d.days_overdue ?? 0), score: String(getRecoveryScore(d)) })}
+                    {t('dScore', {
+                      days: String(d.days_overdue ?? 0),
+                      score: String(getRecoveryScore(d)),
+                    })}
                   </p>
                 </td>
                 <td>
@@ -159,10 +221,7 @@ export default function DebtorTable({
                 </td>
                 <td className="text-right">
                   <div className="flex items-center justify-end gap-2">
-                    <DebtorActionForm
-                      debtor={d}
-                      handleRecoveryAction={handleRecoveryAction}
-                    />
+                    <DebtorActionForm debtor={d} handleRecoveryAction={handleRecoveryAction} />
                     <Link
                       href={`/chat/${d.id}?token=${createDebtorToken(d.id)}`}
                       className="btn btn-sm btn-primary btn-outline gap-1 min-h-9"

@@ -77,7 +77,7 @@ export default function DebtorFilters({
           prefetch={false}
           className="btn btn-ghost btn-sm gap-1.5"
         >
-          <Download className="h-3.5 w-3.5" />
+          <Download className="h-3.5 w-3.5 shrink-0" />
           {t('exportCsv')}
         </Link>
         <Link
@@ -85,7 +85,7 @@ export default function DebtorFilters({
           prefetch={false}
           className="btn btn-ghost btn-sm gap-1.5"
         >
-          <Download className="h-3.5 w-3.5" />
+          <Download className="h-3.5 w-3.5 shrink-0" />
           {t('exportAudit')}
         </Link>
       </div>

@@ -6,7 +6,7 @@ Adds `data_retention_days` column to `merchants` table.
 
 ### Option 1: Supabase Dashboard (SQL Editor)
 
-1. Go to [Supabase Dashboard](https://supabase.com/dashboard) → your project → SQL Editor
+1. Go to [Supabase Dashboard](https://supabase.com/dashboard/project/mvddmzjepcwxfkuggmzm/sql/new) → SQL Editor
 2. Run:
 
 ```sql

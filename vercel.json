@@ -7,6 +7,10 @@
       "maxDuration": 30
     }
   },
+  "crons": [
+    { "path": "/api/cron/data-retention", "schedule": "0 3 * * *" },
+    { "path": "/api/cron/scheduled-follow-up", "schedule": "0 10 * * *" }
+  ],
   "headers": [
     {
       "source": "/(.*)",

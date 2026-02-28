@@ -27,14 +27,17 @@ export async function sendInitialOutreach(formData: FormData) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const merchant = debtor.merchant as any;
     const baseUrl = process.env.NEXT_PUBLIC_URL || 'https://www.dragun.app';
+    const { buildDebtorPortalUrl } = await import('@/lib/debtor-token');
+    const chatUrl = buildDebtorPortalUrl(baseUrl, debtorId, 'chat');
+    const payUrl = buildDebtorPortalUrl(baseUrl, debtorId, 'pay');
 
     const emailContent = initialOutreachEmail({
       debtorName: debtor.name,
       merchantName: merchant.name,
       amount: Number(debtor.total_debt).toLocaleString(),
       currency: debtor.currency || 'USD',
-      chatUrl: `${baseUrl}/en/chat/${debtorId}`,
-      payUrl: `${baseUrl}/en/pay/${debtorId}`,
+      chatUrl,
+      payUrl,
     });
 
     const result = await sendEmail({
@@ -105,6 +108,9 @@ export async function sendFollowUp(formData: FormData) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const merchant = debtor.merchant as any;
     const baseUrl = process.env.NEXT_PUBLIC_URL || 'https://www.dragun.app';
+    const { buildDebtorPortalUrl } = await import('@/lib/debtor-token');
+    const chatUrl = buildDebtorPortalUrl(baseUrl, debtorId, 'chat');
+    const payUrl = buildDebtorPortalUrl(baseUrl, debtorId, 'pay');
 
     const lastContacted = debtor.last_contacted ? new Date(debtor.last_contacted) : new Date();
     const daysSince = Math.max(1, Math.round((Date.now() - lastContacted.getTime()) / (1000 * 60 * 60 * 24)));
@@ -115,8 +121,8 @@ export async function sendFollowUp(formData: FormData) {
         merchantName: merchant.name,
         amount: Number(debtor.total_debt).toLocaleString(),
         currency: debtor.currency || 'USD',
-        chatUrl: `${baseUrl}/en/chat/${debtorId}`,
-        payUrl: `${baseUrl}/en/pay/${debtorId}`,
+        chatUrl,
+        payUrl,
       },
       daysSince,
     );

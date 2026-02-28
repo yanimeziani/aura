@@ -79,7 +79,7 @@ export default function PricingPage() {
                     </li>
                   ))}
                 </ul>
-                <Link href={`/login?plan=${t(`${plan.key}.name`).toLowerCase()}`} className={`btn mt-6 w-full gap-2 ${plan.highlight ? 'btn-primary' : 'btn-outline'}`}>
+                <Link href={`/login?plan=${t(`${plan.key}.name`).toLowerCase()}`} className={`btn mt-6 w-full gap-2 min-h-12 ${plan.highlight ? 'btn-primary' : 'btn-outline'}`}>
                   {t(`${plan.key}.cta`)} <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>
@@ -109,7 +109,7 @@ export default function PricingPage() {
               <p className="mx-auto mt-2 max-w-xl text-sm text-base-content/60">
                 {t('customPlanDesc')}
               </p>
-              <Link href="/contact" className="btn btn-primary btn-lg mt-6 gap-2">
+              <Link href="/contact" className="btn btn-primary btn-lg mt-6 gap-2 min-h-14">
                 {t('contactSales')} <ArrowRight className="h-4 w-4" />
               </Link>
             </div>

@@ -116,6 +116,31 @@
   }
 }
 
+/* DaisyUI button/input/select fixes — prevent vertical squeezing */
+@layer components {
+  .btn {
+    min-height: 2.5rem;
+    align-items: center;
+  }
+  .btn-sm {
+    min-height: 2rem;
+  }
+  .btn-lg {
+    min-height: 3rem;
+  }
+  .input,
+  .select {
+    min-height: 2.5rem;
+  }
+  .input-sm,
+  .select-sm {
+    min-height: 2rem;
+  }
+  .textarea {
+    min-height: 6rem;
+  }
+}
+
 @layer utilities {
   .text-label {
     font-size: 0.6875rem;

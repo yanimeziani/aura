@@ -118,10 +118,10 @@ export default function FeaturesPage() {
             {t('ctaDesc')}
           </p>
           <div className="mt-8 flex flex-wrap gap-3 justify-center">
-            <Link href="/login" className="btn btn-primary btn-lg gap-2">
+            <Link href="/login" className="btn btn-primary btn-lg gap-2 min-h-14">
               {t('ctaButton')} <ArrowRight className="h-4 w-4" />
             </Link>
-            <Link href="/pricing" className="btn btn-outline btn-lg">{t('ctaPricing')}</Link>
+            <Link href="/pricing" className="btn btn-outline btn-lg min-h-14">{t('ctaPricing')}</Link>
           </div>
         </div>
       </section>

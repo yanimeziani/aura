@@ -8,17 +8,17 @@ interface SmsOutreachParams {
 
 export function initialOutreachSms(p: SmsOutreachParams): string {
   const firstName = p.debtorName.split(' ')[0];
-  return `Hi ${firstName}, you have an open balance of ${p.currency} ${p.amount} with ${p.merchantName}. We have flexible options available. Review them here: ${p.chatUrl}`;
+  return `Hi ${firstName}, official notice from ${p.merchantName}: you have an open balance of ${p.currency} ${p.amount}. We have flexible options. Legitimate resolution portal: ${p.chatUrl}`;
 }
 
 export function followUpSms(p: SmsOutreachParams, daysSince: number): string {
   const firstName = p.debtorName.split(' ')[0];
-  return `Hi ${firstName}, following up on your ${p.currency} ${p.amount} balance with ${p.merchantName} (${daysSince}d ago). Payment plans are still available: ${p.chatUrl}`;
+  return `Hi ${firstName}, following up from ${p.merchantName} on your ${p.currency} ${p.amount} balance (${daysSince}d ago). Payment plans still available. Secure portal: ${p.chatUrl}`;
 }
 
 export function paymentReminderSms(p: SmsOutreachParams): string {
   const firstName = p.debtorName.split(' ')[0];
-  return `${firstName}, a quick reminder about your ${p.currency} ${p.amount} balance with ${p.merchantName}. Resolve it easily here: ${p.chatUrl}`;
+  return `${firstName}, reminder from ${p.merchantName}: ${p.currency} ${p.amount} balance. Secure Stripe checkout: ${p.chatUrl}`;
 }
 
 interface OutreachParams {
@@ -53,6 +53,8 @@ export function initialOutreachEmail(p: OutreachParams) {
       '',
       `If you believe this is an error, simply reply to this message or use the chat link above.`,
       '',
+      `This is a legitimate communication from ${p.merchantName}. Payments are processed securely via Stripe. To verify this balance, contact ${p.merchantName} directly.`,
+      '',
       `Best regards,`,
       `${p.merchantName} — Account Resolution`,
     ].join('\n'),
@@ -73,7 +75,12 @@ export function initialOutreachEmail(p: OutreachParams) {
           Or <a href="${p.payUrl}" style="color: #2563eb;">go directly to the payment page</a>.
         </p>
         <p style="font-size: 13px; color: #999; margin-top: 32px; border-top: 1px solid #eee; padding-top: 16px;">
-          If you believe this is an error, simply reply to this message or use the chat link above.<br/>
+          If you believe this is an error, simply reply to this message or use the chat link above.
+        </p>
+        <p style="font-size: 12px; color: #aaa; margin-top: 12px; line-height: 1.5;">
+          <strong style="color: #666;">This is a legitimate communication</strong> from ${p.merchantName}. Payments are processed securely via Stripe. To verify this balance, contact ${p.merchantName} directly.
+        </p>
+        <p style="font-size: 12px; color: #999; margin-top: 8px;">
           ${p.merchantName} — Account Resolution
         </p>
       </div>
@@ -96,6 +103,8 @@ export function followUpEmail(p: OutreachParams, daysSinceFirst: number) {
       `Chat with our resolution assistant: ${p.chatUrl}`,
       `Payment options: ${p.payUrl}`,
       '',
+      `This is a legitimate follow-up from ${p.merchantName}. Payments are processed securely via Stripe. To verify this balance, contact ${p.merchantName} directly.`,
+      '',
       `Best regards,`,
       `${p.merchantName} — Account Resolution`,
     ].join('\n'),
@@ -107,7 +116,10 @@ export function followUpEmail(p: OutreachParams, daysSinceFirst: number) {
         <p style="margin-top: 24px;">
           <a href="${p.chatUrl}" style="display: inline-block; background: #2563eb; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600;">View Options</a>
         </p>
-        <p style="font-size: 13px; color: #999; margin-top: 32px; border-top: 1px solid #eee; padding-top: 16px;">
+        <p style="font-size: 12px; color: #aaa; margin-top: 16px; line-height: 1.5;">
+          <strong style="color: #666;">This is a legitimate follow-up</strong> from ${p.merchantName}. Payments are processed securely via Stripe. To verify this balance, contact ${p.merchantName} directly.
+        </p>
+        <p style="font-size: 12px; color: #999; margin-top: 8px;">
           ${p.merchantName} — Account Resolution
         </p>
       </div>

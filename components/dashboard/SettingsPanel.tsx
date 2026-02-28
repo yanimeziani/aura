@@ -37,7 +37,7 @@ export default function SettingsPanel({ merchant, handleUpdateSettings, t }: Pro
               type="text"
               name="name"
               defaultValue={merchant.name}
-              className="input input-bordered input-sm w-full"
+              className="input input-bordered input-sm w-full min-h-10"
             />
           </div>
 
@@ -85,7 +85,7 @@ export default function SettingsPanel({ merchant, handleUpdateSettings, t }: Pro
             <select
               name="data_retention_days"
               defaultValue={merchant.data_retention_days ?? 0}
-              className="select select-bordered select-sm w-full"
+              className="select select-bordered select-sm w-full min-h-10"
             >
               {RETENTION_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -98,7 +98,7 @@ export default function SettingsPanel({ merchant, handleUpdateSettings, t }: Pro
             </p>
           </div>
 
-          <button className="btn btn-primary w-full">
+          <button className="btn btn-primary w-full min-h-11">
             {t('applyUpdates')}
           </button>
         </form>

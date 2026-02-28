@@ -15,18 +15,28 @@ function toCsvRow(values: Array<string | number | null | undefined>): string {
     .join(',');
 }
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
     const merchantId = await getMerchantId();
     if (!merchantId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { data, error } = await supabaseAdmin
+    const { searchParams } = new URL(req.url);
+    const idsParam = searchParams.get('ids');
+    const ids = idsParam ? idsParam.split(',').map((s) => s.trim()).filter(Boolean) : null;
+
+    let query = supabaseAdmin
       .from('debtors')
       .select('id,name,email,phone,total_debt,currency,status,days_overdue,last_contacted,created_at')
       .eq('merchant_id', merchantId)
       .order('created_at', { ascending: false });
+
+    if (ids?.length) {
+      query = query.in('id', ids);
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       Sentry.captureException(error);

@@ -55,7 +55,7 @@ export default function MobileBottomBar({ addDebtorAction }: Props) {
                     required
                     type="text"
                     placeholder="Jane Smith"
-                    className="input input-bordered w-full pl-11"
+                    className="input input-bordered w-full pl-11 min-h-11"
                   />
                 </div>
               </div>
@@ -69,7 +69,7 @@ export default function MobileBottomBar({ addDebtorAction }: Props) {
                     required
                     type="email"
                     placeholder="jane@example.com"
-                    className="input input-bordered w-full pl-11"
+                    className="input input-bordered w-full pl-11 min-h-11"
                   />
                 </div>
               </div>
@@ -86,13 +86,13 @@ export default function MobileBottomBar({ addDebtorAction }: Props) {
                       min="0.01"
                       step="0.01"
                       placeholder="1500.00"
-                      className="input input-bordered w-full pl-11"
+                      className="input input-bordered w-full pl-11 min-h-11"
                     />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <label className="text-label">{t('debtorCurrency')}</label>
-                  <select name="currency" className="select select-bordered w-full">
+                  <select name="currency" className="select select-bordered w-full min-h-11">
                     <option value="USD">USD</option>
                     <option value="CAD">CAD</option>
                     <option value="EUR">EUR</option>
@@ -108,14 +108,14 @@ export default function MobileBottomBar({ addDebtorAction }: Props) {
                   type="number"
                   min="0"
                   defaultValue="0"
-                  className="input input-bordered w-full"
+                  className="input input-bordered w-full min-h-11"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={isPending}
-                className="btn btn-primary w-full mt-2"
+                className="btn btn-primary w-full mt-2 min-h-12"
               >
                 {isPending ? <span className="loading loading-spinner loading-sm" /> : t('addDebtorSubmit')}
               </button>

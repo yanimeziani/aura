@@ -44,7 +44,7 @@ export default function PaywallBanner({ currentCount, limit, plan, subscribeActi
           <div className="flex gap-2">
             <form action={subscribeAction}>
               <input type="hidden" name="plan" value="starter" />
-              <button className="btn btn-primary gap-2 h-11 px-5 text-sm font-semibold uppercase tracking-[0.14em]">
+              <button className="btn btn-primary gap-2 min-h-11 px-5 text-sm font-semibold uppercase tracking-[0.14em]">
                 {t('upgradeToStarter')}
                 <ArrowRight className="h-4 w-4" />
               </button>

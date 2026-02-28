@@ -29,7 +29,8 @@ import MobileBottomBar from '@/components/dashboard/MobileBottomBar';
 import PaywallBanner from '@/components/dashboard/PaywallBanner';
 import PendingSubscription from '@/components/dashboard/PendingSubscription';
 import StatsGrid from '@/components/dashboard/StatsGrid';
-import DebtorTable, { getRecoveryScore } from '@/components/dashboard/DebtorTable';
+import { getRecoveryScore } from '@/components/dashboard/DebtorTable';
+import DebtorTableWithBulk from '@/components/dashboard/DebtorTableWithBulk';
 import DebtorFilters from '@/components/dashboard/DebtorFilters';
 import TopDebtors from '@/components/dashboard/TopDebtors';
 import SettingsPanel from '@/components/dashboard/SettingsPanel';
@@ -377,7 +378,7 @@ export default async function DashboardPage({
                 {t('gatewayActivatedDesc')}
               </p>
             </div>
-            <Link href="/dashboard" className="btn btn-ghost">
+            <Link href="/dashboard" className="btn btn-ghost min-h-10">
               {t('dismiss')}
             </Link>
           </div>
@@ -392,7 +393,7 @@ export default async function DashboardPage({
                 {t('subscriptionActivatedDesc', { plan: paywall.plan, limit: String(paywall.limit) })}
               </p>
             </div>
-            <Link href="/dashboard" className="btn btn-ghost">
+            <Link href="/dashboard" className="btn btn-ghost min-h-10">
               {t('dismiss')}
             </Link>
           </div>
@@ -425,7 +426,7 @@ export default async function DashboardPage({
             </div>
             <form action={createStripeConnectAccount}>
               <input type="hidden" name="locale" value={locale} />
-              <button className="btn btn-primary gap-1">
+              <button className="btn btn-primary gap-1 min-h-11">
                 {hasStripeAccount ? t('resume') : t('setupStripe')}
                 <ArrowRight className="h-3.5 w-3.5" />
               </button>
@@ -462,10 +463,11 @@ export default async function DashboardPage({
                 />
               </div>
 
-              <DebtorTable
+              <DebtorTableWithBulk
                 debtors={prioritizedDebtors}
                 actionTimeline={actionTimelineByDebtor}
                 handleRecoveryAction={handleRecoveryAction}
+                getRecoveryScore={getRecoveryScore}
                 t={(key: string, values?: Record<string, string | number>) => t(key, values)}
               />
             </div>

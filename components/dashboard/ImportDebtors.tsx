@@ -11,12 +11,19 @@ export default function ImportDebtors() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [isPending, startTransition] = useTransition();
-  const [result, setResult] = useState<{ success: boolean; imported: number; errors: string[] } | null>(null);
+  const [result, setResult] = useState<{
+    success: boolean;
+    imported: number;
+    errors: string[];
+    outreachSent?: number;
+  } | null>(null);
+  const [autoSendOutreach, setAutoSendOutreach] = useState(true);
 
   function handleImport() {
     if (!file) return;
     const formData = new FormData();
     formData.append('csv', file);
+    formData.append('auto_send_outreach', String(autoSendOutreach));
 
     startTransition(async () => {
       const res = await importDebtors(formData);
@@ -38,7 +45,7 @@ export default function ImportDebtors() {
     <>
       <button
         onClick={() => dialogRef.current?.showModal()}
-        className="btn btn-ghost h-10 gap-2 px-4 text-[11px] font-semibold uppercase tracking-[0.14em]"
+        className="btn btn-ghost min-h-10 gap-2 px-4 text-[11px] font-semibold uppercase tracking-[0.14em]"
       >
         <Upload className="h-3.5 w-3.5" />
         {t('importCsv')}
@@ -67,7 +74,12 @@ export default function ImportDebtors() {
                 {result.success ? <CheckCircle2 className="h-5 w-5" /> : <AlertTriangle className="h-5 w-5" />}
                 <div>
                   {result.success ? (
-                    <p className="font-semibold">{t('importSuccess', { count: result.imported })}</p>
+                    <>
+                      <p className="font-semibold">{t('importSuccess', { count: result.imported })}</p>
+                      {result.outreachSent !== undefined && result.outreachSent > 0 && (
+                        <p className="text-xs mt-1">{t('outreachSent', { count: result.outreachSent })}</p>
+                      )}
+                    </>
                   ) : (
                     <p className="font-semibold">{t('importFailed')}</p>
                   )}
@@ -85,9 +97,19 @@ export default function ImportDebtors() {
                   type="file"
                   accept=".csv"
                   onChange={(e) => { setFile(e.target.files?.[0] || null); setResult(null); }}
-                  className="file-input file-input-bordered w-full"
+                  className="file-input file-input-bordered w-full min-h-11"
                 />
               </div>
+
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={autoSendOutreach}
+                  onChange={(e) => setAutoSendOutreach(e.target.checked)}
+                  className="checkbox checkbox-primary checkbox-sm"
+                />
+                <span className="text-sm">{t('autoSendOutreach')}</span>
+              </label>
 
               <div className="rounded-xl border border-base-300 bg-base-100 p-4 space-y-2">
                 <p className="text-label">{t('requiredColumns')}</p>
@@ -107,7 +129,7 @@ export default function ImportDebtors() {
               <button
                 onClick={handleImport}
                 disabled={!file || isPending}
-                className="btn btn-primary w-full"
+                className="btn btn-primary w-full min-h-12"
               >
                 {isPending ? <span className="loading loading-spinner loading-sm" /> : (
                   <>

@@ -89,24 +89,24 @@ export default function DebtorActionForm({ debtor, handleRecoveryAction }: Props
             <button
               onClick={() => handleEmail(sendInitialOutreach)}
               disabled={isPending}
-              className="btn btn-outline flex-1 gap-1.5"
+              className="btn btn-outline flex-1 gap-1.5 min-h-10"
             >
               {isPending ? (
-                <span className="loading loading-spinner loading-xs" />
+                <span className="loading loading-spinner loading-xs shrink-0" />
               ) : (
-                <Mail className="h-3.5 w-3.5" />
+                <Mail className="h-3.5 w-3.5 shrink-0" />
               )}
               {t('emailOutreach')}
             </button>
             <button
               onClick={() => handleEmail(sendFollowUp)}
               disabled={isPending}
-              className="btn btn-outline flex-1 gap-1.5"
+              className="btn btn-outline flex-1 gap-1.5 min-h-10"
             >
               {isPending ? (
-                <span className="loading loading-spinner loading-xs" />
+                <span className="loading loading-spinner loading-xs shrink-0" />
               ) : (
-                <MailPlus className="h-3.5 w-3.5" />
+                <MailPlus className="h-3.5 w-3.5 shrink-0" />
               )}
               {t('emailFollowUp')}
             </button>
@@ -117,7 +117,7 @@ export default function DebtorActionForm({ debtor, handleRecoveryAction }: Props
             <select
               value={smsType}
               onChange={(e) => setSmsType(e.target.value as typeof smsType)}
-              className="select select-bordered select-sm flex-1"
+              className="select select-bordered select-sm flex-1 min-h-10"
             >
               <option value="initial">{t('smsInitial')}</option>
               <option value="follow_up">{t('smsFollowUp')}</option>
@@ -126,7 +126,7 @@ export default function DebtorActionForm({ debtor, handleRecoveryAction }: Props
             <button
               onClick={handleSms}
               disabled={isPending || !hasPhone}
-              className="btn btn-outline gap-1.5"
+              className="btn btn-outline gap-1.5 min-h-10"
               title={hasPhone ? t('sendSmsTitle') : t('noPhoneWarning')}
             >
               {isPending ? (
@@ -158,7 +158,7 @@ export default function DebtorActionForm({ debtor, handleRecoveryAction }: Props
               <select
                 name="action_type"
                 defaultValue="status_update"
-                className="select select-bordered select-sm w-full"
+                className="select select-bordered select-sm w-full min-h-10"
               >
                 {OPERATOR_ACTION_TYPES.map((a) => (
                   <option key={a} value={a}>
@@ -173,7 +173,7 @@ export default function DebtorActionForm({ debtor, handleRecoveryAction }: Props
               <select
                 name="status"
                 defaultValue={debtor.status}
-                className="select select-bordered select-sm w-full"
+                className="select select-bordered select-sm w-full min-h-10"
               >
                 {COLLECTION_STATUSES.map((s) => (
                   <option key={s} value={s}>
@@ -188,7 +188,7 @@ export default function DebtorActionForm({ debtor, handleRecoveryAction }: Props
               <input
                 name="note"
                 placeholder={t('notePlaceholder')}
-                className="input input-bordered input-sm w-full"
+                className="input input-bordered input-sm w-full min-h-10"
               />
             </div>
 
@@ -204,7 +204,7 @@ export default function DebtorActionForm({ debtor, handleRecoveryAction }: Props
               </span>
             </label>
 
-            <button type="submit" className="btn btn-primary w-full mt-2">
+            <button type="submit" className="btn btn-primary w-full mt-2 min-h-11">
               {t('save')}
             </button>
           </form>

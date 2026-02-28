@@ -31,13 +31,15 @@ export async function sendSmsOutreach(formData: FormData) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const merchant = debtor.merchant as any;
     const baseUrl = process.env.NEXT_PUBLIC_URL || 'https://www.dragun.app';
+    const { buildDebtorPortalUrl } = await import('@/lib/debtor-token');
+    const chatUrl = buildDebtorPortalUrl(baseUrl, debtorId, 'chat');
 
     const params = {
       debtorName: debtor.name,
       merchantName: merchant.name,
       amount: Number(debtor.total_debt).toLocaleString(),
       currency: debtor.currency || 'USD',
-      chatUrl: `${baseUrl}/en/chat/${debtorId}`,
+      chatUrl,
     };
 
     let body: string;

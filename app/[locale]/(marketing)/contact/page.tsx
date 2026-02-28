@@ -37,14 +37,14 @@ export default function ContactPage() {
                       <User className="h-3.5 w-3.5" />
                       {t('fullName')}
                     </label>
-                    <input type="text" placeholder={t('fullNamePlaceholder')} className="input input-bordered w-full" />
+                    <input type="text" placeholder={t('fullNamePlaceholder')} className="input input-bordered w-full min-h-11" />
                   </div>
                   <div className="space-y-2">
                     <label className="flex items-center gap-2 text-label">
                       <Mail className="h-3.5 w-3.5" />
                       {t('emailAddress')}
                     </label>
-                    <input type="email" placeholder={t('emailPlaceholder')} className="input input-bordered w-full" />
+                    <input type="email" placeholder={t('emailPlaceholder')} className="input input-bordered w-full min-h-11" />
                   </div>
                 </div>
 
@@ -53,7 +53,7 @@ export default function ContactPage() {
                     <Tag className="h-3.5 w-3.5" />
                     {t('subject')}
                   </label>
-                  <select className="select select-bordered w-full">
+                  <select className="select select-bordered w-full min-h-11">
                     <option>{t('subjectGeneral')}</option>
                     <option>{t('subjectSales')}</option>
                     <option>{t('subjectSupport')}</option>
@@ -66,10 +66,10 @@ export default function ContactPage() {
                     <MessageSquare className="h-3.5 w-3.5" />
                     {t('message')}
                   </label>
-                  <textarea rows={6} placeholder={t('messagePlaceholder')} className="textarea textarea-bordered w-full" />
+                  <textarea rows={6} placeholder={t('messagePlaceholder')} className="textarea textarea-bordered w-full min-h-32" />
                 </div>
 
-                <button type="submit" className="btn btn-primary w-full gap-2 text-xs font-bold uppercase tracking-widest">
+                <button type="submit" className="btn btn-primary w-full gap-2 min-h-12 text-xs font-bold uppercase tracking-widest">
                   {t('sendMessage')}
                   <Send className="h-4 w-4" />
                 </button>

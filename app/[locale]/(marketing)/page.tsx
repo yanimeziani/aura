@@ -79,11 +79,14 @@ export default function LandingPage() {
             </p>
 
             <div className="flex flex-wrap gap-3 mt-10">
-              <Link href="/login" className="btn btn-primary gap-2 px-6">
+              <Link href="/register" className="btn btn-primary gap-2 px-6 text-base min-h-12">
                 {t('startPilot')}
                 <ArrowRight className="w-4 h-4" />
               </Link>
-              <a href="#demo" className="btn btn-ghost border border-base-300/60 gap-2">
+              <Link href="/pricing" className="btn btn-ghost border border-base-300/60 gap-2 min-h-12">
+                {t('seePricing')}
+              </Link>
+              <a href="#demo" className="btn btn-ghost gap-2 min-h-12">
                 {t('watchDemo')}
               </a>
             </div>
@@ -114,12 +117,15 @@ export default function LandingPage() {
       <section className="border-y border-base-300/30 bg-base-200/20 py-6 overflow-hidden">
         <div className="app-shell">
           <p className="text-label text-center mb-4">{t('trustedBy')}</p>
-          <div className="flex flex-wrap justify-center gap-x-10 gap-y-3">
+          <div className="flex flex-wrap justify-center gap-x-10 gap-y-3 items-center">
             {['North Point Fitness', 'Lumen Dental', 'Atlas Services', 'Wellspring Clinic', 'Urban Physio', 'Metro Legal', 'Apex Dental', 'City Fitness'].map((name) => (
               <span key={name} className="text-sm text-base-content/30 font-medium whitespace-nowrap">
                 {name}
               </span>
             ))}
+            <span className="badge badge-outline badge-sm border-base-300/50 text-base-content/40">
+              Stripe · SOC 2
+            </span>
           </div>
         </div>
       </section>
@@ -220,14 +226,17 @@ export default function LandingPage() {
           </h2>
           <p className="text-base-content/50 mt-4 mb-10 text-lg">{t('ctaSubtitle')}</p>
           <div className="flex flex-wrap gap-3 justify-center">
-            <Link href="/login" className="btn btn-primary btn-lg gap-2 px-8">
+            <Link href="/register" className="btn btn-primary btn-lg gap-2 px-8 min-h-14">
               {t('ctaButton')}
               <ArrowRight className="w-5 h-5" />
             </Link>
-            <Link href="/pricing" className="btn btn-ghost btn-lg border border-base-300/60">
+            <Link href="/pricing" className="btn btn-ghost btn-lg border border-base-300/60 min-h-14">
               {t('seePricing')}
             </Link>
           </div>
+          <p className="text-xs text-base-content/40 mt-4">
+            Production pilot · No credit card for trial · Cancel anytime
+          </p>
         </div>
       </section>
     </main>
