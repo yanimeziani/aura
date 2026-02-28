@@ -93,7 +93,8 @@ export default function DebtorTableWithBulk({
         {debtors.map((d) => (
           <div
             key={d.id}
-            className="card bg-base-100 border border-base-300/50 shadow-warm"
+            id={`debtor-${d.id}`}
+            className="card bg-base-100 border border-base-300/50 shadow-warm scroll-mt-28"
           >
             <div className="card-body p-4 gap-3">
               <div className="flex items-start justify-between gap-2">
@@ -173,7 +174,7 @@ export default function DebtorTableWithBulk({
           </thead>
           <tbody>
             {debtors.map((d) => (
-              <tr key={d.id} className="hover">
+              <tr key={d.id} id={`debtor-${d.id}`} className="hover scroll-mt-28" tabIndex={-1}>
                 <td>
                   {d.status !== 'paid' && (
                     <input

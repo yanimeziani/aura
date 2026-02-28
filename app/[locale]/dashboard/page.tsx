@@ -11,9 +11,6 @@ import { createSubscriptionCheckout } from '@/app/actions/subscription';
 import { checkPaywall } from '@/lib/paywall';
 import { updateRecoveryStatus } from '@/app/actions/recovery-actions';
 import {
-  BadgeDollarSign,
-  TrendingUp,
-  MessageSquare,
   CheckCircle2,
   CreditCard,
   Users,
@@ -27,7 +24,10 @@ import DashboardTopNav from '@/components/dashboard/DashboardTopNav';
 import MobileBottomBar from '@/components/dashboard/MobileBottomBar';
 import PaywallBanner from '@/components/dashboard/PaywallBanner';
 import PendingSubscription from '@/components/dashboard/PendingSubscription';
-import StatsGrid from '@/components/dashboard/StatsGrid';
+import DashboardSummary from '@/components/dashboard/DashboardSummary';
+import DashboardAlerts from '@/components/dashboard/DashboardAlerts';
+import FocusStrip from '@/components/dashboard/FocusStrip';
+import InsightsPanel from '@/components/dashboard/InsightsPanel';
 import { getRecoveryScore } from '@/lib/recovery-score';
 import { createDebtorToken } from '@/lib/debtor-token';
 import DebtorTableWithBulk from '@/components/dashboard/DebtorTableWithBulk';
@@ -305,50 +305,32 @@ export default async function DashboardPage({
     matchThreshold: 0.45,
   });
 
-  const stats = [
+  const summaryPrimary = [
     {
       label: t('outstanding'),
       value: `$${totalOutstanding.toLocaleString()}`,
-      icon: BadgeDollarSign,
-      trend: `${debtors.length} ${t('debtors').toLowerCase()}`,
-      sub: t('momChange'),
+      sub: `${actionableDebtors.length} ${t('debtors').toLowerCase()}`,
+      icon: 'outstanding' as const,
     },
     {
       label: t('recovered'),
       value: `$${totalRecovered.toLocaleString()}`,
-      icon: TrendingUp,
-      trend: `${recoveryRate}% rate`,
-      sub: t('vsAvg'),
+      sub: `${recoveryRate}% ${t('vsAvg')}`,
+      icon: 'recovered' as const,
     },
     {
-      label: t('contactedToday'),
-      value: String(contactedToday),
-      icon: MessageSquare,
-      trend: `${Math.round((contactedToday / Math.max(1, actionableDebtors.length)) * 100)}%`,
-      sub: t('queueTouched'),
-    },
-    {
-      label: t('promises'),
-      value: String(promises),
-      icon: CheckCircle2,
-      trend: `min ${Math.round(merchant.settlement_floor * 100)}%`,
-      sub: t('promiseToPay'),
-    },
-    {
-      label: t('paidToday'),
-      value: String(paidToday),
-      icon: BadgeDollarSign,
-      trend: t('today'),
-      sub: t('resolvedToday'),
-    },
-    {
-      label: t('planLabel'),
-      value: paywall.plan.toUpperCase(),
-      icon: CreditCard,
-      trend: `${paywall.currentCount}/${paywall.limit}`,
-      sub: t('debtorsUsed'),
+      label: t('focusToday'),
+      value: actionableDebtors.length > 0 ? String(contactedToday) : '—',
+      sub: paidToday > 0 ? `${paidToday} ${t('resolvedToday')}` : t('queueTouched'),
+      icon: 'today' as const,
     },
   ];
+  const summarySecondary = [
+    { label: t('promises'), value: String(promises) },
+    { label: t('paidToday'), value: String(paidToday) },
+    { label: t('planLabel'), value: `${paywall.plan} · ${paywall.currentCount}/${paywall.limit}` },
+  ];
+  const nextDebtor = prioritizedDebtorsWithPortal[0] ?? null;
 
   return (
     <div id="dashboard-top" className="min-h-screen bg-base-100 pb-28 md:pb-8 scroll-mt-0">
@@ -385,74 +367,64 @@ export default async function DashboardPage({
           <p className="text-sm text-base-content/50">{t('subtitle')}</p>
         </div>
 
-        {/* Alerts */}
-        {stripeSuccess && isOnboardingComplete && (
-          <div className="alert alert-success shadow-warm">
-            <CheckCircle2 className="h-5 w-5 shrink-0" />
-            <div>
-              <p className="font-semibold">{t('gatewayActivated')}</p>
-              <p className="text-sm opacity-80">
-                {t('gatewayActivatedDesc')}
-              </p>
+        {/* Alerts: max 2 visible (Progressive disclosure) */}
+        <DashboardAlerts>
+          {stripeSuccess && isOnboardingComplete && (
+            <div className="alert alert-success shadow-warm">
+              <CheckCircle2 className="h-5 w-5 shrink-0" />
+              <div>
+                <p className="font-semibold">{t('gatewayActivated')}</p>
+                <p className="text-sm opacity-80">{t('gatewayActivatedDesc')}</p>
+              </div>
+              <Link href="/dashboard" className="btn btn-ghost min-h-10">{t('dismiss')}</Link>
             </div>
-            <Link href="/dashboard" className="btn btn-ghost min-h-10">
-              {t('dismiss')}
-            </Link>
-          </div>
-        )}
-
-        {subscriptionSuccess && (
-          <div className="alert alert-success shadow-warm">
-            <CreditCard className="h-5 w-5 shrink-0" />
-            <div>
-              <p className="font-semibold">{t('subscriptionActivated')}</p>
-              <p className="text-sm opacity-80">
-                {t('subscriptionActivatedDesc', { plan: paywall.plan, limit: String(paywall.limit) })}
-              </p>
+          )}
+          {subscriptionSuccess && (
+            <div className="alert alert-success shadow-warm">
+              <CreditCard className="h-5 w-5 shrink-0" />
+              <div>
+                <p className="font-semibold">{t('subscriptionActivated')}</p>
+                <p className="text-sm opacity-80">
+                  {t('subscriptionActivatedDesc', { plan: paywall.plan, limit: String(paywall.limit) })}
+                </p>
+              </div>
+              <Link href="/dashboard" className="btn btn-ghost min-h-10">{t('dismiss')}</Link>
             </div>
-            <Link href="/dashboard" className="btn btn-ghost min-h-10">
-              {t('dismiss')}
-            </Link>
-          </div>
-        )}
-
-        <PendingSubscription subscribeAction={handleSubscribe} />
-
-        <PaywallBanner
-          currentCount={paywall.currentCount}
-          limit={paywall.limit}
-          plan={paywall.plan}
-          subscribeAction={handleSubscribe}
-        />
-
-        {/* Stripe onboarding CTA */}
-        {!isOnboardingComplete && (
-          <div className="alert shadow-warm">
-            <AlertCircle className="h-5 w-5 shrink-0" />
-            <div>
-              <p className="font-semibold">
-                {hasStripeAccount
-                  ? t('completeGatewaySetup')
-                  : t('activateGateway')}
-              </p>
-              <p className="text-sm opacity-70">
-                {hasStripeAccount
-                  ? t('finishOnboardingDesc')
-                  : t('connectStripeDesc')}
-              </p>
+          )}
+          {!isOnboardingComplete && (
+            <div className="alert shadow-warm">
+              <AlertCircle className="h-5 w-5 shrink-0" />
+              <div>
+                <p className="font-semibold">
+                  {hasStripeAccount ? t('completeGatewaySetup') : t('activateGateway')}
+                </p>
+                <p className="text-sm opacity-70">
+                  {hasStripeAccount ? t('finishOnboardingDesc') : t('connectStripeDesc')}
+                </p>
+              </div>
+              <form action={createStripeConnectAccount}>
+                <input type="hidden" name="locale" value={locale} />
+                <button className="btn btn-primary gap-1 min-h-11">
+                  {hasStripeAccount ? t('resume') : t('setupStripe')}
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </button>
+              </form>
             </div>
-            <form action={createStripeConnectAccount}>
-              <input type="hidden" name="locale" value={locale} />
-              <button className="btn btn-primary gap-1 min-h-11">
-                {hasStripeAccount ? t('resume') : t('setupStripe')}
-                <ArrowRight className="h-3.5 w-3.5" />
-              </button>
-            </form>
-          </div>
-        )}
+          )}
+          <PaywallBanner
+            currentCount={paywall.currentCount}
+            limit={paywall.limit}
+            plan={paywall.plan}
+            subscribeAction={handleSubscribe}
+          />
+          <PendingSubscription subscribeAction={handleSubscribe} />
+        </DashboardAlerts>
 
-        {/* Stats */}
-        <StatsGrid stats={stats} />
+        {/* Summary: 3 primary metrics (Miller's Law, Hick's Law) */}
+        <DashboardSummary primary={summaryPrimary} secondary={summarySecondary} />
+
+        {/* Next best action (Goal-Gradient Effect) */}
+        <FocusStrip nextDebtor={nextDebtor} actionableCount={actionableDebtors.length} />
 
         {/* Main content: table + sidebar */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
@@ -488,19 +460,21 @@ export default async function DashboardPage({
             </div>
           </section>
 
-          {/* Sidebar */}
-          <aside className="space-y-6 lg:col-span-4">
-            <SuggestedCitations chunks={suggestedCitations} />
-            <RecoveryAnalytics
-              recoveryRate={recoveryRate}
-              totalPortfolio={totalPortfolio}
-              totalRecovered={totalRecovered}
-              statusCounts={statusCounts}
-              recentActions={recentActions}
-              debtorNames={Object.fromEntries(debtors.map((d) => [d.id, d.name]))}
-              t={(key: string, values?: Record<string, string | number>) => t(key, values)}
-            />
-            <TopDebtors debtors={prioritizedDebtors} t={(key: string, values?: Record<string, string | number>) => t(key, values)} />
+          {/* Sidebar: one compartment (Law of Common Region, Chunking) */}
+          <aside className="lg:col-span-4">
+            <InsightsPanel>
+              <SuggestedCitations chunks={suggestedCitations} />
+              <RecoveryAnalytics
+                recoveryRate={recoveryRate}
+                totalPortfolio={totalPortfolio}
+                totalRecovered={totalRecovered}
+                statusCounts={statusCounts}
+                recentActions={recentActions}
+                debtorNames={Object.fromEntries(debtors.map((d) => [d.id, d.name]))}
+                t={(key: string, values?: Record<string, string | number>) => t(key, values)}
+              />
+              <TopDebtors debtors={prioritizedDebtors} t={(key: string, values?: Record<string, string | number>) => t(key, values)} />
+            </InsightsPanel>
           </aside>
         </div>
       </main>
