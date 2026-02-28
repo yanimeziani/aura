@@ -1,6 +1,7 @@
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import Logo from '@/components/Logo';
+import FooterStatus from '@/components/FooterStatus';
 
 export default function Footer() {
   const t = useTranslations('Footer');
@@ -52,16 +53,7 @@ export default function Footer() {
               <li>privacy@meziani.ai</li>
             </ul>
 
-            <div className="mt-8 rounded-xl border border-base-300/50 bg-base-100 p-4">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-base-content/30 mb-1">{t('statusLabel')}</p>
-              <div className="flex items-center gap-2">
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-success" />
-                </span>
-                <span className="text-xs font-medium text-success">{t('allOperational')}</span>
-              </div>
-            </div>
+            <FooterStatus />
           </div>
         </div>
 

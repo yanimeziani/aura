@@ -31,6 +31,8 @@
     "contactHeading": "Contact",
     "statusLabel": "Status",
     "allOperational": "All systems operational",
+    "statusChecking": "Checking…",
+    "statusDegraded": "Service degraded",
     "tagStripe": "Stripe Connect",
     "tagAudit": "Audit Logs",
     "tagRag": "RAG Indexing",

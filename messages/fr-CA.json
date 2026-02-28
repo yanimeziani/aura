@@ -18,7 +18,11 @@
     "company": "Entreprise",
     "about": "À propos",
     "contact": "Contact",
-    "legal": "Mentions légales"
+    "legal": "Mentions légales",
+    "statusLabel": "Statut",
+    "allOperational": "Tous les systèmes opérationnels",
+    "statusChecking": "Vérification…",
+    "statusDegraded": "Service dégradé"
   },
   "Home": {
     "badge": "Recouvrement prêt à la conformité",
