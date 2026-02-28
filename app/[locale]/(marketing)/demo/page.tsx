@@ -1,20 +1,27 @@
 import type { Metadata } from 'next';
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { ArrowLeft } from 'lucide-react';
 import InteractiveRecoveryDemo from '@/components/InteractiveRecoveryDemo';
 
-export const metadata: Metadata = {
-  title: 'Live Demo | Dragun.app',
-  description: 'Try the AI debt recovery agent in real time. See how Dragun negotiates with empathy and cites your contract.',
-  openGraph: {
-    title: 'Live Demo | Dragun.app',
-    description: 'Try the AI debt recovery agent in real time.',
-  },
-};
+type Props = { params: Promise<{ locale: string }> };
 
-export default function DemoPage() {
-  const t = useTranslations('Home');
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'Demo' });
+  return {
+    title: t('metaTitle'),
+    description: t('metaDesc'),
+    openGraph: {
+      title: t('metaTitle'),
+      description: t('metaDesc'),
+    },
+  };
+}
+
+export default async function DemoPage({ params }: Props) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'Home' });
 
   return (
     <main className="min-h-screen">

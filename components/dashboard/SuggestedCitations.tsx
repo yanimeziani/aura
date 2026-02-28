@@ -1,13 +1,14 @@
 'use client';
 
 import { FileText } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface Props {
   chunks: string[];
-  t: (key: string) => string;
 }
 
-export default function SuggestedCitations({ chunks, t }: Props) {
+export default function SuggestedCitations({ chunks }: Props) {
+  const t = useTranslations('Dashboard');
   if (!chunks?.length) return null;
 
   return (

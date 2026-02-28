@@ -40,6 +40,10 @@ yarn-error.log*
 # Supabase local
 supabase/.temp/
 
+# Playwright
+playwright-report/
+test-results/
+
 # Artifacts
 {output_folder}/
 _bmad-output/

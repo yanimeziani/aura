@@ -490,10 +490,7 @@ export default async function DashboardPage({
 
           {/* Sidebar */}
           <aside className="space-y-6 lg:col-span-4">
-            <SuggestedCitations
-              chunks={suggestedCitations}
-              t={(key: string) => t(key)}
-            />
+            <SuggestedCitations chunks={suggestedCitations} />
             <RecoveryAnalytics
               recoveryRate={recoveryRate}
               totalPortfolio={totalPortfolio}

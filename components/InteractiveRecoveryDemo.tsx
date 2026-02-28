@@ -2,42 +2,75 @@
 
 import { FormEvent, useMemo, useRef, useState, useEffect } from 'react';
 import { Send, Lock, Bot, User } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 type Message = {
   role: 'agent' | 'user';
   text: string;
 };
 
-function buildReply(input: string) {
+type ReplyKey =
+  | 'replyDispute'
+  | 'replyPlan'
+  | 'replyPay'
+  | 'replyTime'
+  | 'replyWho'
+  | 'replyDefault';
+
+function getReplyKey(input: string): ReplyKey {
   const n = input.toLowerCase();
-
-  if (n.includes('dispute') || n.includes('cancel') || n.includes('don\'t owe'))
-    return 'I understand your concern. In this demo account, clause 4.2 of the service agreement requires 30-day written notice. I can note this for review, but in the meantime, would you like to explore a settlement option that could save you up to 30%?';
-
-  if (n.includes('plan') || n.includes('installment') || n.includes('split') || n.includes('payment plan'))
-    return 'Absolutely. For your balance of CAD 1,250, I can set up 3 monthly payments of $416.67. Each payment is processed securely through Stripe, and you\'ll get a receipt after each one. Would that work for you?';
-
-  if (n.includes('pay') || n.includes('today') || n.includes('resolve') || n.includes('settle'))
-    return 'Great decision. I\'ll send you a secure payment link right now. You can choose to pay the full amount, take the settlement offer at $875, or start a 3-month plan. Everything goes through Stripe checkout.';
-
-  if (n.includes('time') || n.includes('later') || n.includes('can\'t') || n.includes('afford'))
-    return 'I hear you, and I appreciate you being upfront about that. That\'s exactly why we have flexible options. Would a payment plan of $416.67/month over 3 months be more manageable for your situation?';
-
-  if (n.includes('who') || n.includes('what is') || n.includes('dragun'))
-    return 'I\'m the resolution assistant for this account. Everything here is confidential and secure. I\'m here to help find an option that works for both sides. Would you like to see what\'s available?';
-
-  return 'Thanks for reaching out. I have a few options that might work for your situation: full payment, a 30% settlement discount, or a 3-month plan. Which would you like to hear more about?';
+  // Match English and French keywords
+  if (
+    n.includes('dispute') ||
+    n.includes('cancel') ||
+    n.includes("don't owe") ||
+    n.includes('contester') ||
+    n.includes('conteste')
+  )
+    return 'replyDispute';
+  if (
+    n.includes('plan') ||
+    n.includes('installment') ||
+    n.includes('split') ||
+    n.includes('payment plan') ||
+    n.includes('échelon') ||
+    n.includes('mensuel')
+  )
+    return 'replyPlan';
+  if (
+    n.includes('pay') ||
+    n.includes('today') ||
+    n.includes('resolve') ||
+    n.includes('settle') ||
+    n.includes('payer') ||
+    n.includes('régler')
+  )
+    return 'replyPay';
+  if (
+    n.includes('time') ||
+    n.includes('later') ||
+    n.includes("can't") ||
+    n.includes('afford') ||
+    n.includes('temps') ||
+    n.includes('plus tard')
+  )
+    return 'replyTime';
+  if (
+    n.includes('who') ||
+    n.includes('what is') ||
+    n.includes('dragun') ||
+    n.includes('qui') ||
+    n.includes('c\'est quoi')
+  )
+    return 'replyWho';
+  return 'replyDefault';
 }
 
 export default function InteractiveRecoveryDemo() {
+  const t = useTranslations('Demo');
   const initialMessages = useMemo<Message[]>(
-    () => [
-      {
-        role: 'agent',
-        text: 'Hi there. I\'m reaching out about an open balance of CAD 1,250 with Atlas Services. I have some flexible options that could work for you -- would you like to hear them?',
-      },
-    ],
-    []
+    () => [{ role: 'agent', text: t('initialMessage') }],
+    [t]
   );
 
   const [messages, setMessages] = useState<Message[]>(initialMessages);
@@ -75,7 +108,7 @@ export default function InteractiveRecoveryDemo() {
     if (!clean || typing) return;
     setMessages((prev) => [...prev, { role: 'user', text: clean }]);
     setInput('');
-    setTimeout(() => runAgentReply(buildReply(clean)), 400);
+    setTimeout(() => runAgentReply(t(getReplyKey(clean))), 400);
   };
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -95,10 +128,10 @@ export default function InteractiveRecoveryDemo() {
         <div className="flex-1 text-center">
           <div className="inline-flex items-center gap-2 rounded-md bg-base-300/40 px-4 py-0.5">
             <Lock className="h-2.5 w-2.5 text-success" />
-            <span className="text-[10px] font-mono text-base-content/40">chat.dragun.app/demo/DRG-2048</span>
+            <span className="text-[10px] font-mono text-base-content/40">{t('urlBar')}</span>
           </div>
         </div>
-        <span className="rounded-md bg-warning/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-warning">Sandbox</span>
+        <span className="rounded-md bg-warning/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-warning">{t('sandbox')}</span>
       </div>
 
       <div className="grid lg:grid-cols-[1fr_280px]">
@@ -108,12 +141,12 @@ export default function InteractiveRecoveryDemo() {
           <div className="border-b border-[#e8e4df] bg-[#faf9f7] px-5 py-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[13px] font-semibold text-[#444]">Atlas Services</p>
-                <p className="text-[10px] text-[#aaa]">Account Resolution &middot; Demo</p>
+                <p className="text-[13px] font-semibold text-[#444]">{t('merchantName')}</p>
+                <p className="text-[10px] text-[#aaa]">{t('accountResolution')}</p>
               </div>
               <div className="flex items-center gap-2 rounded-lg bg-[#f0ece6] px-3 py-1.5">
-                <span className="text-[10px] text-[#888]">Balance</span>
-                <span className="text-[12px] font-semibold text-[#555]">CAD 1,250</span>
+                <span className="text-[10px] text-[#888]">{t('balance')}</span>
+                <span className="text-[12px] font-semibold text-[#555]">{t('balanceAmount')}</span>
               </div>
             </div>
           </div>
@@ -158,12 +191,7 @@ export default function InteractiveRecoveryDemo() {
           {/* Quick actions */}
           <div className="border-t border-[#e8e4df] bg-[#faf9f7] px-4 py-2.5">
             <div className="flex gap-2 overflow-x-auto pb-1">
-              {[
-                'I\'d like to pay now',
-                'Can I set up a plan?',
-                'I want to dispute this',
-                'I need more time',
-              ].map((preset) => (
+              {[t('quickPay'), t('quickPlan'), t('quickDispute'), t('quickTime')].map((preset) => (
                 <button
                   key={preset}
                   onClick={() => handleSend(preset)}
@@ -182,7 +210,7 @@ export default function InteractiveRecoveryDemo() {
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder={typing ? 'Typing...' : 'Type anything to test the agent'}
+              placeholder={typing ? t('typing') : t('inputPlaceholder')}
               disabled={typing}
               className="flex-1 min-h-11 rounded-xl border border-[#e0dbd4] bg-[#faf9f7] px-4 py-2.5 text-[13px] text-[#444] placeholder:text-[#c4b9a8] outline-none focus:border-[#8b7355] transition-colors"
             />
@@ -199,29 +227,29 @@ export default function InteractiveRecoveryDemo() {
         {/* Side panel -- merchant view */}
         <div className="hidden lg:flex flex-col border-l border-base-300/60 bg-base-200/30">
           <div className="border-b border-base-300/60 px-4 py-3">
-            <span className="text-[9px] font-bold uppercase tracking-wider text-base-content/40">Merchant View</span>
-            <p className="text-[10px] text-base-content/30 mt-0.5">What you see while the AI works</p>
+            <span className="text-[9px] font-bold uppercase tracking-wider text-base-content/40">{t('merchantView')}</span>
+            <p className="text-[10px] text-base-content/30 mt-0.5">{t('merchantViewHint')}</p>
           </div>
 
           <div className="p-4 space-y-3 flex-1">
             {/* Account summary */}
             <div className="rounded-lg border border-base-300/50 bg-base-100 p-3">
-              <p className="text-[10px] font-semibold text-base-content/40 mb-2">ACCOUNT DRG-2048</p>
+              <p className="text-[10px] font-semibold text-base-content/40 mb-2">{t('accountLabel')}</p>
               <div className="space-y-1.5 text-[11px]">
                 <div className="flex justify-between">
-                  <span className="text-base-content/50">Status</span>
-                  <span className="font-semibold text-blue-500">Negotiating</span>
+                  <span className="text-base-content/50">{t('status')}</span>
+                  <span className="font-semibold text-blue-500">{t('statusNegotiating')}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-base-content/50">Balance</span>
+                  <span className="text-base-content/50">{t('balanceLabel')}</span>
                   <span className="font-mono">$1,250</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-base-content/50">Days</span>
+                  <span className="text-base-content/50">{t('daysLabel')}</span>
                   <span className="font-mono">42</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-base-content/50">Messages</span>
+                  <span className="text-base-content/50">{t('messagesLabel')}</span>
                   <span className="font-mono">{messages.length}</span>
                 </div>
               </div>
@@ -229,12 +257,12 @@ export default function InteractiveRecoveryDemo() {
 
             {/* AI confidence */}
             <div className="rounded-lg border border-base-300/50 bg-base-100 p-3">
-              <p className="text-[10px] font-semibold text-base-content/40 mb-2">AI ASSESSMENT</p>
+              <p className="text-[10px] font-semibold text-base-content/40 mb-2">{t('aiAssessment')}</p>
               <div className="space-y-2">
                 <div>
                   <div className="flex justify-between text-[10px] mb-1">
-                    <span className="text-base-content/50">Resolution likelihood</span>
-                    <span className="font-semibold text-success">High</span>
+                    <span className="text-base-content/50">{t('resolutionLikelihood')}</span>
+                    <span className="font-semibold text-success">{t('likelihoodHigh')}</span>
                   </div>
                   <div className="h-1.5 rounded-full bg-base-300/50">
                     <div className="h-1.5 rounded-full bg-success w-3/4 transition-all" />
@@ -242,8 +270,8 @@ export default function InteractiveRecoveryDemo() {
                 </div>
                 <div>
                   <div className="flex justify-between text-[10px] mb-1">
-                    <span className="text-base-content/50">Sentiment</span>
-                    <span className="font-semibold text-blue-500">Cooperative</span>
+                    <span className="text-base-content/50">{t('sentiment')}</span>
+                    <span className="font-semibold text-blue-500">{t('sentimentCooperative')}</span>
                   </div>
                   <div className="h-1.5 rounded-full bg-base-300/50">
                     <div className="h-1.5 rounded-full bg-blue-400 w-4/5 transition-all" />
@@ -254,26 +282,26 @@ export default function InteractiveRecoveryDemo() {
 
             {/* Audit trail */}
             <div className="rounded-lg border border-base-300/50 bg-base-100 p-3">
-              <p className="text-[10px] font-semibold text-base-content/40 mb-2">AUDIT TRAIL</p>
+              <p className="text-[10px] font-semibold text-base-content/40 mb-2">{t('auditTrail')}</p>
               <div className="space-y-1.5 text-[10px] text-base-content/45">
                 <div className="flex items-center gap-1.5">
                   <div className="h-1 w-1 rounded-full bg-success" />
-                  Session initiated
+                  {t('auditSessionInit')}
                 </div>
                 <div className="flex items-center gap-1.5">
                   <div className="h-1 w-1 rounded-full bg-blue-400" />
-                  Options presented
+                  {t('auditOptionsPresented')}
                 </div>
                 {messages.length > 2 && (
                   <div className="flex items-center gap-1.5">
                     <div className="h-1 w-1 rounded-full bg-amber-400" />
-                    Negotiation active
+                    {t('auditNegotiationActive')}
                   </div>
                 )}
                 {messages.length > 4 && (
                   <div className="flex items-center gap-1.5">
                     <div className="h-1 w-1 rounded-full bg-success" />
-                    Resolution path identified
+                    {t('auditResolutionPath')}
                   </div>
                 )}
               </div>
@@ -282,7 +310,7 @@ export default function InteractiveRecoveryDemo() {
 
           <div className="border-t border-base-300/60 px-4 py-3">
             <p className="text-[9px] text-base-content/30 text-center">
-              Real-time sync &middot; Every message logged
+              {t('auditFooter')}
             </p>
           </div>
         </div>
