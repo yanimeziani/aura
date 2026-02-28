@@ -9,6 +9,8 @@ export type DebtorRow = {
   last_contacted: string | null;
   days_overdue?: number | null;
   created_at: string;
+  /** Precomputed portal URL with token (set by server for client components) */
+  portalChatUrl?: string;
 };
 
 export type RecoveryActionRow = {

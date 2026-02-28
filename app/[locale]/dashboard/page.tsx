@@ -29,7 +29,8 @@ import MobileBottomBar from '@/components/dashboard/MobileBottomBar';
 import PaywallBanner from '@/components/dashboard/PaywallBanner';
 import PendingSubscription from '@/components/dashboard/PendingSubscription';
 import StatsGrid from '@/components/dashboard/StatsGrid';
-import { getRecoveryScore } from '@/components/dashboard/DebtorTable';
+import { getRecoveryScore } from '@/lib/recovery-score';
+import { createDebtorToken } from '@/lib/debtor-token';
 import DebtorTableWithBulk from '@/components/dashboard/DebtorTableWithBulk';
 import DebtorFilters from '@/components/dashboard/DebtorFilters';
 import TopDebtors from '@/components/dashboard/TopDebtors';
@@ -253,6 +254,11 @@ export default async function DashboardPage({
     return getRecoveryScore(b) - getRecoveryScore(a);
   });
 
+  const prioritizedDebtorsWithPortal: DebtorRow[] = prioritizedDebtors.map((d) => ({
+    ...d,
+    portalChatUrl: `/chat/${d.id}?token=${createDebtorToken(d.id)}`,
+  }));
+
   const actionTimelineByDebtor = recoveryActions.reduce<
     Record<string, RecoveryActionRow[]>
   >((acc, action) => {
@@ -464,11 +470,9 @@ export default async function DashboardPage({
               </div>
 
               <DebtorTableWithBulk
-                debtors={prioritizedDebtors}
+                debtors={prioritizedDebtorsWithPortal}
                 actionTimeline={actionTimelineByDebtor}
                 handleRecoveryAction={handleRecoveryAction}
-                getRecoveryScore={getRecoveryScore}
-                t={(key: string, values?: Record<string, string | number>) => t(key, values)}
               />
             </div>
           </section>

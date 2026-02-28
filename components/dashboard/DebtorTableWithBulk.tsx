@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { ArrowUpRight } from 'lucide-react';
-import { createDebtorToken } from '@/lib/debtor-token';
+import { getRecoveryScore } from '@/lib/recovery-score';
 import { getNextAction } from '@/lib/next-action';
 import type { DebtorRow, RecoveryActionRow } from './dashboard-types';
 import DebtorActionForm from './DebtorActionForm';
@@ -35,17 +36,14 @@ interface Props {
   debtors: DebtorRow[];
   actionTimeline: Record<string, RecoveryActionRow[]>;
   handleRecoveryAction: (formData: FormData) => Promise<void>;
-  getRecoveryScore: (d: DebtorRow) => number;
-  t: (key: string, values?: Record<string, string | number>) => string;
 }
 
 export default function DebtorTableWithBulk({
   debtors,
   actionTimeline,
   handleRecoveryAction,
-  getRecoveryScore,
-  t,
 }: Props) {
+  const t = useTranslations('Dashboard');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   function toggle(id: string) {
@@ -140,7 +138,7 @@ export default function DebtorTableWithBulk({
               <div className="flex items-center gap-2 pt-1">
                 <DebtorActionForm debtor={d} handleRecoveryAction={handleRecoveryAction} />
                 <Link
-                  href={`/chat/${d.id}?token=${createDebtorToken(d.id)}`}
+                  href={d.portalChatUrl ?? `/chat/${d.id}`}
                   className="btn btn-sm btn-primary btn-outline gap-1 ml-auto min-h-9"
                 >
                   {t('joinAI')}
@@ -223,7 +221,7 @@ export default function DebtorTableWithBulk({
                   <div className="flex items-center justify-end gap-2">
                     <DebtorActionForm debtor={d} handleRecoveryAction={handleRecoveryAction} />
                     <Link
-                      href={`/chat/${d.id}?token=${createDebtorToken(d.id)}`}
+                      href={d.portalChatUrl ?? `/chat/${d.id}`}
                       className="btn btn-sm btn-primary btn-outline gap-1 min-h-9"
                     >
                       {t('joinAI')}
