@@ -25,18 +25,31 @@ export async function addDebtor(formData: FormData) {
     throw new Error('Missing or invalid required fields');
   }
 
-  const { error } = await supabaseAdmin.from('debtors').insert({
-    merchant_id: merchantId,
-    name,
-    email,
-    phone,
-    total_debt,
-    currency,
-    days_overdue,
-    status: 'pending',
-  });
+  const { data: inserted, error } = await supabaseAdmin
+    .from('debtors')
+    .insert({
+      merchant_id: merchantId,
+      name,
+      email,
+      phone,
+      total_debt,
+      currency,
+      days_overdue,
+      status: 'pending',
+    })
+    .select('id')
+    .single();
 
   if (error) throw new Error(error.message);
+  if (inserted?.id) {
+    await supabaseAdmin.from('recovery_actions').insert({
+      merchant_id: merchantId,
+      debtor_id: inserted.id,
+      action_type: 'debtor_added',
+      status_after: 'pending',
+      note: 'Added via dashboard',
+    });
+  }
 
   revalidatePath('/[locale]/dashboard', 'page');
 }

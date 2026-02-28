@@ -1,5 +1,6 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { generateEmbedding } from '@/lib/ai-provider';
 import { chunkText } from '@/lib/chunking';
@@ -108,4 +109,14 @@ export async function uploadContract(formData: FormData) {
     const message = error instanceof Error ? error.message : 'Unknown error';
     return { success: false, error: message };
   }
+}
+
+/** Form-facing action for use with useActionState (e.g. close modal on success). */
+export async function uploadContractFromForm(
+  _prev: { success: boolean; error?: string },
+  formData: FormData
+): Promise<{ success: boolean; error?: string }> {
+  const result = await uploadContract(formData);
+  if (result.success) revalidatePath('/dashboard');
+  return result;
 }

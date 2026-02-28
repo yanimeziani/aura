@@ -1,6 +1,5 @@
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { createClient } from '@/lib/supabase/server';
-import { uploadContract } from '../../actions/upload-contract';
 import { updateMerchantSettings } from '../../actions/merchant-settings';
 import { addDebtor } from '../../actions/add-debtor';
 import { revalidatePath } from 'next/cache';
@@ -34,8 +33,6 @@ import { createDebtorToken } from '@/lib/debtor-token';
 import DebtorTableWithBulk from '@/components/dashboard/DebtorTableWithBulk';
 import DebtorFilters from '@/components/dashboard/DebtorFilters';
 import TopDebtors from '@/components/dashboard/TopDebtors';
-import SettingsPanel from '@/components/dashboard/SettingsPanel';
-import KnowledgePanel from '@/components/dashboard/KnowledgePanel';
 import RecoveryAnalytics from '@/components/dashboard/RecoveryAnalytics';
 import type { DebtorRow, RecoveryActionRow } from '@/components/dashboard/dashboard-types';
 
@@ -185,12 +182,6 @@ export default async function DashboardPage({
     (recoveryActionsData ?? []) as RecoveryActionRow[];
 
   // --- Server actions ---
-  async function handleUpload(formData: FormData) {
-    'use server';
-    await uploadContract(formData);
-    revalidatePath('/dashboard');
-  }
-
   async function handleAddDebtor(formData: FormData) {
     'use server';
     const mid = await getMerchantId();
@@ -214,11 +205,15 @@ export default async function DashboardPage({
     const strictness = parseInt(formData.get('strictness') as string);
     const settlement = parseFloat(formData.get('settlement') as string) / 100;
     const retention = parseInt(formData.get('data_retention_days') as string) || 0;
+    const currency_preference = (formData.get('currency_preference') as string) || undefined;
+    const phone = (formData.get('phone') as string)?.trim() || undefined;
     await updateMerchantSettings({
       name,
       strictness_level: strictness,
       settlement_floor: settlement,
       data_retention_days: retention,
+      currency_preference,
+      phone,
     });
     revalidatePath('/dashboard');
   }
@@ -361,6 +356,15 @@ export default async function DashboardPage({
             hasStripeAccount={hasStripeAccount}
             isOnboardingComplete={isOnboardingComplete}
             locale={locale}
+            merchant={{
+              name: merchant.name,
+              strictness_level: merchant.strictness_level,
+              settlement_floor: merchant.settlement_floor,
+              data_retention_days: merchant.data_retention_days,
+              currency_preference: merchant.currency_preference,
+              phone: merchant.phone,
+            }}
+            contract={contract}
           />
         </div>
       </nav>
@@ -489,16 +493,6 @@ export default async function DashboardPage({
               t={(key: string, values?: Record<string, string | number>) => t(key, values)}
             />
             <TopDebtors debtors={prioritizedDebtors} t={(key: string, values?: Record<string, string | number>) => t(key, values)} />
-            <SettingsPanel
-              merchant={merchant}
-              handleUpdateSettings={handleUpdateSettings}
-              t={(key: string) => t(key)}
-            />
-            <KnowledgePanel
-              contract={contract}
-              handleUpload={handleUpload}
-              t={(key: string) => t(key)}
-            />
           </aside>
         </div>
       </main>

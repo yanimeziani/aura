@@ -128,6 +128,18 @@ export async function importDebtors(
     return { success: false, imported: 0, errors: [insertError.message] };
   }
 
+  if (inserted?.length) {
+    await supabaseAdmin.from('recovery_actions').insert(
+      inserted.map((row) => ({
+        merchant_id: merchantId,
+        debtor_id: row.id,
+        action_type: 'import',
+        status_after: 'pending',
+        note: 'Bulk import from CSV',
+      }))
+    );
+  }
+
   const autoSend = formData.get('auto_send_outreach') === 'true';
   let outreachSent = 0;
   if (autoSend && inserted?.length) {

@@ -5,17 +5,39 @@ import { useTranslations } from 'next-intl';
 import { Settings, FileText, LogOut, ChevronDown, ShieldCheck, Wallet } from 'lucide-react';
 import { createStripeConnectAccount, createStripeLoginLink } from '@/app/actions/stripe-connect';
 import { signOut } from '@/app/actions/auth';
+import SettingsModal from '@/components/dashboard/SettingsModal';
+import KnowledgeModal from '@/components/dashboard/KnowledgeModal';
+
+interface MerchantForSettings {
+  name: string;
+  strictness_level: number;
+  settlement_floor: number;
+  data_retention_days?: number | null;
+  currency_preference?: string | null;
+  phone?: string | null;
+}
 
 interface Props {
   merchantName: string;
   hasStripeAccount: boolean;
   isOnboardingComplete: boolean;
   locale: string;
+  merchant?: MerchantForSettings | null;
+  contract?: { file_name: string } | null;
 }
 
-export default function DashboardTopNav({ merchantName, hasStripeAccount, isOnboardingComplete, locale }: Props) {
+export default function DashboardTopNav({
+  merchantName,
+  hasStripeAccount,
+  isOnboardingComplete,
+  locale,
+  merchant = null,
+  contract = null,
+}: Props) {
   const t = useTranslations('Dashboard');
   const [open, setOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [knowledgeOpen, setKnowledgeOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -67,23 +89,33 @@ export default function DashboardTopNav({ merchantName, hasStripeAccount, isOnbo
             </div>
 
             <div className="space-y-1 p-1.5">
-              <a
-                href="#settings"
-                onClick={() => setOpen(false)}
-                className="flex min-h-11 items-center gap-2 rounded-xl px-3 py-2.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-base-content/60 transition-colors hover:bg-base-300 hover:text-base-content"
-              >
-                <Settings className="h-4 w-4" />
-                <span>{t('agentParams')}</span>
-              </a>
+              {merchant && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOpen(false);
+                    setSettingsOpen(true);
+                  }}
+                  className="flex min-h-11 w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.12em] text-base-content/60 transition-colors hover:bg-base-300 hover:text-base-content"
+                >
+                  <Settings className="h-4 w-4" />
+                  <span>{t('agentParams')}</span>
+                </button>
+              )}
 
-              <a
-                href="#knowledge"
-                onClick={() => setOpen(false)}
-                className="flex min-h-11 items-center gap-2 rounded-xl px-3 py-2.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-base-content/60 transition-colors hover:bg-base-300 hover:text-base-content"
-              >
-                <FileText className="h-4 w-4" />
-                <span>{t('ragContext')}</span>
-              </a>
+              {contract !== undefined && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOpen(false);
+                    setKnowledgeOpen(true);
+                  }}
+                  className="flex min-h-11 w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.12em] text-base-content/60 transition-colors hover:bg-base-300 hover:text-base-content"
+                >
+                  <FileText className="h-4 w-4" />
+                  <span>{t('ragContext')}</span>
+                </button>
+              )}
 
               {isOnboardingComplete ? (
                 <form action={createStripeLoginLink}>
@@ -126,6 +158,21 @@ export default function DashboardTopNav({ merchantName, hasStripeAccount, isOnbo
           </div>
         )}
       </div>
+
+      {merchant && (
+        <SettingsModal
+          open={settingsOpen}
+          onClose={() => setSettingsOpen(false)}
+          merchant={merchant}
+        />
+      )}
+      {contract !== undefined && (
+        <KnowledgeModal
+          open={knowledgeOpen}
+          onClose={() => setKnowledgeOpen(false)}
+          contract={contract}
+        />
+      )}
     </div>
   );
 }

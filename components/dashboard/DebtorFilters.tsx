@@ -2,7 +2,6 @@
 
 import { useTranslations } from 'next-intl';
 import { Download } from 'lucide-react';
-import { Link } from '@/i18n/navigation';
 import { COLLECTION_STATUSES } from '@/lib/recovery-types';
 import ImportDebtors from './ImportDebtors';
 
@@ -22,7 +21,7 @@ export default function DebtorFilters({
   const t = useTranslations('Dashboard');
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
       <form method="get" className="flex flex-wrap items-center gap-2">
         <input type="hidden" name="force_dashboard" value="true" />
         <select
@@ -67,27 +66,34 @@ export default function DebtorFilters({
           <option value="overdue_desc">{t('sortOverdue')}</option>
           <option value="created_desc">{t('sortNewest')}</option>
         </select>
-        <button className="btn btn-ghost btn-sm">{t('apply')}</button>
+        <button type="submit" className="btn btn-ghost btn-sm">
+          {t('apply')}
+        </button>
       </form>
 
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2 border-l border-base-300/60 pl-3 sm:pl-4">
+        <span className="sr-only">{t('dataAndExport')}</span>
         <ImportDebtors />
-        <Link
+        <a
           href="/api/recovery/export"
-          prefetch={false}
           className="btn btn-ghost btn-sm gap-1.5"
+          download
+          rel="noopener noreferrer"
+          title={t('exportCsvDesc')}
         >
-          <Download className="h-3.5 w-3.5 shrink-0" />
+          <Download className="h-3.5 w-3.5 shrink-0" aria-hidden />
           {t('exportCsv')}
-        </Link>
-        <Link
+        </a>
+        <a
           href="/api/recovery/audit-export"
-          prefetch={false}
           className="btn btn-ghost btn-sm gap-1.5"
+          download
+          rel="noopener noreferrer"
+          title={t('exportAuditDesc')}
         >
-          <Download className="h-3.5 w-3.5 shrink-0" />
+          <Download className="h-3.5 w-3.5 shrink-0" aria-hidden />
           {t('exportAudit')}
-        </Link>
+        </a>
       </div>
     </div>
   );
