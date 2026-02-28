@@ -225,7 +225,16 @@
     "addDebtorSubmit": "Ajouter",
     "settings": "Paramètres",
     "merchant": "Compte marchand",
-    "backToSite": "Retour au site"
+    "backToSite": "Retour au site",
+    "analyticsRecoveryRate": "Taux de recouvrement",
+    "analyticsOfPortfolio": "du portefeuille total",
+    "analyticsRecovered": "recouvré",
+    "analyticsTotal": "total",
+    "analyticsStatusBreakdown": "Répartition du portefeuille",
+    "analyticsRecentActivity": "Activité récente",
+    "analyticsNoActivity": "Aucune action de recouvrement enregistrée.",
+    "dataRetentionLabel": "Rétention des données",
+    "dataRetentionHint": "Contrôle la durée de conservation des dossiers débiteurs et des données de conversation. Configurez selon les exigences de protection des données de votre juridiction."
   },
   "Chat": {
     "agentActive": "Agent Dragun Actif",

@@ -403,7 +403,16 @@
     "noteLabel": "Note (optional)",
     "notePlaceholder": "Add a note...",
     "confirmEscalation": "Confirm escalation (required for escalated status)",
-    "save": "Save"
+    "save": "Save",
+    "analyticsRecoveryRate": "Recovery Rate",
+    "analyticsOfPortfolio": "of total portfolio",
+    "analyticsRecovered": "recovered",
+    "analyticsTotal": "total",
+    "analyticsStatusBreakdown": "Portfolio Breakdown",
+    "analyticsRecentActivity": "Recent Activity",
+    "analyticsNoActivity": "No recovery actions recorded yet.",
+    "dataRetentionLabel": "Data Retention",
+    "dataRetentionHint": "Controls how long debtor records and conversation data are retained. Set to comply with your jurisdiction's data protection requirements."
   },
   "Chat": {
     "agentActive": "Agent Dragun Active",

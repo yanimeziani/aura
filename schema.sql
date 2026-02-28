@@ -16,6 +16,7 @@ CREATE TABLE merchants (
   stripe_account_id TEXT,
   stripe_onboarding_complete BOOLEAN DEFAULT FALSE,
   onboarding_complete BOOLEAN DEFAULT FALSE,
+  data_retention_days INT DEFAULT 0,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 

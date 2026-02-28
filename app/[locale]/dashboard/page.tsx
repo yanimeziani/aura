@@ -34,6 +34,7 @@ import DebtorFilters from '@/components/dashboard/DebtorFilters';
 import TopDebtors from '@/components/dashboard/TopDebtors';
 import SettingsPanel from '@/components/dashboard/SettingsPanel';
 import KnowledgePanel from '@/components/dashboard/KnowledgePanel';
+import RecoveryAnalytics from '@/components/dashboard/RecoveryAnalytics';
 import type { DebtorRow, RecoveryActionRow } from '@/components/dashboard/dashboard-types';
 
 export default async function DashboardPage({
@@ -210,10 +211,12 @@ export default async function DashboardPage({
     const name = formData.get('name') as string;
     const strictness = parseInt(formData.get('strictness') as string);
     const settlement = parseFloat(formData.get('settlement') as string) / 100;
+    const retention = parseInt(formData.get('data_retention_days') as string) || 0;
     await updateMerchantSettings({
       name,
       strictness_level: strictness,
       settlement_floor: settlement,
+      data_retention_days: retention,
     });
     revalidatePath('/dashboard');
   }
@@ -265,6 +268,11 @@ export default async function DashboardPage({
     (acc, d) => acc + (d.status === 'paid' ? d.total_debt : 0),
     0,
   );
+  const totalPortfolio = totalOutstanding + totalRecovered;
+  const recoveryRate = totalPortfolio > 0
+    ? Math.round((totalRecovered / totalPortfolio) * 100)
+    : 0;
+
   const contactedToday = debtors.filter((d) => {
     if (!d.last_contacted) return false;
     const lc = new Date(d.last_contacted);
@@ -277,19 +285,26 @@ export default async function DashboardPage({
   }).length;
   const promises = debtors.filter((d) => d.status === 'promise_to_pay').length;
 
+  const statusCounts: Record<string, number> = {};
+  for (const d of debtors) {
+    statusCounts[d.status] = (statusCounts[d.status] || 0) + 1;
+  }
+
+  const recentActions = recoveryActions.slice(0, 10);
+
   const stats = [
     {
       label: t('outstanding'),
       value: `$${totalOutstanding.toLocaleString()}`,
       icon: BadgeDollarSign,
-      trend: '+4.5%',
+      trend: `${debtors.length} ${t('debtors').toLowerCase()}`,
       sub: t('momChange'),
     },
     {
       label: t('recovered'),
       value: `$${totalRecovered.toLocaleString()}`,
       icon: TrendingUp,
-      trend: '+12%',
+      trend: `${recoveryRate}% rate`,
       sub: t('vsAvg'),
     },
     {
@@ -447,6 +462,15 @@ export default async function DashboardPage({
 
           {/* Sidebar */}
           <aside className="space-y-6 lg:col-span-4">
+            <RecoveryAnalytics
+              recoveryRate={recoveryRate}
+              totalPortfolio={totalPortfolio}
+              totalRecovered={totalRecovered}
+              statusCounts={statusCounts}
+              recentActions={recentActions}
+              debtorNames={Object.fromEntries(debtors.map((d) => [d.id, d.name]))}
+              t={(key: string, values?: Record<string, string | number>) => t(key, values)}
+            />
             <TopDebtors debtors={prioritizedDebtors} t={(key: string, values?: Record<string, string | number>) => t(key, values)} />
             <SettingsPanel
               merchant={merchant}

@@ -6,7 +6,8 @@ import { ensureMerchant } from '@/lib/merchant';
 export async function updateMerchantSettings(settings: { 
   name?: string, 
   strictness_level?: number, 
-  settlement_floor?: number 
+  settlement_floor?: number,
+  data_retention_days?: number, 
 }) {
   try {
     const merchantId = await ensureMerchant();
