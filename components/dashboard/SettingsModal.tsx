@@ -52,7 +52,7 @@ export default function SettingsModal({ open, onClose, merchant }: Props) {
       titleId="settings-modal-title"
       className="max-w-md"
     >
-      <div className="flex items-center justify-between border-b border-base-300/50 pb-4">
+      <div className="flex items-center justify-between border-b border-base-300/50 px-4 pt-4 pb-4 sm:px-6 sm:pt-6">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-base-300/50">
             <Settings className="h-4 w-4 text-base-content/60" />
@@ -71,7 +71,7 @@ export default function SettingsModal({ open, onClose, merchant }: Props) {
         </button>
       </div>
 
-      <form action={formAction} className="space-y-5 pt-4">
+      <form action={formAction} className="space-y-5 px-4 pb-6 pt-4 sm:px-6 sm:pb-8">
         <div className="form-control">
           <label className="text-label mb-1.5" htmlFor="settings-name">
             {t('businessNameLabel')}

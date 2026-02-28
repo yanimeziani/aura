@@ -119,7 +119,7 @@ export default function InteractiveRecoveryDemo() {
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto bg-[#faf9f7] p-5 space-y-3 max-h-[360px] min-h-[280px]">
+          <div className="flex-1 overflow-y-auto bg-[#faf9f7] p-4 sm:p-5 space-y-3 max-h-[50vh] sm:max-h-[360px] min-h-[240px] sm:min-h-[280px]">
             {messages.map((m, idx) => (
               <div key={`${m.role}-${idx}`} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'} items-end gap-2`}>
                 {m.role === 'agent' && (
@@ -168,7 +168,7 @@ export default function InteractiveRecoveryDemo() {
                   key={preset}
                   onClick={() => handleSend(preset)}
                   disabled={typing}
-                  className="shrink-0 rounded-full border border-[#e0dbd4] bg-white px-3 py-1.5 text-[11px] font-medium text-[#777] transition-colors hover:border-[#c4b9a8] hover:bg-[#f5f3f0] disabled:opacity-40"
+                  className="shrink-0 rounded-full border border-[#e0dbd4] bg-white px-3 py-2 min-h-10 text-[11px] font-medium text-[#777] transition-colors hover:border-[#c4b9a8] hover:bg-[#f5f3f0] disabled:opacity-40 touch-manipulation"
                   type="button"
                 >
                   {preset}
@@ -184,12 +184,12 @@ export default function InteractiveRecoveryDemo() {
               onChange={(e) => setInput(e.target.value)}
               placeholder={typing ? 'Typing...' : 'Type anything to test the agent'}
               disabled={typing}
-              className="flex-1 rounded-xl border border-[#e0dbd4] bg-[#faf9f7] px-4 py-2.5 text-[13px] text-[#444] placeholder:text-[#c4b9a8] outline-none focus:border-[#8b7355] transition-colors"
+              className="flex-1 min-h-11 rounded-xl border border-[#e0dbd4] bg-[#faf9f7] px-4 py-2.5 text-[13px] text-[#444] placeholder:text-[#c4b9a8] outline-none focus:border-[#8b7355] transition-colors"
             />
             <button
               type="submit"
               disabled={typing || !input.trim()}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#5b4a3f] text-white transition-opacity disabled:opacity-30"
+              className="flex h-11 w-11 min-h-11 min-w-11 shrink-0 items-center justify-center rounded-xl bg-[#5b4a3f] text-white transition-opacity disabled:opacity-30 touch-manipulation"
             >
               <Send className="h-4 w-4" />
             </button>

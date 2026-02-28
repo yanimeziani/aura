@@ -1,6 +1,7 @@
 import { streamText, convertToModelMessages } from 'ai';
 import { supabaseAdmin } from '@/lib/supabase-admin';
-import { generateEmbedding, getChatModel } from '@/lib/ai-provider';
+import { getChatModel } from '@/lib/ai-provider';
+import { getRagContext, RAG_QUERIES } from '@/lib/rag';
 
 export const runtime = 'nodejs';
 export const maxDuration = 30;
@@ -169,39 +170,10 @@ export async function POST(req: Request) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const merchant = debtor.merchant as any;
 
-    let context = '';
-    const { data: contract } = await supabaseAdmin
-      .from('contracts')
-      .select('id')
-      .eq('merchant_id', merchant.id)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single();
-
-    if (contract) {
-      try {
-        const queryEmbedding = await generateEmbedding(lastMessageText);
-        if (queryEmbedding) {
-          const { data: matches, error: matchError } = await supabaseAdmin.rpc(
-            'match_contract_embeddings',
-            {
-              query_embedding: queryEmbedding,
-              match_threshold: 0.5,
-              match_count: 5,
-              p_contract_id: contract.id,
-            },
-          );
-
-          if (!matchError && matches && matches.length > 0) {
-            context = (matches as Array<{ content: string }>)
-              .map((m) => m.content)
-              .join('\n---\n');
-          }
-        }
-      } catch (e) {
-        console.error('RAG retrieval failed; continuing without context', e);
-      }
-    }
+    const { context } = await getRagContext(merchant.id, RAG_QUERIES.chat(lastMessageText), {
+      matchCount: 5,
+      matchThreshold: 0.5,
+    });
 
     const systemPrompt = buildSystemPrompt(merchant, debtor, context);
 

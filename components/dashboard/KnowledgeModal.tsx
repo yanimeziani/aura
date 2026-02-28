@@ -30,7 +30,7 @@ export default function KnowledgeModal({ open, onClose, contract }: Props) {
       titleId="knowledge-modal-title"
       className="max-w-md"
     >
-      <div className="flex items-center justify-between gap-2 border-b border-base-300/50 pb-4">
+      <div className="flex items-center justify-between gap-2 border-b border-base-300/50 px-4 pt-4 pb-4 sm:px-6 sm:pt-6">
         <div className="flex min-w-0 flex-1 items-center gap-3">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-base-300/50">
             <FileText className="h-4 w-4 text-base-content/60" />
@@ -52,7 +52,7 @@ export default function KnowledgeModal({ open, onClose, contract }: Props) {
         </button>
       </div>
 
-      <form action={formAction} className="space-y-3 pt-4">
+      <form action={formAction} className="space-y-3 px-4 pb-6 pt-4 sm:px-6 sm:pb-8">
         <input
           id="knowledge-contract-upload"
           type="file"

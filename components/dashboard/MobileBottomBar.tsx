@@ -25,7 +25,7 @@ export default function MobileBottomBar({ addDebtorAction }: Props) {
   return (
     <>
       <dialog ref={dialogRef} className="modal modal-bottom sm:modal-middle">
-        <div className="modal-box overflow-hidden rounded-2xl border border-base-300 bg-base-200 p-0 shadow-xl">
+        <div className="modal-box max-h-[90dvh] overflow-y-auto overflow-x-hidden rounded-t-2xl rounded-b-none sm:rounded-2xl border border-base-300 bg-base-200 p-0 shadow-xl">
           <div className="p-6">
             <div className="mb-6 flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -128,23 +128,37 @@ export default function MobileBottomBar({ addDebtorAction }: Props) {
         </form>
       </dialog>
 
-      <div className="fixed bottom-0 left-0 right-0 z-30 flex h-20 items-center justify-between border-t border-base-300 bg-base-100 px-6 pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] md:hidden">
-        <a href="#top" className="flex min-h-11 min-w-11 flex-col items-center justify-center gap-1">
-          <BarChart3 className="h-5 w-5" />
-          <span className="text-[9px] font-semibold uppercase tracking-[0.16em]">{t('overview')}</span>
+      <div
+        className="fixed bottom-0 left-0 right-0 z-30 flex min-h-[4.5rem] items-center justify-between border-t border-base-300 bg-base-100 px-4 md:hidden"
+        style={{
+          paddingLeft: 'max(1rem, env(safe-area-inset-left))',
+          paddingRight: 'max(1rem, env(safe-area-inset-right))',
+          paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))',
+        }}
+      >
+        <a
+          href="#dashboard-top"
+          className="flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-0.5 rounded-lg text-base-content/70 hover:bg-base-200/60 hover:text-base-content active:scale-95"
+        >
+          <BarChart3 className="h-5 w-5 shrink-0" aria-hidden />
+          <span className="text-[9px] font-semibold uppercase tracking-[0.12em]">{t('overview')}</span>
         </a>
 
         <button
           onClick={() => dialogRef.current?.showModal()}
-          className="-translate-y-7 flex h-14 w-14 items-center justify-center rounded-full border-4 border-base-100 bg-primary text-primary-content shadow-lg active:scale-95"
+          className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-4 border-base-100 bg-primary text-primary-content shadow-lg -translate-y-6 active:scale-95 touch-manipulation"
+          style={{ marginBottom: 'env(safe-area-inset-bottom)' }}
           aria-label={t('addDebtor')}
         >
-          <Plus className="h-6 w-6" />
+          <Plus className="h-6 w-6" aria-hidden />
         </button>
 
-        <a href="#debtors" className="flex min-h-11 min-w-11 flex-col items-center justify-center gap-1 text-base-content/50 hover:text-base-content">
-          <Users className="h-5 w-5" />
-          <span className="text-[9px] font-semibold uppercase tracking-[0.16em]">{t('debtors')}</span>
+        <a
+          href="#dashboard-debtors"
+          className="flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-0.5 rounded-lg text-base-content/50 hover:bg-base-200/60 hover:text-base-content active:scale-95"
+        >
+          <Users className="h-5 w-5 shrink-0" aria-hidden />
+          <span className="text-[9px] font-semibold uppercase tracking-[0.12em]">{t('debtors')}</span>
         </a>
       </div>
     </>

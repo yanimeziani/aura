@@ -26,6 +26,7 @@ export default function Footer() {
           <div className="lg:col-span-2">
             <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-base-content/35 mb-4">{t('platform')}</h2>
             <ul className="space-y-3 text-sm text-base-content/50">
+              <li><Link href="/demo" className="hover:text-base-content transition-colors">{t('demo')}</Link></li>
               <li><Link href="/features" className="hover:text-base-content transition-colors">{t('features')}</Link></li>
               <li><Link href="/pricing" className="hover:text-base-content transition-colors">{t('pricing')}</Link></li>
               <li><Link href="/integrations" className="hover:text-base-content transition-colors">{t('integrations')}</Link></li>

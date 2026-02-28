@@ -21,9 +21,11 @@ interface Debtor {
 interface Props {
   debtorId: string;
   token: string;
+  /** Optional RAG snippet: "Per your agreement…" shown above payment options */
+  contractSnippet?: string;
 }
 
-export default function PayClient({ debtorId, token }: Props) {
+export default function PayClient({ debtorId, token, contractSnippet }: Props) {
   const t = useTranslations('Pay');
   const [debtor, setDebtor] = useState<Debtor | null>(null);
   const [loading, setLoading] = useState(true);
@@ -151,6 +153,11 @@ export default function PayClient({ debtorId, token }: Props) {
             {t('title')} <span className="text-primary">{t('titleHighlight')}</span> {t('titleEnd')}
           </h1>
           <p className="text-base-content/50 max-w-xl mx-auto">{t('subtitle')}</p>
+          {contractSnippet && (
+            <p className="text-sm text-base-content/60 max-w-lg mx-auto mt-4 pl-4 border-l-2 border-primary/30 italic">
+              {t('perAgreement')}: {contractSnippet}
+            </p>
+          )}
         </div>
 
         {payError && (

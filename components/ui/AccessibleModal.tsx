@@ -93,7 +93,9 @@ export default function AccessibleModal({
       aria-describedby={descriptionId}
       onCancel={close}
     >
-      <div className={`modal-box overflow-hidden rounded-2xl border border-base-300 bg-base-200 shadow-xl ${className}`}>
+      <div
+        className={`modal-box max-h-[90dvh] sm:max-h-[85vh] overflow-y-auto overflow-x-hidden rounded-t-2xl rounded-b-none sm:rounded-2xl border border-base-300 bg-base-200 shadow-xl ${className}`}
+      >
         {children}
       </div>
       <form method="dialog" className="modal-backdrop bg-base-100/80 backdrop-blur-sm" onSubmit={close}>

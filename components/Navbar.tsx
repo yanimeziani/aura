@@ -11,6 +11,7 @@ import Logo from '@/components/Logo';
 import ThemeToggle from '@/components/ThemeToggle';
 
 const links = [
+  { key: 'demo', href: '/demo' },
   { key: 'features', href: '/features' },
   { key: 'pricing', href: '/pricing' },
   { key: 'faq', href: '/faq' },
@@ -66,10 +67,10 @@ export default function Navbar() {
             <label tabIndex={0} className="btn btn-ghost btn-square h-10 min-h-10" aria-label="Open menu">
               <Menu className="h-5 w-5" />
             </label>
-            <ul tabIndex={0} className="menu dropdown-content z-20 mt-3 w-56 rounded-2xl border border-base-300 bg-base-100 p-2 shadow-xl">
+            <ul tabIndex={0} className="menu dropdown-content z-20 mt-3 w-56 min-w-[calc(100vw-2rem)] max-w-72 rounded-2xl border border-base-300 bg-base-100 p-2 shadow-xl">
               {links.map((item) => (
                 <li key={item.href}>
-                  <Link href={item.href} className="text-sm">{t(item.key)}</Link>
+                  <Link href={item.href} className="text-sm min-h-11 flex items-center touch-manipulation">{t(item.key)}</Link>
                 </li>
               ))}
             </ul>
@@ -141,7 +142,7 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              <Link href="/#demo" className="btn btn-sm btn-ghost h-10 min-h-10 hidden sm:inline-flex text-sm text-base-content/55">{t('watchDemo')}</Link>
+              <Link href="/demo" className="btn btn-sm btn-ghost h-10 min-h-10 hidden sm:inline-flex text-sm text-base-content/55">{t('watchDemo')}</Link>
               <Link href="/login" className="btn btn-sm btn-primary h-10 min-h-10 rounded-full gap-1.5 px-5">
                 {t('startPilot')}
                 <ArrowRight className="h-4 w-4" />

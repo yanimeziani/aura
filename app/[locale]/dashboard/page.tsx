@@ -34,7 +34,9 @@ import DebtorTableWithBulk from '@/components/dashboard/DebtorTableWithBulk';
 import DebtorFilters from '@/components/dashboard/DebtorFilters';
 import TopDebtors from '@/components/dashboard/TopDebtors';
 import RecoveryAnalytics from '@/components/dashboard/RecoveryAnalytics';
+import SuggestedCitations from '@/components/dashboard/SuggestedCitations';
 import type { DebtorRow, RecoveryActionRow } from '@/components/dashboard/dashboard-types';
+import { getRagContext, RAG_QUERIES } from '@/lib/rag';
 
 export default async function DashboardPage({
   searchParams,
@@ -298,6 +300,11 @@ export default async function DashboardPage({
 
   const recentActions = recoveryActions.slice(0, 10);
 
+  const { chunks: suggestedCitations } = await getRagContext(merchantId!, RAG_QUERIES.dashboardSuggest, {
+    matchCount: 3,
+    matchThreshold: 0.45,
+  });
+
   const stats = [
     {
       label: t('outstanding'),
@@ -344,7 +351,7 @@ export default async function DashboardPage({
   ];
 
   return (
-    <div className="min-h-screen bg-base-100 pb-24 md:pb-8">
+    <div id="dashboard-top" className="min-h-screen bg-base-100 pb-28 md:pb-8 scroll-mt-0">
       {/* Navigation */}
       <nav className="sticky top-0 z-30 border-b border-base-300/50 bg-base-100/90 backdrop-blur-xl">
         <div className="app-shell flex h-16 items-center justify-between">
@@ -450,7 +457,7 @@ export default async function DashboardPage({
         {/* Main content: table + sidebar */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
           {/* Debtor list */}
-          <section className="lg:col-span-8">
+          <section id="dashboard-debtors" className="lg:col-span-8 scroll-mt-24">
             <div className="card bg-base-200/50 border border-base-300/50 shadow-warm overflow-hidden">
               <div className="flex flex-col gap-3 border-b border-base-300/50 p-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-3">
@@ -483,6 +490,10 @@ export default async function DashboardPage({
 
           {/* Sidebar */}
           <aside className="space-y-6 lg:col-span-4">
+            <SuggestedCitations
+              chunks={suggestedCitations}
+              t={(key: string) => t(key)}
+            />
             <RecoveryAnalytics
               recoveryRate={recoveryRate}
               totalPortfolio={totalPortfolio}

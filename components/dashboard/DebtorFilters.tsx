@@ -27,7 +27,7 @@ export default function DebtorFilters({
         <select
           name="status"
           defaultValue={statusFilter}
-          className="select select-bordered select-sm"
+          className="select select-bordered select-sm min-h-11 touch-manipulation"
         >
           <option value="all">{t('allStatus')}</option>
           {COLLECTION_STATUSES.map((s) => (
@@ -39,7 +39,7 @@ export default function DebtorFilters({
         <select
           name="overdue"
           defaultValue={overdueFilter}
-          className="select select-bordered select-sm"
+          className="select select-bordered select-sm min-h-11 touch-manipulation"
         >
           <option value="all">{t('allOverdue')}</option>
           <option value="0_30">0–30d</option>
@@ -49,7 +49,7 @@ export default function DebtorFilters({
         <select
           name="amount"
           defaultValue={amountFilter}
-          className="select select-bordered select-sm"
+          className="select select-bordered select-sm min-h-11 touch-manipulation"
         >
           <option value="all">{t('allAmount')}</option>
           <option value="lt_200">&lt;200</option>
@@ -59,40 +59,40 @@ export default function DebtorFilters({
         <select
           name="sort"
           defaultValue={sortBy}
-          className="select select-bordered select-sm"
+          className="select select-bordered select-sm min-h-11 touch-manipulation"
         >
           <option value="score_desc">{t('sortScore')}</option>
           <option value="amount_desc">{t('sortAmount')}</option>
           <option value="overdue_desc">{t('sortOverdue')}</option>
           <option value="created_desc">{t('sortNewest')}</option>
         </select>
-        <button type="submit" className="btn btn-ghost btn-sm">
+        <button type="submit" className="btn btn-ghost btn-sm min-h-11 min-w-[44px] touch-manipulation">
           {t('apply')}
         </button>
       </form>
 
-      <div className="flex flex-wrap items-center gap-2 border-l border-base-300/60 pl-3 sm:pl-4">
+      <div className="flex flex-wrap items-center gap-2 border-t border-base-300/60 pt-3 sm:border-t-0 sm:border-l sm:pt-0 sm:pl-4">
         <span className="sr-only">{t('dataAndExport')}</span>
         <ImportDebtors />
         <a
           href="/api/recovery/export"
-          className="btn btn-ghost btn-sm gap-1.5"
+          className="btn btn-ghost btn-sm gap-1.5 min-h-11 min-w-[44px] touch-manipulation"
           download
           rel="noopener noreferrer"
           title={t('exportCsvDesc')}
         >
           <Download className="h-3.5 w-3.5 shrink-0" aria-hidden />
-          {t('exportCsv')}
+          <span className="sm:inline">{t('exportCsv')}</span>
         </a>
         <a
           href="/api/recovery/audit-export"
-          className="btn btn-ghost btn-sm gap-1.5"
+          className="btn btn-ghost btn-sm gap-1.5 min-h-11 min-w-[44px] touch-manipulation"
           download
           rel="noopener noreferrer"
           title={t('exportAuditDesc')}
         >
           <Download className="h-3.5 w-3.5 shrink-0" aria-hidden />
-          {t('exportAudit')}
+          <span className="sm:inline">{t('exportAudit')}</span>
         </a>
       </div>
     </div>

@@ -4,6 +4,7 @@ import { supabaseAdmin } from '@/lib/supabase-admin';
 import { getMerchantId } from '@/lib/auth';
 import { sendEmail } from '@/lib/comms';
 import { initialOutreachEmail, followUpEmail } from '@/lib/comms/templates';
+import { getRagSnippet, RAG_QUERIES } from '@/lib/rag';
 import { revalidatePath } from 'next/cache';
 import * as Sentry from '@sentry/nextjs';
 
@@ -31,6 +32,8 @@ export async function sendInitialOutreach(formData: FormData) {
     const chatUrl = buildDebtorPortalUrl(baseUrl, debtorId, 'chat');
     const payUrl = buildDebtorPortalUrl(baseUrl, debtorId, 'pay');
 
+    const contractSnippet = await getRagSnippet(merchantId, RAG_QUERIES.outreach, 280);
+
     const emailContent = initialOutreachEmail({
       debtorName: debtor.name,
       merchantName: merchant.name,
@@ -38,6 +41,7 @@ export async function sendInitialOutreach(formData: FormData) {
       currency: debtor.currency || 'USD',
       chatUrl,
       payUrl,
+      contractSnippet: contractSnippet || undefined,
     });
 
     const result = await sendEmail({
@@ -115,6 +119,8 @@ export async function sendFollowUp(formData: FormData) {
     const lastContacted = debtor.last_contacted ? new Date(debtor.last_contacted) : new Date();
     const daysSince = Math.max(1, Math.round((Date.now() - lastContacted.getTime()) / (1000 * 60 * 60 * 24)));
 
+    const contractSnippet = await getRagSnippet(merchantId, RAG_QUERIES.outreach, 280);
+
     const emailContent = followUpEmail(
       {
         debtorName: debtor.name,
@@ -123,6 +129,7 @@ export async function sendFollowUp(formData: FormData) {
         currency: debtor.currency || 'USD',
         chatUrl,
         payUrl,
+        contractSnippet: contractSnippet || undefined,
       },
       daysSince,
     );

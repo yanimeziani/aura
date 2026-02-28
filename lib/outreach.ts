@@ -2,6 +2,7 @@ import { supabaseAdmin } from '@/lib/supabase-admin';
 import { sendEmail } from '@/lib/comms';
 import { followUpEmail } from '@/lib/comms/templates';
 import { buildDebtorPortalUrl } from '@/lib/debtor-token';
+import { getRagSnippet, RAG_QUERIES } from '@/lib/rag';
 
 /**
  * Send follow-up email for a debtor. Used by cron and server actions.
@@ -25,6 +26,8 @@ export async function sendFollowUpEmail(debtorId: string): Promise<{ success: bo
   const lastContacted = debtor.last_contacted ? new Date(debtor.last_contacted) : new Date();
   const daysSince = Math.max(1, Math.round((Date.now() - lastContacted.getTime()) / (1000 * 60 * 60 * 24)));
 
+  const contractSnippet = await getRagSnippet(merchantId, RAG_QUERIES.outreach, 280);
+
   const emailContent = followUpEmail(
     {
       debtorName: debtor.name,
@@ -33,6 +36,7 @@ export async function sendFollowUpEmail(debtorId: string): Promise<{ success: bo
       currency: debtor.currency || 'USD',
       chatUrl,
       payUrl,
+      contractSnippet: contractSnippet || undefined,
     },
     daysSince,
   );

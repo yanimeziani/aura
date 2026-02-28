@@ -1,6 +1,8 @@
 import { verifyDebtorToken } from '@/lib/debtor-token';
 import PayClient from '@/components/debtor-portal/PayClient';
 import { ShieldCheck } from 'lucide-react';
+import { supabaseAdmin } from '@/lib/supabase-admin';
+import { getRagSnippet, RAG_QUERIES } from '@/lib/rag';
 
 export default async function PaymentPage({
   params,
@@ -25,5 +27,20 @@ export default async function PaymentPage({
     );
   }
 
-  return <PayClient debtorId={debtorId} token={token!} />;
+  const { data: debtorRow } = await supabaseAdmin
+    .from('debtors')
+    .select('merchant_id')
+    .eq('id', debtorId)
+    .single();
+  const contractSnippet = debtorRow?.merchant_id
+    ? await getRagSnippet(debtorRow.merchant_id, RAG_QUERIES.payPage, 200)
+    : '';
+
+  return (
+    <PayClient
+      debtorId={debtorId}
+      token={token!}
+      contractSnippet={contractSnippet || undefined}
+    />
+  );
 }

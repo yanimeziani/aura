@@ -28,10 +28,15 @@ interface OutreachParams {
   currency: string;
   chatUrl: string;
   payUrl: string;
+  /** Optional RAG snippet: "According to your agreement…" (injected when present) */
+  contractSnippet?: string;
 }
 
 export function initialOutreachEmail(p: OutreachParams) {
   const firstName = p.debtorName.split(' ')[0];
+  const ragBlock = p.contractSnippet
+    ? [``, `According to your agreement with ${p.merchantName}:`, `"${p.contractSnippet.replace(/"/g, "'")}"`, '']
+    : [];
 
   return {
     subject: `${p.merchantName} — Open balance on your account`,
@@ -39,7 +44,7 @@ export function initialOutreachEmail(p: OutreachParams) {
       `Hi ${firstName},`,
       '',
       `We're reaching out about an outstanding balance of ${p.currency} ${p.amount} on your account with ${p.merchantName}.`,
-      '',
+      ...ragBlock,
       `We understand that situations vary, so we offer several flexible resolution options:`,
       `• Full payment`,
       `• Settlement at a reduced amount`,
@@ -62,6 +67,7 @@ export function initialOutreachEmail(p: OutreachParams) {
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 560px; margin: 0 auto; color: #333;">
         <p>Hi ${firstName},</p>
         <p>We're reaching out about an outstanding balance of <strong>${p.currency} ${p.amount}</strong> on your account with ${p.merchantName}.</p>
+        ${p.contractSnippet ? `<p style="font-size: 14px; color: #555; border-left: 3px solid #2563eb; padding-left: 12px; margin: 16px 0;">According to your agreement: <em>${p.contractSnippet.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</em></p>` : ''}
         <p>We understand that situations vary, so we offer several flexible resolution options:</p>
         <ul style="padding-left: 1.2em;">
           <li>Full payment</li>
@@ -90,6 +96,9 @@ export function initialOutreachEmail(p: OutreachParams) {
 
 export function followUpEmail(p: OutreachParams, daysSinceFirst: number) {
   const firstName = p.debtorName.split(' ')[0];
+  const ragBlock = p.contractSnippet
+    ? ['', `Per your agreement: "${p.contractSnippet.replace(/"/g, "'")}"`, '']
+    : [];
 
   return {
     subject: `${p.merchantName} — Friendly follow-up on your account`,
@@ -97,7 +106,7 @@ export function followUpEmail(p: OutreachParams, daysSinceFirst: number) {
       `Hi ${firstName},`,
       '',
       `We reached out ${daysSinceFirst} days ago about a balance of ${p.currency} ${p.amount} with ${p.merchantName}.`,
-      '',
+      ...ragBlock,
       `We'd love to help you resolve this. Our flexible options are still available, including payment plans.`,
       '',
       `Chat with our resolution assistant: ${p.chatUrl}`,
@@ -112,6 +121,7 @@ export function followUpEmail(p: OutreachParams, daysSinceFirst: number) {
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 560px; margin: 0 auto; color: #333;">
         <p>Hi ${firstName},</p>
         <p>We reached out ${daysSinceFirst} days ago about a balance of <strong>${p.currency} ${p.amount}</strong> with ${p.merchantName}.</p>
+        ${p.contractSnippet ? `<p style="font-size: 14px; color: #555; border-left: 3px solid #2563eb; padding-left: 12px; margin: 16px 0;">Per your agreement: <em>${p.contractSnippet.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</em></p>` : ''}
         <p>We'd love to help you resolve this. Our flexible options are still available, including payment plans.</p>
         <p style="margin-top: 24px;">
           <a href="${p.chatUrl}" style="display: inline-block; background: #2563eb; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600;">View Options</a>

@@ -35,7 +35,7 @@ export function getConfiguredEmailProvider(): CommsProviderName {
 }
 
 export function getConfiguredSmsProvider(): CommsProviderName {
-  return readProvider(process.env.SMS_PROVIDER, 'twilio');
+  return readProvider(process.env.SMS_PROVIDER, 'noop');
 }
 
 export function getResendConfig(): {
