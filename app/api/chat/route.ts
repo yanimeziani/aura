@@ -1,4 +1,5 @@
-import { streamText, convertToModelMessages } from 'ai';
+import { streamText } from 'ai';
+import type { ModelMessage } from 'ai';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { getChatModel, OPENROUTER_FREE_FALLBACK_MODELS } from '@/lib/ai-provider';
 import { getRagContext, RAG_QUERIES } from '@/lib/rag';
@@ -166,26 +167,36 @@ export async function POST(req: Request) {
       return Response.json({ error: 'Conversation too long' }, { status: 400 });
     }
 
-    // Ensure each message has role and content so SDK never sees undefined.map
+    // Normalize to { role, content } and build ModelMessage[] for streamText (no UIMessage/parts).
     const normalizedMessages = messages.map((m) => ({
-      role: (m && typeof m === 'object' && m.role) || 'user',
-      content: (m && typeof m === 'object' && m.content !== undefined) ? m.content : '',
+      role: (m && typeof m === 'object' && (m as { role?: string }).role) || 'user',
+      content: (m && typeof m === 'object' && (m as { content?: unknown }).content !== undefined)
+        ? (m as { content: unknown }).content
+        : '',
     }));
 
-    const convertedMessages = await convertToModelMessages(normalizedMessages);
-    const lastUserMessage = convertedMessages.length > 0 ? convertedMessages[convertedMessages.length - 1] : null;
-    let lastMessageText = '';
+    const modelMessages: ModelMessage[] = normalizedMessages.map((m) => {
+      const role = (m.role === 'assistant' ? 'assistant' : 'user') as 'user' | 'assistant';
+      const content = m.content;
+      const safeContent =
+        typeof content === 'string'
+          ? content
+          : Array.isArray(content)
+            ? content
+            : '';
+      return { role, content: safeContent };
+    });
 
-    if (lastUserMessage?.role === 'user') {
-      const content = lastUserMessage.content;
-      if (typeof content === 'string') {
-        lastMessageText = content;
-      } else if (Array.isArray(content)) {
-        lastMessageText = content
-          .filter((p) => p && p.type === 'text')
-          .map((p) => (p as { type: 'text'; text: string }).text)
+    const lastNorm = normalizedMessages[normalizedMessages.length - 1];
+    let lastMessageText = '';
+    if (lastNorm?.role === 'user') {
+      const c = lastNorm.content;
+      if (typeof c === 'string') lastMessageText = c;
+      else if (Array.isArray(c))
+        lastMessageText = (c as Array<{ type?: string; text?: string }>)
+          .filter((p) => p?.type === 'text')
+          .map((p) => p.text ?? '')
           .join('');
-      }
     }
 
     if (!lastMessageText || lastMessageText.trim().length === 0) {
@@ -240,7 +251,7 @@ export async function POST(req: Request) {
         const result = streamText({
           model: modelsToTry[i],
           system: systemPrompt,
-          messages: convertedMessages,
+          messages: modelMessages,
           temperature: 0.3,
           maxOutputTokens: 400,
           onFinish: async ({ text }) => {
