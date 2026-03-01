@@ -602,16 +602,21 @@
     "returnHome": "Return Home"
   },
   "Auth": {
-    "signIn": "Sign In",
-    "signUp": "Sign Up",
-    "errorTitle": "Authentication Error",
+    "signIn": "Sign in",
+    "signUp": "Get started",
+    "loginHeadline": "Welcome back",
+    "loginSubline": "Sign in to your recovery dashboard.",
+    "registerHeadline": "Create your account",
+    "registerSubline": "Set up your recovery workspace in a few minutes. No credit card required.",
+    "errorTitle": "Something went wrong",
     "successTitle": "Success",
     "continueGoogle": "Continue with Google",
-    "secureAccess": "Secure, enterprise-grade access"
+    "secureAccess": "Secure sign-in. We never see your password.",
+    "authFooter": "Dragun by Meziani AI"
   },
   "Onboarding": {
     "title": "Welcome to",
-    "subtitle": "Complete your elite merchant profile to begin recovering revenue.",
+    "subtitle": "Complete your merchant profile to start recovering revenue.",
     "step1": "Business Profile",
     "step1Desc": "Basic information",
     "step2": "Recovery Policy",

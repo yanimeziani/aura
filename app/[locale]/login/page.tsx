@@ -44,8 +44,11 @@ export default function LoginPage() {
           <div className="mb-6 inline-flex items-center justify-center">
             <Logo className="h-8 w-auto" />
           </div>
-          <p className="text-base-content/40 text-[10px] font-bold tracking-[0.3em] uppercase">
-            {t('signIn')}
+          <h1 className="text-xl font-semibold tracking-tight text-base-content mb-1">
+            {t('loginHeadline')}
+          </h1>
+          <p className="text-base-content/50 text-sm">
+            {t('loginSubline')}
           </p>
         </div>
 
@@ -78,8 +81,11 @@ export default function LoginPage() {
               )}
             </button>
 
-            <p className="text-center text-base-content/30 text-[10px] uppercase tracking-widest mt-4">
+            <p className="text-center text-base-content/40 text-xs mt-4">
               {t('secureAccess')}
+            </p>
+            <p className="text-center text-base-content/30 text-[10px] mt-6">
+              {t('authFooter')}
             </p>
           </div>
         </div>

@@ -293,8 +293,15 @@
   },
   "Auth": {
     "signIn": "Se connecter",
-    "signUp": "S'inscrire",
-    "errorTitle": "Erreur d'authentification",
-    "successTitle": "Succès"
+    "signUp": "Créer un compte",
+    "loginHeadline": "Bon retour",
+    "loginSubline": "Accédez à votre tableau de bord de recouvrement.",
+    "registerHeadline": "Créer un compte",
+    "registerSubline": "Configurez votre espace de recouvrement en quelques minutes. Aucune carte requise.",
+    "errorTitle": "Une erreur s'est produite",
+    "successTitle": "Succès",
+    "continueGoogle": "Continuer avec Google",
+    "secureAccess": "Connexion sécurisée. Nous ne voyons jamais votre mot de passe.",
+    "authFooter": "Dragun par Meziani AI"
   }
 }
