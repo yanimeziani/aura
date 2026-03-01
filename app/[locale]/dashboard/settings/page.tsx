@@ -29,6 +29,8 @@ export default async function DashboardSettingsPage({
     redirect({ href: '/dashboard', locale });
   }
 
+  const m = merchant as NonNullable<typeof merchant>;
+
   return (
     <div className="min-h-screen bg-base-100 py-6 px-4">
       <div className="app-shell max-w-2xl mx-auto">
@@ -45,12 +47,12 @@ export default async function DashboardSettingsPage({
         </p>
         <SettingsPageForm
           merchant={{
-            name: merchant.name,
-            strictness_level: merchant.strictness_level ?? 5,
-            settlement_floor: Number(merchant.settlement_floor) || 0.8,
-            data_retention_days: merchant.data_retention_days,
-            currency_preference: merchant.currency_preference,
-            phone: merchant.phone,
+            name: m.name,
+            strictness_level: m.strictness_level ?? 5,
+            settlement_floor: Number(m.settlement_floor) || 0.8,
+            data_retention_days: m.data_retention_days,
+            currency_preference: m.currency_preference,
+            phone: m.phone,
           }}
         />
       </div>
