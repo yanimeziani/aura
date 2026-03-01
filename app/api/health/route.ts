@@ -20,7 +20,14 @@ export async function GET() {
       );
     }
 
-    return NextResponse.json({ status: 'operational' });
+    const openrouterConfigured =
+      typeof process.env.OPENROUTER_API_KEY === 'string' &&
+      process.env.OPENROUTER_API_KEY.length > 0;
+
+    return NextResponse.json({
+      status: 'operational',
+      openrouter_configured: openrouterConfigured,
+    });
   } catch (err) {
     console.error('[health] Error:', err);
     return NextResponse.json(

@@ -52,6 +52,14 @@ export ARCJET_KEY=your_arcjet_key
 
 ## Vercel Deployment
 
+### Ensure OPENROUTER_API_KEY is set (required for dragun agent chat)
+1. Open [Vercel Dashboard](https://vercel.com) → your **dragun-app** project.
+2. Go to **Settings** → **Environment Variables**.
+3. Ensure **OPENROUTER_API_KEY** exists with a value like `sk-or-v1-...` (get a free key at [openrouter.ai](https://openrouter.ai)).
+4. Scope it to **Production** (and Preview if you use preview deployments). Save.
+5. **Redeploy** the latest production deployment so the new value is applied (Settings → Deployments → ⋮ on latest → Redeploy).
+6. Verify: after deploy, open `https://www.dragun.app/api/health` and check `openrouter_configured: true` in the JSON response.
+
 ### 1. Environment Variables in Vercel Dashboard
 1. Go to your Vercel project dashboard
 2. Navigate to **Settings** > **Environment Variables**
