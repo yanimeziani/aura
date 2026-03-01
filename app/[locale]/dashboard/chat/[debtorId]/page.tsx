@@ -29,6 +29,8 @@ export default async function DashboardChatSpectatorPage({
     redirect({ href: '/dashboard', locale });
   }
 
+  const d = debtor as NonNullable<typeof debtor>;
+
   const { data: messages } = await supabaseAdmin
     .from('conversations')
     .select('id, role, message, created_at')
@@ -36,14 +38,14 @@ export default async function DashboardChatSpectatorPage({
     .order('created_at', { ascending: true });
 
   const debtorRow: DebtorRow = {
-    id: debtor.id,
-    name: debtor.name,
+    id: d.id,
+    name: d.name,
     email: '',
-    currency: debtor.currency ?? 'USD',
-    total_debt: Number(debtor.total_debt),
-    status: debtor.status ?? 'pending',
-    last_contacted: debtor.last_contacted,
-    days_overdue: debtor.days_overdue ?? null,
+    currency: d.currency ?? 'USD',
+    total_debt: Number(d.total_debt),
+    status: d.status ?? 'pending',
+    last_contacted: d.last_contacted,
+    days_overdue: d.days_overdue ?? null,
     created_at: '',
   };
   const recoveryScore = getRecoveryScore(debtorRow);
@@ -58,7 +60,7 @@ export default async function DashboardChatSpectatorPage({
         </p>
         <SpectatorChat
           debtorId={debtorId}
-          debtorName={debtor.name}
+          debtorName={d.name}
           debtorSummary={{
             status: debtorRow.status,
             currency: debtorRow.currency,
