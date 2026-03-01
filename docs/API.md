@@ -6,7 +6,7 @@ Reference for Dragun.app API routes. All routes live under `/api/`. Rate limitin
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
-| GET | `/api/health` | None | Health check. Returns `{ status, openrouter_configured }`. Uses DB ping; 503 if degraded. |
+| GET | `/api/health` | None | Health check. Returns `{ status, ai_configured }`. Uses DB ping; 503 if degraded. |
 
 ## Debtor portal (token or session)
 

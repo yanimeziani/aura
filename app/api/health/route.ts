@@ -20,13 +20,15 @@ export async function GET() {
       );
     }
 
-    const openrouterConfigured =
-      typeof process.env.OPENROUTER_API_KEY === 'string' &&
-      process.env.OPENROUTER_API_KEY.length > 0;
+    const provider = (process.env.AI_PROVIDER ?? 'groq').toLowerCase();
+    const aiConfigured =
+      provider === 'local' ||
+      (typeof process.env.GROQ_API_KEY === 'string' &&
+        process.env.GROQ_API_KEY.length > 0);
 
     return NextResponse.json({
       status: 'operational',
-      openrouter_configured: openrouterConfigured,
+      ai_configured: aiConfigured,
     });
   } catch (err) {
     console.error('[health] Error:', err);

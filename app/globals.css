@@ -179,6 +179,13 @@
     }
   }
 
+  @media (min-width: 1280px) {
+    .app-shell {
+      padding-left: max(2.5rem, env(safe-area-inset-left, 0px));
+      padding-right: max(2.5rem, env(safe-area-inset-right, 0px));
+    }
+  }
+
   .shadow-warm {
     box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.04), 0 1px 2px 0 rgb(0 0 0 / 0.02);
   }

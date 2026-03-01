@@ -23,15 +23,21 @@ interface Props {
   token: string;
 }
 
+function generateId() {
+  return crypto.randomUUID?.() ?? `msg-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+}
+
 export default function ChatClient({ debtorId, token }: Props) {
   const t = useTranslations('Chat');
   const [debtor, setDebtor] = useState<Debtor | null>(null);
   const [loading, setLoading] = useState(true);
+  const [initiateLoading, setInitiateLoading] = useState(false);
+  const initiateRequested = useRef(false);
   const supabase = useMemo(() => createClient(), []);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const [chatError, setChatError] = useState<string | null>(null);
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
+  const { messages, setMessages, input, handleInputChange, handleSubmit, isLoading } = useChat({
     api: '/api/chat',
     body: { debtorId, token },
     onError: () => setChatError(t('agentUnavailable')),
@@ -49,6 +55,56 @@ export default function ChatClient({ debtorId, token }: Props) {
     }
     fetchDebtor();
   }, [debtorId, supabase]);
+
+  // Load existing conversation or request agent to send the first message
+  useEffect(() => {
+    if (!debtor || loading) return;
+
+    async function hydrateConversation() {
+      const { data: rows } = await supabase
+        .from('conversations')
+        .select('role, message')
+        .eq('debtor_id', debtorId)
+        .order('created_at', { ascending: true });
+
+      if (rows && rows.length > 0) {
+        const hydrated = rows.map((r) => ({
+          id: generateId(),
+          role: r.role as 'user' | 'assistant' | 'system',
+          content: r.message ?? '',
+        }));
+        setMessages(hydrated);
+        return;
+      }
+
+      if (initiateRequested.current) return;
+      initiateRequested.current = true;
+      setInitiateLoading(true);
+      setChatError(null);
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ debtorId, token, initiate: true }),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          setChatError((err as { error?: string })?.error ?? t('agentUnavailable'));
+          return;
+        }
+        const text = await res.text();
+        if (text?.trim()) {
+          setMessages([{ id: generateId(), role: 'assistant', content: text.trim() }]);
+        }
+      } catch {
+        setChatError(t('agentUnavailable'));
+      } finally {
+        setInitiateLoading(false);
+      }
+    }
+
+    hydrateConversation();
+  }, [debtor, debtorId, token, loading, supabase, setMessages, t]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
@@ -107,7 +163,7 @@ export default function ChatClient({ debtorId, token }: Props) {
             <span className="text-xs">{chatError}</span>
           </div>
         )}
-        {messages.length === 0 && (
+        {messages.length === 0 && !initiateLoading && (
           <div className="text-center py-16 space-y-6">
             <div className="w-16 h-16 mx-auto rounded-2xl bg-base-200 border border-base-300/50 flex items-center justify-center text-3xl shadow-warm">
               🐲
@@ -126,6 +182,13 @@ export default function ChatClient({ debtorId, token }: Props) {
               <p className="text-[10px] text-base-content/40 max-w-[240px] text-center">
                 {t('trustLine', { merchant: debtor.merchant.name })}
               </p>
+            </div>
+          </div>
+        )}
+        {messages.length === 0 && initiateLoading && (
+          <div className="chat chat-start">
+            <div className="chat-bubble bg-base-200 border border-base-300/30">
+              <span className="loading loading-dots loading-xs" />
             </div>
           </div>
         )}

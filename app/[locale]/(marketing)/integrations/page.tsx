@@ -2,11 +2,11 @@ import type { Metadata } from 'next';
 import { useTranslations } from 'next-intl';
 
 export const metadata: Metadata = {
-  title: 'Integrations | Dragun.app — Stripe, Supabase, Gemini AI',
-  description: 'Connect Stripe for payments, Supabase for real-time data, and Gemini 2.0 Flash for AI intelligence. Mindbody integration coming soon.',
+  title: 'Integrations | Dragun.app — Stripe, Supabase, AI Engine',
+  description: 'Connect Stripe for payments, Supabase for real-time data, and AI-powered intelligence. Mindbody integration coming soon.',
   openGraph: {
     title: 'Integrations | Dragun.app',
-    description: 'Stripe, Supabase, and Gemini AI integrations for automated debt recovery.',
+    description: 'Stripe, Supabase, and AI integrations for automated debt recovery.',
   },
 };
 
@@ -16,7 +16,7 @@ export default function IntegrationsPage() {
   const integrations = [
     { name: 'Stripe', description: t('stripeDesc'), status: 'active', icon: '💳' },
     { name: 'Supabase', description: t('supabaseDesc'), status: 'active', icon: '⚡' },
-    { name: 'Gemini 2.0 Flash', description: t('geminiDesc'), status: 'active', icon: '🐉' },
+    { name: 'AI Engine', description: t('geminiDesc'), status: 'active', icon: '🐉' },
     { name: t('mindbodyName'), description: t('mindbodyDesc'), status: 'upcoming', icon: '🧘' },
   ];
 

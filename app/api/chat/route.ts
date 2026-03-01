@@ -1,7 +1,7 @@
 import { streamText } from 'ai';
 import type { ModelMessage } from 'ai';
 import { supabaseAdmin } from '@/lib/supabase-admin';
-import { getChatModel, OPENROUTER_FREE_FALLBACK_MODELS } from '@/lib/ai-provider';
+import { getChatModel, getChatFallbackModelIds } from '@/lib/ai-provider';
 import { getRagContext, RAG_QUERIES } from '@/lib/rag';
 import { verifyDebtorToken } from '@/lib/debtor-token';
 import type { MerchantForChat } from '@/lib/merchant-types';
@@ -133,15 +133,25 @@ ${context || 'No specific contract terms available. Use the resolution options a
 - Always end with a clear, gentle next step.`;
 }
 
+const OPENING_INSTRUCTION = `
+---
+## RIGHT NOW: OPEN THE CONVERSATION
+The debtor has just opened the chat. They have not sent any message yet. You have all authorised data above (name, balance, currency, merchant, contract context). Your job is to send the first message to start the conversation.
+
+- Use their first name and the balance/currency from the account details. Do not ask them for their name or the amount — you already have it.
+- Briefly acknowledge the open balance and that you are here to help. Offer the resolution options (full payment, payment plan, settlement) and invite them to choose or ask questions.
+- Keep it to 2–3 sentences. Sound human and warm. End with a clear next step (e.g. "Would you like to hear the options?" or "What would work best for you?").
+- Do not add meta-commentary like "I am the assistant". Just write the single message the debtor will see.`;
+
 export async function POST(req: Request) {
   try {
-    let body: { messages?: unknown; debtorId?: string; token?: string };
+    let body: { messages?: unknown; debtorId?: string; token?: string; initiate?: boolean };
     try {
       body = await req.json();
     } catch {
       return Response.json({ error: 'Invalid JSON' }, { status: 400 });
     }
-    const { messages: rawMessages, debtorId, token } = body ?? {};
+    const { messages: rawMessages, debtorId, token, initiate } = body ?? {};
 
     if (!debtorId || typeof debtorId !== 'string') {
       return Response.json({ error: 'Invalid request' }, { status: 400 });
@@ -160,70 +170,13 @@ export async function POST(req: Request) {
       );
     }
     const messages = Array.isArray(rawMessages) ? rawMessages : [];
-    if (messages.length === 0) {
+    const isInitiate = Boolean(initiate) || messages.length === 0;
+
+    if (!isInitiate && messages.length === 0) {
       return Response.json({ error: 'Invalid messages' }, { status: 400 });
     }
     if (messages.length > 60) {
       return Response.json({ error: 'Conversation too long' }, { status: 400 });
-    }
-
-    // Normalize to { role, content } and build ModelMessage[] for streamText (no UIMessage/parts).
-    const normalizedMessages = messages.map((m) => ({
-      role: (m && typeof m === 'object' && (m as { role?: string }).role) || 'user',
-      content: (m && typeof m === 'object' && (m as { content?: unknown }).content !== undefined)
-        ? (m as { content: unknown }).content
-        : '',
-    }));
-
-    // Coerce content to string or TextPart[] so the SDK never sees invalid shapes.
-    function toMessageContent(raw: unknown): string | Array<{ type: 'text'; text: string }> {
-      if (typeof raw === 'string' && raw.length > 0) return raw;
-      if (Array.isArray(raw)) {
-        const parts = raw
-          .map((p) => {
-            if (p && typeof p === 'object' && 'text' in (p as object))
-              return { type: 'text' as const, text: String((p as { text?: unknown }).text ?? '') };
-            if (typeof p === 'string') return { type: 'text' as const, text: p };
-            return null;
-          })
-          .filter((p): p is { type: 'text'; text: string } => p != null && p.text.length > 0);
-        if (parts.length > 0) return parts;
-      }
-      if (raw != null && typeof raw === 'object' && 'text' in (raw as object))
-        return [{ type: 'text' as const, text: String((raw as { text?: unknown }).text ?? '') }];
-      return '';
-    }
-
-    const modelMessages: ModelMessage[] = normalizedMessages
-      .map((m) => {
-        const role = (m.role === 'assistant' ? 'assistant' : 'user') as 'user' | 'assistant';
-        const content = toMessageContent(m.content);
-        const isEmpty =
-          content === '' || (Array.isArray(content) && content.every((p) => !p.text?.trim()));
-        return isEmpty ? null : ({ role, content } as ModelMessage);
-      })
-      .filter((m): m is ModelMessage => m != null);
-
-    const lastNorm = normalizedMessages[normalizedMessages.length - 1];
-    let lastMessageText = '';
-    if (lastNorm?.role === 'user') {
-      const c = lastNorm.content;
-      if (typeof c === 'string') lastMessageText = c;
-      else if (Array.isArray(c))
-        lastMessageText = (c as Array<{ type?: string; text?: string }>)
-          .filter((p) => p?.type === 'text')
-          .map((p) => p.text ?? '')
-          .join('');
-    }
-
-    if (!lastMessageText || lastMessageText.trim().length === 0) {
-      return Response.json({ error: 'Empty message' }, { status: 400 });
-    }
-    if (modelMessages.length === 0) {
-      return Response.json({ error: 'No valid messages' }, { status: 400 });
-    }
-    if (lastMessageText.length > 5000) {
-      return Response.json({ error: 'Message too long' }, { status: 400 });
     }
 
     const { data: debtor, error: debtorError } = await supabaseAdmin
@@ -246,17 +199,6 @@ export async function POST(req: Request) {
     }
 
     const merchantId = String(merchant.id);
-    let context = '';
-    try {
-      const rag = await getRagContext(merchantId, RAG_QUERIES.chat(lastMessageText), {
-        matchCount: 5,
-        matchThreshold: 0.5,
-      });
-      context = rag?.context ?? '';
-    } catch (ragErr) {
-      console.warn('[/api/chat] RAG context failed', ragErr);
-    }
-
     const safeDebtor = {
       name: debtor?.name ?? null,
       email: debtor?.email ?? null,
@@ -265,7 +207,95 @@ export async function POST(req: Request) {
       status: debtor?.status ?? null,
       days_overdue: debtor?.days_overdue ?? null,
     };
-    const systemPrompt = buildSystemPrompt(merchant, safeDebtor, context);
+
+    let systemPrompt: string;
+    let modelMessages: ModelMessage[];
+    let lastMessageText = '';
+
+    if (isInitiate) {
+      let context = '';
+      try {
+        const rag = await getRagContext(merchantId, 'payment terms settlement options balance due', {
+          matchCount: 5,
+          matchThreshold: 0.5,
+        });
+        context = rag?.context ?? '';
+      } catch (ragErr) {
+        console.warn('[/api/chat] RAG context failed (initiate)', ragErr);
+      }
+      systemPrompt = buildSystemPrompt(merchant, safeDebtor, context) + OPENING_INSTRUCTION;
+      modelMessages = [{ role: 'user' as const, content: '[Open the conversation with your first message to the debtor.]' }];
+    } else {
+      // Normalize to { role, content } and build ModelMessage[] for streamText.
+      const normalizedMessages = messages.map((m) => ({
+        role: (m && typeof m === 'object' && (m as { role?: string }).role) || 'user',
+        content: (m && typeof m === 'object' && (m as { content?: unknown }).content !== undefined)
+          ? (m as { content: unknown }).content
+          : '',
+      }));
+
+      function toMessageContent(raw: unknown): string | Array<{ type: 'text'; text: string }> {
+        if (typeof raw === 'string' && raw.length > 0) return raw;
+        if (Array.isArray(raw)) {
+          const parts = raw
+            .map((p) => {
+              if (p && typeof p === 'object' && 'text' in (p as object))
+                return { type: 'text' as const, text: String((p as { text?: unknown }).text ?? '') };
+              if (typeof p === 'string') return { type: 'text' as const, text: p };
+              return null;
+            })
+            .filter((p): p is { type: 'text'; text: string } => p != null && p.text.length > 0);
+          if (parts.length > 0) return parts;
+        }
+        if (raw != null && typeof raw === 'object' && 'text' in (raw as object))
+          return [{ type: 'text' as const, text: String((raw as { text?: unknown }).text ?? '') }];
+        return '';
+      }
+
+      const built: ModelMessage[] = normalizedMessages
+        .map((m) => {
+          const role = (m.role === 'assistant' ? 'assistant' : 'user') as 'user' | 'assistant';
+          const content = toMessageContent(m.content);
+          const isEmpty =
+            content === '' || (Array.isArray(content) && content.every((p) => !p.text?.trim()));
+          return isEmpty ? null : ({ role, content } as ModelMessage);
+        })
+        .filter((m): m is ModelMessage => m != null);
+
+      const lastNorm = normalizedMessages[normalizedMessages.length - 1];
+      if (lastNorm?.role === 'user') {
+        const c = lastNorm.content;
+        if (typeof c === 'string') lastMessageText = c;
+        else if (Array.isArray(c))
+          lastMessageText = (c as Array<{ type?: string; text?: string }>)
+            .filter((p) => p?.type === 'text')
+            .map((p) => p.text ?? '')
+            .join('');
+      }
+
+      if (!lastMessageText || lastMessageText.trim().length === 0) {
+        return Response.json({ error: 'Empty message' }, { status: 400 });
+      }
+      if (built.length === 0) {
+        return Response.json({ error: 'No valid messages' }, { status: 400 });
+      }
+      if (lastMessageText.length > 5000) {
+        return Response.json({ error: 'Message too long' }, { status: 400 });
+      }
+
+      modelMessages = built;
+      let context = '';
+      try {
+        const rag = await getRagContext(merchantId, RAG_QUERIES.chat(lastMessageText), {
+          matchCount: 5,
+          matchThreshold: 0.5,
+        });
+        context = rag?.context ?? '';
+      } catch (ragErr) {
+        console.warn('[/api/chat] RAG context failed', ragErr);
+      }
+      systemPrompt = buildSystemPrompt(merchant, safeDebtor, context);
+    }
 
     let model;
     try {
@@ -277,7 +307,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const fallbacks = Array.isArray(OPENROUTER_FREE_FALLBACK_MODELS) ? OPENROUTER_FREE_FALLBACK_MODELS : [];
+    const fallbacks = getChatFallbackModelIds();
     const modelsToTry = [model, ...fallbacks.map((id) => getChatModel(id))];
     let lastError: unknown;
 
@@ -291,18 +321,30 @@ export async function POST(req: Request) {
           maxOutputTokens: 400,
           onFinish: async ({ text }) => {
             const did = debtorId;
-            const msg = lastMessageText?.trim() || '';
             if (!did) return;
-            await Promise.allSettled([
-              supabaseAdmin.from('conversations').insert([
-                { debtor_id: did, role: 'user', message: msg },
-                { debtor_id: did, role: 'assistant', message: typeof text === 'string' ? text : '' },
-              ]),
-              supabaseAdmin
-                .from('debtors')
-                .update({ last_contacted: new Date().toISOString() })
-                .eq('id', did),
-            ]);
+            const assistantMessage = typeof text === 'string' ? text : '';
+            if (isInitiate) {
+              await Promise.allSettled([
+                supabaseAdmin.from('conversations').insert([
+                  { debtor_id: did, role: 'assistant', message: assistantMessage },
+                ]),
+                supabaseAdmin
+                  .from('debtors')
+                  .update({ last_contacted: new Date().toISOString() })
+                  .eq('id', did),
+              ]);
+            } else {
+              await Promise.allSettled([
+                supabaseAdmin.from('conversations').insert([
+                  { debtor_id: did, role: 'user', message: lastMessageText?.trim() || '' },
+                  { debtor_id: did, role: 'assistant', message: assistantMessage },
+                ]),
+                supabaseAdmin
+                  .from('debtors')
+                  .update({ last_contacted: new Date().toISOString() })
+                  .eq('id', did),
+              ]);
+            }
           },
         });
 

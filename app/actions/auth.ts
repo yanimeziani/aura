@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { routing } from '@/i18n/routing';
 
 export async function signInWithGoogle() {
   const supabase = await createClient();
@@ -11,8 +12,9 @@ export async function signInWithGoogle() {
   const proto = h.get('x-forwarded-proto') ?? 'https';
   const baseUrl = process.env.NEXT_PUBLIC_URL ?? (host ? `${proto}://${host}` : null);
 
+  const dashboardPath = `/${routing.defaultLocale}/dashboard`;
   const options = baseUrl
-    ? { redirectTo: `${baseUrl}/api/auth/callback` }
+    ? { redirectTo: `${baseUrl}/api/auth/callback?next=${encodeURIComponent(dashboardPath)}` }
     : undefined;
 
   const { data, error } = await supabase.auth.signInWithOAuth({

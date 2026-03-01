@@ -9,7 +9,7 @@ Dragun automates debt recovery with AI that negotiates professionally -- citing 
 - **Framework**: Next.js 16 (App Router, Server Actions)
 - **UI**: Tailwind CSS v4, DaisyUI v5, Framer Motion
 - **Auth & DB**: Supabase (PostgreSQL, pgvector, Row-Level Security)
-- **AI**: Google Gemini 2.5 Flash / DeepSeek v3 via OpenRouter
+- **AI**: Groq (Llama 3.3 70B / 8B instant); optional OpenAI for RAG embeddings
 - **Payments**: Stripe Connect (destination charges, 5% platform fee)
 - **Monitoring**: Sentry, Vercel Analytics
 - **Security**: Arcjet (rate limiting, bot protection), CSP, HSTS
@@ -37,7 +37,7 @@ See [`.env.example`](.env.example) for all required and optional variables.
 
 At minimum you need:
 - Supabase project URL + keys
-- At least one AI provider key (Google AI or OpenRouter)
+- Groq API key (free at console.groq.com)
 - Stripe secret key + webhook secret
 
 ## Deployment

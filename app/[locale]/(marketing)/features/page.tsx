@@ -4,7 +4,7 @@ import { Link } from '@/i18n/navigation';
 
 export const metadata: Metadata = {
   title: 'Features | Dragun.app — AI Negotiation, Contract Intelligence, Stripe Connect',
-  description: 'Gemini-powered AI negotiation, contract clause citation, Stripe payment integration, compliance guardrails, and real-time analytics.',
+  description: 'AI negotiation, contract clause citation, Stripe payment integration, compliance guardrails, and real-time analytics.',
   openGraph: {
     title: 'Features | Dragun.app',
     description: 'AI negotiation, contract intelligence, Stripe integration, and compliance guardrails for professional debt recovery.',

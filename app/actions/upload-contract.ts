@@ -72,10 +72,11 @@ export async function uploadContract(formData: FormData) {
     const embeddingFunction = async (chunk: string) => {
         try {
             const embedding = await generateEmbedding(chunk);
+            if (!embedding || embedding.length === 0) return null;
             return {
                 contract_id: contract.id,
                 content: chunk,
-                embedding: embedding,
+                embedding,
             };
         } catch (err: unknown) {
             const message = err instanceof Error ? err.message : 'Unknown embedding error';

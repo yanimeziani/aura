@@ -16,6 +16,7 @@
     "db:check": "bash -c 'source ~/.config/meziani/mcp.env 2>/dev/null; node scripts/supabase-migrate-and-check.mjs'"
   },
   "dependencies": {
+    "@ai-sdk/groq": "^3.0.26",
     "@ai-sdk/openai": "^3.0.29",
     "@ai-sdk/react": "^0.0.70",
     "@arcjet/next": "^1.1.0",
@@ -46,8 +47,8 @@
     "@types/react-dom": "^19.2.3",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
-    "tsx": "^4.19.2",
     "tailwindcss-animate": "^1.0.7",
+    "tsx": "^4.19.2",
     "typescript": "^5"
   },
   "browserslist": "> 1%"

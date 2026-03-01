@@ -11,8 +11,8 @@ This document outlines all environment variables required for the Dragun applica
 | `NEXT_PUBLIC_SUPABASE_URL` | Public | Supabase project URL | `https://xyzabcd.supabase.co` |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public | Supabase anonymous key | `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...` |
 | `SUPABASE_SERVICE_ROLE_KEY` | Private | Supabase service role key | `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...` |
-| `OPENROUTER_API_KEY` | Private | OpenRouter API key | `sk-or-v1-...` |
-| `GOOGLE_GENERATIVE_AI_API_KEY` | Private | Google Gemini API key (embeddings only) | `AIzaSyBxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx` |
+| `GROQ_API_KEY` | Private | Groq API key (chat; free at console.groq.com) | `gsk_...` |
+| `OPENAI_API_KEY` | Private | Optional: OpenAI key for RAG embeddings | `sk-...` |
 | `STRIPE_SECRET_KEY` | Private | Stripe secret key | `sk_test_51xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx` |
 | `STRIPE_WEBHOOK_SECRET` | Private | Stripe webhook signing secret | `whsec_1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx` |
 | `SENTRY_DSN` | Private | Sentry project DSN | `https://examplePublicKey@o0.ingest.sentry.io/0` |
@@ -28,8 +28,7 @@ NEXT_PUBLIC_URL=http://localhost:3000
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
-OPENROUTER_API_KEY=your_openrouter_api_key
-GOOGLE_GENERATIVE_AI_API_KEY=your_google_api_key
+GROQ_API_KEY=your_groq_api_key
 STRIPE_SECRET_KEY=your_stripe_secret_key
 STRIPE_WEBHOOK_SECRET=your_webhook_secret
 SENTRY_DSN=your_sentry_dsn
@@ -42,8 +41,7 @@ export NEXT_PUBLIC_URL=http://localhost:3000
 export NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 export NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 export SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
-export OPENROUTER_API_KEY=your_openrouter_api_key
-export GOOGLE_GENERATIVE_AI_API_KEY=your_google_api_key
+export GROQ_API_KEY=your_groq_api_key
 export STRIPE_SECRET_KEY=your_stripe_secret_key
 export STRIPE_WEBHOOK_SECRET=your_webhook_secret
 export SENTRY_DSN=your_sentry_dsn
@@ -52,13 +50,13 @@ export ARCJET_KEY=your_arcjet_key
 
 ## Vercel Deployment
 
-### Ensure OPENROUTER_API_KEY is set (required for dragun agent chat)
+### Ensure GROQ_API_KEY is set (required for dragun agent chat)
 1. Open [Vercel Dashboard](https://vercel.com) → your **dragun-app** project.
 2. Go to **Settings** → **Environment Variables**.
-3. Ensure **OPENROUTER_API_KEY** exists with a value like `sk-or-v1-...` (get a free key at [openrouter.ai](https://openrouter.ai)).
+3. Ensure **GROQ_API_KEY** exists (get a free key at [console.groq.com](https://console.groq.com)).
 4. Scope it to **Production** (and Preview if you use preview deployments). Save.
 5. **Redeploy** the latest production deployment so the new value is applied (Settings → Deployments → ⋮ on latest → Redeploy).
-6. Verify: after deploy, open `https://www.dragun.app/api/health` and check `openrouter_configured: true` in the JSON response.
+6. Verify: after deploy, open `https://www.dragun.app/api/health` and check `ai_configured: true` in the JSON response.
 
 ### 1. Environment Variables in Vercel Dashboard
 1. Go to your Vercel project dashboard
@@ -76,8 +74,7 @@ The `vercel.json` file already includes environment variable mappings. Replace t
     "NEXT_PUBLIC_SUPABASE_URL": "@supabase_url",
     "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@supabase_anon_key",
     "SUPABASE_SERVICE_ROLE_KEY": "@supabase_service_role_key",
-    "OPENROUTER_API_KEY": "@openrouter_api_key",
-    "GOOGLE_GENERATIVE_AI_API_KEY": "@google_generative_ai_api_key",
+    "GROQ_API_KEY": "@groq_api_key",
     "STRIPE_SECRET_KEY": "@stripe_secret_key",
     "STRIPE_WEBHOOK_SECRET": "@stripe_webhook_secret",
     "SENTRY_DSN": "@sentry_dsn",
