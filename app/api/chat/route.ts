@@ -1,9 +1,19 @@
 import { streamText, convertToModelMessages } from 'ai';
 import { supabaseAdmin } from '@/lib/supabase-admin';
-import { getChatModel } from '@/lib/ai-provider';
+import { getChatModel, OPENROUTER_FREE_FALLBACK_MODELS } from '@/lib/ai-provider';
 import { getRagContext, RAG_QUERIES } from '@/lib/rag';
 import { verifyDebtorToken } from '@/lib/debtor-token';
 import type { MerchantForChat } from '@/lib/merchant-types';
+
+function isQuotaOrRateLimitError(error: unknown): boolean {
+  const msg = error instanceof Error ? error.message : String(error);
+  const s = msg.toLowerCase();
+  if (s.includes('429') || s.includes('402')) return true;
+  if (s.includes('quota') || s.includes('rate limit') || s.includes('too many requests')) return true;
+  if (s.includes('insufficient credits') || s.includes('payment required')) return true;
+  const status = (error as { status?: number })?.status;
+  return status === 429 || status === 402;
+}
 
 export const runtime = 'nodejs';
 export const maxDuration = 30;
@@ -207,30 +217,57 @@ export async function POST(req: Request) {
       );
     }
 
-    const result = streamText({
-      model,
-      system: systemPrompt,
-      messages: convertedMessages,
-      temperature: 0.3,
-      maxOutputTokens: 400,
-      onFinish: async ({ text }) => {
-        await Promise.allSettled([
-          supabaseAdmin.from('conversations').insert([
-            { debtor_id: debtorId, role: 'user', message: lastMessageText },
-            { debtor_id: debtorId, role: 'assistant', message: text },
-          ]),
-          supabaseAdmin
-            .from('debtors')
-            .update({ last_contacted: new Date().toISOString() })
-            .eq('id', debtorId),
-        ]);
-      },
-    });
+    const modelsToTry = [model, ...OPENROUTER_FREE_FALLBACK_MODELS.map((id) => getChatModel(id))];
+    let lastError: unknown;
 
-    return result.toTextStreamResponse();
+    for (let i = 0; i < modelsToTry.length; i++) {
+      try {
+        const result = streamText({
+          model: modelsToTry[i],
+          system: systemPrompt,
+          messages: convertedMessages,
+          temperature: 0.3,
+          maxOutputTokens: 400,
+          onFinish: async ({ text }) => {
+            await Promise.allSettled([
+              supabaseAdmin.from('conversations').insert([
+                { debtor_id: debtorId, role: 'user', message: lastMessageText },
+                { debtor_id: debtorId, role: 'assistant', message: text },
+              ]),
+              supabaseAdmin
+                .from('debtors')
+                .update({ last_contacted: new Date().toISOString() })
+                .eq('id', debtorId),
+            ]);
+          },
+        });
+
+        return result.toTextStreamResponse();
+      } catch (err) {
+        lastError = err;
+        if (isQuotaOrRateLimitError(err) && i < modelsToTry.length - 1) {
+          console.warn('[/api/chat] Quota/rate limit, trying next model', { attempt: i + 1 });
+          continue;
+        }
+        throw err;
+      }
+    }
+
+    throw lastError;
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error));
     console.error('[/api/chat]', err.message, err.stack);
+
+    if (isQuotaOrRateLimitError(error)) {
+      return Response.json(
+        {
+          error:
+            'The recovery agent is at capacity right now. Please try again in a few minutes.',
+        },
+        { status: 503, headers: { 'Retry-After': '60' } },
+      );
+    }
+
     return Response.json({ error: 'Internal error' }, { status: 500 });
   }
 }

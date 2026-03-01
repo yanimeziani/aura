@@ -17,12 +17,19 @@ const openrouter = createOpenAI({
  */
 const OPENROUTER_FREE_ROUTER = 'openrouter/free';
 
-export const getChatModel = () => {
+/** Specific free models to try as fallback when the router hits quota/rate limit. */
+export const OPENROUTER_FREE_FALLBACK_MODELS = [
+  'stepfun/step-3.5-flash:free',
+  'meta-llama/llama-3.2-3b-instruct:free',
+  'qwen/qwen-2.5-7b-instruct:free',
+] as const;
+
+export const getChatModel = (modelOverride?: string) => {
   if (!process.env.OPENROUTER_API_KEY) {
     throw new Error('OPENROUTER_API_KEY is required. Get one free at openrouter.ai');
   }
 
-  const explicit = process.env.OPENROUTER_MODEL?.trim();
+  const explicit = modelOverride ?? process.env.OPENROUTER_MODEL?.trim();
   if (explicit) {
     return openrouter(explicit);
   }
