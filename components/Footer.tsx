@@ -8,8 +8,8 @@ export default function Footer() {
 
   return (
     <footer className="border-t border-base-300/50 bg-base-200/20">
-      <div className="app-shell py-14 sm:py-20">
-        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-12">
+      <div className="app-shell py-10 sm:py-14 md:py-20">
+        <div className="grid gap-8 sm:gap-12 grid-cols-1 sm:grid-cols-2 lg:grid-cols-12">
           <div className="space-y-5 sm:col-span-2 lg:col-span-5">
             <Logo className="h-8 w-auto" />
             <p className="max-w-sm text-sm text-base-content/50 leading-relaxed">
@@ -27,7 +27,7 @@ export default function Footer() {
           <div className="lg:col-span-2">
             <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-base-content/35 mb-4">{t('platform')}</h2>
             <ul className="space-y-3 text-sm text-base-content/50">
-              <li><Link href="/demo" className="hover:text-base-content transition-colors">{t('demo')}</Link></li>
+              <li><Link href="/demo" className="hover:text-base-content transition-colors touch-manipulation">{t('demo')}</Link></li>
               <li><Link href="/features" className="hover:text-base-content transition-colors">{t('features')}</Link></li>
               <li><Link href="/pricing" className="hover:text-base-content transition-colors">{t('pricing')}</Link></li>
               <li><Link href="/integrations" className="hover:text-base-content transition-colors">{t('integrations')}</Link></li>

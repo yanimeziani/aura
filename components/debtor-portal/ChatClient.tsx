@@ -154,7 +154,7 @@ export default function ChatClient({ debtorId, token }: Props) {
         )}
       </main>
 
-      <section className="px-4 py-2.5 flex gap-2 overflow-x-auto border-t border-base-300/30 bg-base-100/80 backdrop-blur-sm scrollbar-hide">
+      <section className="px-4 py-2.5 flex gap-2 overflow-x-auto overflow-y-hidden border-t border-base-300/30 bg-base-100/80 backdrop-blur-sm scrollbar-hide scroll-smooth" style={{ paddingLeft: 'max(1rem, env(safe-area-inset-left))', paddingRight: 'max(1rem, env(safe-area-inset-right))' }}>
         {actionChips.map((chip) => (
           <button
             key={chip}
@@ -170,10 +170,10 @@ export default function ChatClient({ debtorId, token }: Props) {
         ))}
       </section>
 
-      <footer className="p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] bg-base-100 border-t border-base-300/30">
-        <form onSubmit={handleSubmit} className="flex items-center gap-2">
+      <footer className="p-4 pb-[max(1rem,calc(env(safe-area-inset-bottom)+1rem))] bg-base-100 border-t border-base-300/30" style={{ paddingLeft: 'max(1rem, env(safe-area-inset-left))', paddingRight: 'max(1rem, env(safe-area-inset-right))' }}>
+        <form onSubmit={handleSubmit} className="flex items-center gap-2 min-w-0">
           <input
-            className="input input-bordered flex-1 text-sm min-h-11"
+            className="input input-bordered flex-1 min-w-0 text-sm min-h-11"
             value={input}
             placeholder={t('placeholder')}
             onChange={handleInputChange}

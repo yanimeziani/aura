@@ -39,6 +39,11 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       { source: '/dashboard', destination: '/en/dashboard', permanent: false },
+      {
+        source: '/dashboard/chat/:path*',
+        destination: '/en/dashboard/chat/:path*',
+        permanent: false,
+      },
       { source: '/login', destination: '/en/login', permanent: false },
       { source: '/register', destination: '/en/register', permanent: false },
       {

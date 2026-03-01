@@ -97,7 +97,8 @@ export default function AccessibleModal({
       onCancel={close}
     >
       <div
-        className={`modal-box max-h-[90dvh] sm:max-h-[85vh] overflow-y-auto overflow-x-hidden rounded-t-2xl rounded-b-none sm:rounded-2xl border border-base-300 bg-base-200 shadow-xl ${className}`}
+        className={`modal-box max-h-[90dvh] sm:max-h-[85vh] overflow-y-auto overflow-x-hidden rounded-t-2xl rounded-b-none sm:rounded-2xl border border-base-300 bg-base-200 shadow-xl w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] sm:w-full ${className}`}
+        style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
       >
         {children}
       </div>

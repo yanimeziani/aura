@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, MessageCircle } from 'lucide-react';
 import { getRecoveryScore } from '@/lib/recovery-score';
 import { getNextAction } from '@/lib/next-action';
 import type { DebtorRow, RecoveryActionRow } from './dashboard-types';
@@ -89,26 +89,27 @@ export default function DebtorTableWithBulk({
       )}
 
       {/* Mobile cards */}
-      <div className="space-y-3 p-4 md:hidden">
+      <div className="space-y-3 p-3 sm:p-4 md:hidden">
         {debtors.map((d) => (
           <div
             key={d.id}
             id={`debtor-${d.id}`}
-            className="card bg-base-100 border border-base-300/50 shadow-warm scroll-mt-28"
+            className="card bg-base-100 border border-base-300/50 shadow-warm scroll-mt-28 min-w-0 overflow-hidden"
           >
-            <div className="card-body p-4 gap-3">
-              <div className="flex items-start justify-between gap-2">
+            <div className="card-body p-3 sm:p-4 gap-3 min-w-0">
+              <div className="flex items-start justify-between gap-2 min-w-0">
                 {d.status !== 'paid' && (
                   <input
                     type="checkbox"
                     checked={selectedIds.has(d.id)}
                     onChange={() => toggle(d.id)}
-                    className="checkbox checkbox-sm checkbox-primary"
+                    className="checkbox checkbox-sm checkbox-primary shrink-0 mt-0.5"
+                    aria-label={`Select ${d.name}`}
                   />
                 )}
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-sm">{d.name}</p>
-                  <p className="text-xs text-base-content/50">{d.email}</p>
+                <div className="flex-1 min-w-0 overflow-hidden">
+                  <p className="font-semibold text-sm truncate">{d.name}</p>
+                  <p className="text-xs text-base-content/50 truncate">{d.email}</p>
                 </div>
                 <span className={`badge badge-sm ${getStatusBadge(d.status)}`}>
                   {getStatusLabel(d.status, t)}
@@ -136,11 +137,19 @@ export default function DebtorTableWithBulk({
                 </p>
               )}
 
-              <div className="flex items-center gap-2 pt-1">
+              <div className="flex items-center gap-2 pt-1 flex-wrap">
                 <DebtorActionForm debtor={d} handleRecoveryAction={handleRecoveryAction} />
                 <Link
+                  href={`/dashboard/chat/${d.id}`}
+                  className="btn btn-sm btn-ghost btn-outline gap-1 min-h-[44px] touch-manipulation"
+                  title={t('spectatorView')}
+                >
+                  <MessageCircle className="h-3.5 w-3.5" />
+                  {t('viewChat')}
+                </Link>
+                <Link
                   href={d.portalChatUrl ?? `/chat/${d.id}`}
-                  className="btn btn-sm btn-primary btn-outline gap-1 ml-auto min-h-9"
+                  className="btn btn-sm btn-primary btn-outline gap-1 ml-auto min-h-[44px] min-w-[44px] touch-manipulation"
                 >
                   {t('joinAI')}
                   <ArrowUpRight className="h-3.5 w-3.5" />
@@ -221,6 +230,14 @@ export default function DebtorTableWithBulk({
                 <td className="text-right">
                   <div className="flex items-center justify-end gap-2">
                     <DebtorActionForm debtor={d} handleRecoveryAction={handleRecoveryAction} />
+                    <Link
+                      href={`/dashboard/chat/${d.id}`}
+                      className="btn btn-sm btn-ghost btn-outline gap-1 min-h-9"
+                      title={t('spectatorView')}
+                    >
+                      <MessageCircle className="h-3.5 w-3.5" />
+                      {t('viewChat')}
+                    </Link>
                     <Link
                       href={d.portalChatUrl ?? `/chat/${d.id}`}
                       className="btn btn-sm btn-primary btn-outline gap-1 min-h-9"

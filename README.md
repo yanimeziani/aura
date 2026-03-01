@@ -44,6 +44,20 @@ At minimum you need:
 
 Deployed on Vercel. Push to `main` triggers production deployment.
 
+## Testing
+
+- **Unit**: `npm run test:unit` (chunking and other unit tests via tsx)
+- **E2E**: `npm run test:e2e` (Playwright; see [docs/e2e.md](docs/e2e.md))
+- **All**: `npm run test` runs unit then E2E
+
+## Maintenance
+
+Routine checks (lint, audit, i18n, DB) and pre-release checklist: see [MAINTENANCE.md](MAINTENANCE.md).
+
+## OpenClaw
+
+This repo is part of the shared **OpenClaw** setup (Dragun + FocusFeed). MCPs (Vercel, GitHub, Supabase, Stripe, Sentry) and agent config: see `~/.openclaw/workspace/OPENCLAW_SETUP.md` or `../OPENCLAW.md`.
+
 ## License
 
 Proprietary. All rights reserved. Meziani AI Inc.

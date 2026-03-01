@@ -6,6 +6,7 @@ import { sendEmail } from '@/lib/comms';
 import { initialOutreachEmail, followUpEmail } from '@/lib/comms/templates';
 import { getRagSnippet, RAG_QUERIES } from '@/lib/rag';
 import type { MerchantBasic } from '@/lib/merchant-types';
+import { checkOutreachEtiquette } from '@/lib/outreach-etiquette';
 import { revalidatePath } from 'next/cache';
 import * as Sentry from '@sentry/nextjs';
 
@@ -25,6 +26,11 @@ export async function sendInitialOutreach(formData: FormData) {
       .single();
 
     if (debtorError || !debtor) throw new Error('Debtor not found');
+
+    const etiquette = await checkOutreachEtiquette(debtorId, 'email');
+    if (!etiquette.allowed) {
+      return { success: false, error: etiquette.reason ?? 'Outreach not allowed by etiquette rules.' };
+    }
 
     const merchant = (debtor.merchant ?? { name: 'Merchant' }) as MerchantBasic;
     const baseUrl = process.env.NEXT_PUBLIC_URL || 'https://www.dragun.app';
@@ -108,6 +114,11 @@ export async function sendFollowUp(formData: FormData) {
       .single();
 
     if (debtorError || !debtor) throw new Error('Debtor not found');
+
+    const etiquette = await checkOutreachEtiquette(debtorId, 'email');
+    if (!etiquette.allowed) {
+      return { success: false, error: etiquette.reason ?? 'Outreach not allowed by etiquette rules.' };
+    }
 
     const merchant = (debtor.merchant ?? { name: 'Merchant' }) as MerchantBasic;
     const baseUrl = process.env.NEXT_PUBLIC_URL || 'https://www.dragun.app';

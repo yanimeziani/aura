@@ -67,12 +67,19 @@ export default function Navbar() {
             <label tabIndex={0} className="btn btn-ghost btn-square h-10 min-h-10" aria-label={t('openMenu')}>
               <Menu className="h-5 w-5" />
             </label>
-            <ul tabIndex={0} className="menu dropdown-content z-20 mt-3 w-56 min-w-[calc(100vw-2rem)] max-w-72 rounded-2xl border border-base-300 bg-base-100 p-2 shadow-xl">
+            <ul tabIndex={0} className="menu dropdown-content z-20 mt-3 w-56 min-w-[min(100vw-2rem,14rem)] max-w-[calc(100vw-2rem)] rounded-2xl border border-base-300 bg-base-100 p-2 shadow-xl right-0 left-auto">
               {links.map((item) => (
                 <li key={item.href}>
-                  <Link href={item.href} className="text-sm min-h-11 flex items-center touch-manipulation">{t(item.key)}</Link>
+                  <Link href={item.href} className="text-sm min-h-[44px] flex items-center touch-manipulation">{t(item.key)}</Link>
                 </li>
               ))}
+              <li className="border-t border-base-300/50 mt-2 pt-2">
+                <div className="flex gap-1 px-2 py-1">
+                  <span className="text-[10px] font-semibold text-base-content/40 uppercase tracking-wider self-center">Lang</span>
+                  <button type="button" onClick={() => switchLocale('en')} className={`flex-1 rounded-lg px-2 py-2 text-xs font-semibold min-h-[40px] touch-manipulation ${locale === 'en' ? 'bg-base-200 text-base-content' : 'text-base-content/50 hover:bg-base-200/60'}`}>EN</button>
+                  <button type="button" onClick={() => switchLocale('fr')} className={`flex-1 rounded-lg px-2 py-2 text-xs font-semibold min-h-[40px] touch-manipulation ${locale === 'fr' ? 'bg-base-200 text-base-content' : 'text-base-content/50 hover:bg-base-200/60'}`}>FR</button>
+                </div>
+              </li>
             </ul>
           </div>
           <Link href="/" className="tap-safe inline-flex items-center" aria-label={t('dragunHome')}>

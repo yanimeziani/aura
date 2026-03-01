@@ -206,13 +206,13 @@ export default function InteractiveRecoveryDemo() {
           </div>
 
           {/* Input */}
-          <form onSubmit={onSubmit} className="border-t border-[#e8e4df] bg-white px-4 py-3 flex items-center gap-2">
+          <form onSubmit={onSubmit} className="border-t border-[#e8e4df] bg-white px-4 py-3 flex items-center gap-2 min-w-0">
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder={typing ? t('typing') : t('inputPlaceholder')}
               disabled={typing}
-              className="flex-1 min-h-11 rounded-xl border border-[#e0dbd4] bg-[#faf9f7] px-4 py-2.5 text-[13px] text-[#444] placeholder:text-[#c4b9a8] outline-none focus:border-[#8b7355] transition-colors"
+              className="flex-1 min-w-0 min-h-11 rounded-xl border border-[#e0dbd4] bg-[#faf9f7] px-4 py-2.5 text-[13px] text-[#444] placeholder:text-[#c4b9a8] outline-none focus:border-[#8b7355] transition-colors"
             />
             <button
               type="submit"

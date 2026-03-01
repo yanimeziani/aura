@@ -134,7 +134,13 @@ ${context || 'No specific contract terms available. Use the resolution options a
 
 export async function POST(req: Request) {
   try {
-    const { messages, debtorId, token } = await req.json();
+    let body: { messages?: unknown; debtorId?: string; token?: string };
+    try {
+      body = await req.json();
+    } catch {
+      return Response.json({ error: 'Invalid JSON' }, { status: 400 });
+    }
+    const { messages: rawMessages, debtorId, token } = body ?? {};
 
     if (!debtorId || typeof debtorId !== 'string') {
       return Response.json({ error: 'Invalid request' }, { status: 400 });
@@ -152,23 +158,31 @@ export async function POST(req: Request) {
         { status: 429, headers: { 'Retry-After': '60' } },
       );
     }
-    if (!Array.isArray(messages) || messages.length === 0) {
+    const messages = Array.isArray(rawMessages) ? rawMessages : [];
+    if (messages.length === 0) {
       return Response.json({ error: 'Invalid messages' }, { status: 400 });
     }
     if (messages.length > 60) {
       return Response.json({ error: 'Conversation too long' }, { status: 400 });
     }
 
-    const convertedMessages = await convertToModelMessages(messages);
+    // Ensure each message has role and content so SDK never sees undefined.map
+    const normalizedMessages = messages.map((m) => ({
+      role: (m && typeof m === 'object' && m.role) || 'user',
+      content: (m && typeof m === 'object' && m.content !== undefined) ? m.content : '',
+    }));
+
+    const convertedMessages = await convertToModelMessages(normalizedMessages);
     const lastUserMessage = convertedMessages.length > 0 ? convertedMessages[convertedMessages.length - 1] : null;
     let lastMessageText = '';
 
     if (lastUserMessage?.role === 'user') {
-      if (typeof lastUserMessage.content === 'string') {
-        lastMessageText = lastUserMessage.content;
-      } else if (Array.isArray(lastUserMessage.content)) {
-        lastMessageText = lastUserMessage.content
-          .filter((p) => p.type === 'text')
+      const content = lastUserMessage.content;
+      if (typeof content === 'string') {
+        lastMessageText = content;
+      } else if (Array.isArray(content)) {
+        lastMessageText = content
+          .filter((p) => p && p.type === 'text')
           .map((p) => (p as { type: 'text'; text: string }).text)
           .join('');
       }
@@ -217,7 +231,8 @@ export async function POST(req: Request) {
       );
     }
 
-    const modelsToTry = [model, ...OPENROUTER_FREE_FALLBACK_MODELS.map((id) => getChatModel(id))];
+    const fallbacks = Array.isArray(OPENROUTER_FREE_FALLBACK_MODELS) ? OPENROUTER_FREE_FALLBACK_MODELS : [];
+    const modelsToTry = [model, ...fallbacks.map((id) => getChatModel(id))];
     let lastError: unknown;
 
     for (let i = 0; i < modelsToTry.length; i++) {

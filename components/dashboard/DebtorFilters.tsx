@@ -57,7 +57,7 @@ export default function DebtorFilters({
           <ChevronDown className={`h-3.5 w-3.5 transition-transform ${filterOpen ? 'rotate-180' : ''}`} />
         </button>
         {filterOpen && (
-          <div className="absolute right-0 z-40 mt-1.5 w-64 rounded-xl border border-base-300 bg-base-200 p-4 shadow-xl">
+          <div className="absolute right-0 z-40 mt-1.5 w-64 min-w-[min(100vw-2rem,16rem)] max-w-[calc(100vw-2rem)] rounded-xl border border-base-300 bg-base-200 p-4 shadow-xl">
             <form method="get" className="space-y-3">
               <input type="hidden" name="force_dashboard" value="true" />
               <label className="block">
@@ -133,7 +133,7 @@ export default function DebtorFilters({
           <ChevronDown className={`h-3.5 w-3.5 transition-transform ${exportOpen ? 'rotate-180' : ''}`} />
         </button>
         {exportOpen && (
-          <div className="absolute right-0 z-40 mt-1.5 w-52 rounded-xl border border-base-300 bg-base-200 py-1 shadow-xl">
+          <div className="absolute right-0 z-40 mt-1.5 w-52 min-w-[min(100vw-2rem,13rem)] max-w-[calc(100vw-2rem)] rounded-xl border border-base-300 bg-base-200 py-1 shadow-xl">
             <a
               href="/api/recovery/export"
               download

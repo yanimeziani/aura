@@ -6,6 +6,7 @@ import { sendSms } from '@/lib/comms';
 import { initialOutreachSms, followUpSms, paymentReminderSms } from '@/lib/comms/templates';
 import { normalizePhoneToE164 } from '@/lib/phone';
 import type { MerchantBasic } from '@/lib/merchant-types';
+import { checkOutreachEtiquette } from '@/lib/outreach-etiquette';
 import { revalidatePath } from 'next/cache';
 import * as Sentry from '@sentry/nextjs';
 
@@ -36,6 +37,11 @@ export async function sendSmsOutreach(formData: FormData) {
     const smsOptOut = (debtor as { sms_opt_out?: boolean }).sms_opt_out;
     if (smsOptOut) {
       return { success: false, error: 'This recipient has opted out of SMS.' };
+    }
+
+    const etiquette = await checkOutreachEtiquette(debtorId, 'sms');
+    if (!etiquette.allowed) {
+      return { success: false, error: etiquette.reason ?? 'Outreach not allowed by etiquette rules.' };
     }
 
     const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();

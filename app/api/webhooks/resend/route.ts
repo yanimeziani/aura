@@ -64,36 +64,35 @@ export async function POST(request: Request) {
     // Parse webhook event
     const event: ResendWebhookEvent = JSON.parse(rawBody);
 
-    console.log('[webhook] Received event:', {
-      id: event.id,
-      type: event.type,
-      emailId: event.data.id,
-    });
+    const isDev = process.env.NODE_ENV !== 'production';
+    if (isDev) {
+      console.log('[webhook] Received event:', {
+        id: event.id,
+        type: event.type,
+        emailId: event.data.id,
+      });
+    }
 
     // Handle different event types
     switch (event.type) {
       case 'email.sent':
-        // Email was successfully sent
-        console.log('[webhook] Email sent:', event.data.id);
+        if (isDev) console.log('[webhook] Email sent:', event.data.id);
         break;
 
       case 'email.delivered':
-        // Email was delivered to recipient
-        console.log('[webhook] Email delivered:', event.data.id);
+        if (isDev) console.log('[webhook] Email delivered:', event.data.id);
         break;
 
       case 'email.opened':
-        // Recipient opened the email
-        console.log('[webhook] Email opened:', event.data.id);
+        if (isDev) console.log('[webhook] Email opened:', event.data.id);
         break;
 
       case 'email.clicked':
-        // Recipient clicked a link in the email
-        console.log('[webhook] Email clicked:', event.data.id);
+        if (isDev) console.log('[webhook] Email clicked:', event.data.id);
         break;
 
       case 'email.complained':
-        console.warn('[webhook] Email complained (spam):', event.data.id);
+        if (isDev) console.warn('[webhook] Email complained (spam):', event.data.id);
         await updateDebtorOnBounceOrComplaint(event.data.to);
         break;
 
@@ -103,12 +102,11 @@ export async function POST(request: Request) {
         break;
 
       case 'email.deferred':
-        // Email delivery delayed
-        console.warn('[webhook] Email deferred:', event.data.id);
+        if (isDev) console.warn('[webhook] Email deferred:', event.data.id);
         break;
 
       default:
-        console.warn('[webhook] Unknown event type:', event.type);
+        if (isDev) console.warn('[webhook] Unknown event type:', event.type);
     }
 
     return NextResponse.json({ received: true });

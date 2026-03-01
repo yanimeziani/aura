@@ -337,7 +337,7 @@ export default async function DashboardPage({
     <div id="dashboard-top" className="min-h-screen bg-base-100 pb-28 md:pb-8 scroll-mt-0">
       {/* Navigation */}
       <nav className="sticky top-0 z-30 border-b border-base-300/50 bg-base-100/90 backdrop-blur-xl">
-        <div className="app-shell flex h-16 items-center justify-between">
+        <div className="app-shell flex h-14 sm:h-16 items-center justify-between gap-2 min-h-0">
           <Link href="/" className="flex items-center">
             <Logo className="h-8 w-auto" />
           </Link>
@@ -359,10 +359,10 @@ export default async function DashboardPage({
         </div>
       </nav>
 
-      <main className="app-shell space-y-6 py-6">
+      <main className="app-shell space-y-4 sm:space-y-6 py-4 sm:py-6">
         {/* Page header */}
         <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+          <h1 className="text-xl font-bold tracking-tight sm:text-2xl md:text-3xl">
             {t('title')}
           </h1>
           <p className="text-sm text-base-content/50">{t('subtitle')}</p>
@@ -371,41 +371,47 @@ export default async function DashboardPage({
         {/* Alerts: max 2 visible (Progressive disclosure) */}
         <DashboardAlerts>
           {stripeSuccess && isOnboardingComplete && (
-            <div className="alert alert-success shadow-warm">
-              <CheckCircle2 className="h-5 w-5 shrink-0" />
-              <div>
-                <p className="font-semibold">{t('gatewayActivated')}</p>
-                <p className="text-sm opacity-80">{t('gatewayActivatedDesc')}</p>
+            <div className="alert alert-success shadow-warm flex-col sm:flex-row items-stretch sm:items-center gap-3 text-left">
+              <div className="flex gap-3 flex-1 min-w-0">
+                <CheckCircle2 className="h-5 w-5 shrink-0" />
+                <div className="min-w-0">
+                  <p className="font-semibold">{t('gatewayActivated')}</p>
+                  <p className="text-sm opacity-80">{t('gatewayActivatedDesc')}</p>
+                </div>
               </div>
-              <Link href="/dashboard" className="btn btn-ghost min-h-10">{t('dismiss')}</Link>
+              <Link href="/dashboard" className="btn btn-ghost min-h-10 min-w-[44px] sm:shrink-0">{t('dismiss')}</Link>
             </div>
           )}
           {subscriptionSuccess && (
-            <div className="alert alert-success shadow-warm">
-              <CreditCard className="h-5 w-5 shrink-0" />
-              <div>
-                <p className="font-semibold">{t('subscriptionActivated')}</p>
-                <p className="text-sm opacity-80">
-                  {t('subscriptionActivatedDesc', { plan: paywall.plan, limit: String(paywall.limit) })}
-                </p>
+            <div className="alert alert-success shadow-warm flex-col sm:flex-row items-stretch sm:items-center gap-3 text-left">
+              <div className="flex gap-3 flex-1 min-w-0">
+                <CreditCard className="h-5 w-5 shrink-0" />
+                <div className="min-w-0">
+                  <p className="font-semibold">{t('subscriptionActivated')}</p>
+                  <p className="text-sm opacity-80">
+                    {t('subscriptionActivatedDesc', { plan: paywall.plan, limit: String(paywall.limit) })}
+                  </p>
+                </div>
               </div>
-              <Link href="/dashboard" className="btn btn-ghost min-h-10">{t('dismiss')}</Link>
+              <Link href="/dashboard" className="btn btn-ghost min-h-10 min-w-[44px] sm:shrink-0">{t('dismiss')}</Link>
             </div>
           )}
           {!isOnboardingComplete && (
-            <div className="alert shadow-warm">
-              <AlertCircle className="h-5 w-5 shrink-0" />
-              <div>
-                <p className="font-semibold">
-                  {hasStripeAccount ? t('completeGatewaySetup') : t('activateGateway')}
-                </p>
-                <p className="text-sm opacity-70">
-                  {hasStripeAccount ? t('finishOnboardingDesc') : t('connectStripeDesc')}
-                </p>
+            <div className="alert shadow-warm flex-col sm:flex-row items-stretch sm:items-center gap-3 text-left">
+              <div className="flex gap-3 flex-1 min-w-0">
+                <AlertCircle className="h-5 w-5 shrink-0" />
+                <div className="min-w-0">
+                  <p className="font-semibold">
+                    {hasStripeAccount ? t('completeGatewaySetup') : t('activateGateway')}
+                  </p>
+                  <p className="text-sm opacity-70">
+                    {hasStripeAccount ? t('finishOnboardingDesc') : t('connectStripeDesc')}
+                  </p>
+                </div>
               </div>
-              <form action={createStripeConnectAccount}>
+              <form action={createStripeConnectAccount} className="w-full sm:w-auto">
                 <input type="hidden" name="locale" value={locale} />
-                <button className="btn btn-primary gap-1 min-h-11">
+                <button className="btn btn-primary gap-1 min-h-11 w-full sm:w-auto min-w-[44px] touch-manipulation">
                   {hasStripeAccount ? t('resume') : t('setupStripe')}
                   <ArrowRight className="h-3.5 w-3.5" />
                 </button>
@@ -429,11 +435,11 @@ export default async function DashboardPage({
         <FocusStrip nextDebtor={nextDebtor} actionableCount={actionableDebtors.length} />
 
         {/* Main content: table + sidebar */}
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+        <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-12">
           {/* Debtor list */}
-          <section id="dashboard-debtors" className="lg:col-span-8 scroll-mt-24">
+          <section id="dashboard-debtors" className="lg:col-span-8 scroll-mt-24 min-w-0">
             <div className="card bg-base-200/50 border border-base-300/50 shadow-warm overflow-hidden">
-              <div className="flex flex-col gap-3 border-b border-base-300/50 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-col gap-3 border-b border-base-300/50 p-3 sm:p-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-3">
                   <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-base-300/50">
                     <Users className="h-4 w-4 text-base-content/60" />
@@ -463,7 +469,7 @@ export default async function DashboardPage({
           </section>
 
           {/* Sidebar: one compartment (Law of Common Region, Chunking) */}
-          <aside className="lg:col-span-4">
+          <aside className="lg:col-span-4 min-w-0">
             <InsightsPanel>
               <SuggestedCitations chunks={suggestedCitations} />
               <RecoveryAnalytics

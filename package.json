@@ -6,10 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "eslint .",
     "i18n:check": "node scripts/check-i18n-parity.mjs",
+    "test:unit": "tsx tests/chunking.test.ts",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
+    "test": "npm run test:unit && npm run test:e2e",
+    "audit": "npm audit",
     "db:check": "bash -c 'source ~/.config/meziani/mcp.env 2>/dev/null; node scripts/supabase-migrate-and-check.mjs'"
   },
   "dependencies": {
@@ -43,6 +46,7 @@
     "@types/react-dom": "^19.2.3",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "tsx": "^4.19.2",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "^5"
   },

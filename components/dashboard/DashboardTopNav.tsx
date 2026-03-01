@@ -79,7 +79,7 @@ export default function DashboardTopNav({
         </button>
 
         {open && (
-          <div className="absolute right-0 z-50 mt-2 w-56 min-w-48 max-w-72 overflow-hidden rounded-2xl border border-base-300 bg-base-200 py-1 shadow-xl">
+          <div className="absolute right-0 z-50 mt-2 w-56 min-w-[min(100vw-2rem,16rem)] max-w-[calc(100vw-2rem)] sm:max-w-72 overflow-hidden rounded-2xl border border-base-300 bg-base-200 py-1 shadow-xl">
             <div className="border-b border-base-300 px-4 py-3">
               <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.12em]">{merchantName}</p>
               <div className="flex items-center gap-1.5">

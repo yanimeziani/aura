@@ -78,32 +78,32 @@ export default function LandingPage() {
               {t('heroParagraph')}
             </p>
 
-            <div className="flex flex-wrap gap-3 mt-10">
-              <Link href="/register" className="btn btn-primary gap-2 px-6 text-base min-h-12">
+            <div className="flex flex-wrap gap-3 mt-8 sm:mt-10">
+              <Link href="/register" className="btn btn-primary gap-2 px-6 text-base min-h-12 min-w-[44px] touch-manipulation">
                 {t('startPilot')}
                 <ArrowRight className="w-4 h-4" />
               </Link>
-              <Link href="/pricing" className="btn btn-ghost border border-base-300/60 gap-2 min-h-12">
+              <Link href="/pricing" className="btn btn-ghost border border-base-300/60 gap-2 min-h-12 min-w-[44px] touch-manipulation">
                 {t('seePricing')}
               </Link>
-              <a href="#demo" className="btn btn-ghost gap-2 min-h-12">
+              <a href="#demo" className="btn btn-ghost gap-2 min-h-12 min-w-[44px] touch-manipulation">
                 {t('watchDemo')}
               </a>
             </div>
           </div>
 
           {/* Floating stat cards beside hero -- Von Restorff: make key metrics stand out */}
-          <div className="mt-16 grid grid-cols-2 sm:grid-cols-3 gap-3 max-w-2xl">
+          <div className="mt-12 sm:mt-16 grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 max-w-2xl min-w-0">
             {[
               { label: t('recoveryRateLabel'), value: '82%', sub: t('pilotMedian') },
               { label: t('latencyLabel'), value: '2.1s', sub: t('p50Latency') },
               { label: t('activePilots'), value: '24+', sub: t('liveDeployments') },
             ].map((stat) => (
-              <div key={stat.label} className="card bg-base-200/50 border border-base-300/30 shadow-warm hover-lift">
-                <div className="card-body p-4">
-                  <p className="text-label">{stat.label}</p>
-                  <p className="text-2xl sm:text-3xl font-bold tracking-tight">{stat.value}</p>
-                  <p className="text-xs text-base-content/40">{stat.sub}</p>
+              <div key={stat.label} className="card bg-base-200/50 border border-base-300/30 shadow-warm hover-lift min-w-0">
+                <div className="card-body p-3 sm:p-4">
+                  <p className="text-label truncate">{stat.label}</p>
+                  <p className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">{stat.value}</p>
+                  <p className="text-xs text-base-content/40 truncate">{stat.sub}</p>
                 </div>
               </div>
             ))}
@@ -226,11 +226,11 @@ export default function LandingPage() {
           </h2>
           <p className="text-base-content/50 mt-4 mb-10 text-lg">{t('ctaSubtitle')}</p>
           <div className="flex flex-wrap gap-3 justify-center">
-            <Link href="/register" className="btn btn-primary btn-lg gap-2 px-8 min-h-14">
+            <Link href="/register" className="btn btn-primary btn-lg gap-2 px-8 min-h-14 min-w-[44px] touch-manipulation">
               {t('ctaButton')}
               <ArrowRight className="w-5 h-5" />
             </Link>
-            <Link href="/pricing" className="btn btn-ghost btn-lg border border-base-300/60 min-h-14">
+            <Link href="/pricing" className="btn btn-ghost btn-lg border border-base-300/60 min-h-14 min-w-[44px] touch-manipulation">
               {t('seePricing')}
             </Link>
           </div>
