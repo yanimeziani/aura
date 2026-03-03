@@ -1,5 +1,6 @@
 package org.dragun.pegasus.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -9,13 +10,16 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import org.dragun.pegasus.domain.model.AgentInfo
 import org.dragun.pegasus.ui.Routes
+import org.dragun.pegasus.ui.components.glass.*
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
     viewModel: DashboardViewModel = hiltViewModel(),
@@ -23,15 +27,41 @@ fun DashboardScreen(
     onLogout: () -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
+    val glassColors = LiquidGlassTheme.glassColors
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        MaterialTheme.colorScheme.background,
+                        MaterialTheme.colorScheme.background.copy(alpha = 0.95f),
+                    )
+                )
+            )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding()
+                .padding(horizontal = 20.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            Spacer(Modifier.height(8.dp))
+
+            GlassTopBar(
                 title = {
                     Column {
-                        Text("Pegasus", style = MaterialTheme.typography.titleMedium)
                         Text(
-                            "OpenClaw — ${state.username}",
+                            "Pegasus",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                        Text(
+                            "OpenClaw · ${state.username}",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -39,68 +69,78 @@ fun DashboardScreen(
                 },
                 actions = {
                     IconButton(onClick = { viewModel.refresh() }) {
-                        Icon(Icons.Default.Refresh, "Refresh")
+                        Icon(Icons.Default.Refresh, "Refresh", tint = MaterialTheme.colorScheme.primary)
                     }
                     IconButton(onClick = { onNavigate(Routes.SETTINGS) }) {
-                        Icon(Icons.Default.Settings, "Settings")
+                        Icon(Icons.Default.Settings, "Settings", tint = MaterialTheme.colorScheme.primary)
                     }
                     IconButton(onClick = { viewModel.logout(onLogout) }) {
-                        Icon(Icons.Default.Logout, "Logout")
+                        Icon(Icons.Default.Logout, "Logout", tint = MaterialTheme.colorScheme.primary)
                     }
                 },
             )
-        },
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(horizontal = 16.dp)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
+
             if (state.panicActive) {
-                Card(
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.error),
+                GlassCard(
                     modifier = Modifier.fillMaxWidth(),
+                    cornerRadius = 16.dp,
                 ) {
                     Row(
-                        modifier = Modifier.padding(16.dp),
+                        modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Icon(Icons.Default.Warning, null, tint = MaterialTheme.colorScheme.onError)
-                        Spacer(Modifier.width(8.dp))
-                        Text(
-                            "PANIC MODE ACTIVE",
-                            color = MaterialTheme.colorScheme.onError,
-                            fontWeight = FontWeight.Bold,
+                        Icon(
+                            Icons.Default.Warning,
+                            null,
+                            tint = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.size(28.dp)
                         )
-                        Spacer(Modifier.weight(1f))
-                        TextButton(
+                        Spacer(Modifier.width(12.dp))
+                        Column(Modifier.weight(1f)) {
+                            Text(
+                                "PANIC MODE ACTIVE",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.error,
+                            )
+                            Text(
+                                "All agents halted",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        GlassButton(
                             onClick = { viewModel.togglePanic() },
-                            colors = ButtonDefaults.textButtonColors(
-                                contentColor = MaterialTheme.colorScheme.onError,
-                            ),
-                        ) { Text("CLEAR") }
+                            cornerRadius = 10.dp,
+                        ) {
+                            Text("CLEAR", style = MaterialTheme.typography.labelMedium)
+                        }
                     }
                 }
             }
 
             state.error?.let {
-                Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+                GlassCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    cornerRadius = 16.dp,
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.Error, null, tint = MaterialTheme.colorScheme.error)
+                        Spacer(Modifier.width(8.dp))
+                        Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+                    }
+                }
             }
 
-            // System health
             state.health?.let { health ->
                 StatusCard(
-                    title = "System",
+                    title = "System Health",
                     status = health.status,
-                    subtitle = "Uptime: ${(health.uptime_s / 60).toInt()}m",
+                    subtitle = "Uptime: ${(health.uptime_s / 60).toInt()} minutes",
                 )
             }
 
-            // Agents
-            Text("Agents", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+            SectionHeader("Agents")
             state.agents.forEach { (id, info) ->
                 AgentCard(
                     id = id,
@@ -111,39 +151,53 @@ fun DashboardScreen(
                 )
             }
             if (state.agents.isEmpty() && !state.loading) {
-                Text(
-                    "No agents connected yet",
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.bodySmall,
-                )
+                GlassCard(modifier = Modifier.fillMaxWidth()) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(Icons.Default.CloudOff, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            "No agents connected",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
             }
 
-            // Quick nav cards
-            Text("Actions", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                NavCard(
+            SectionHeader("Quick Actions")
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                ActionCard(
                     icon = Icons.Default.CheckCircle,
                     label = "HITL Queue",
                     badge = state.hitlCount,
                     onClick = { onNavigate(Routes.HITL) },
                     modifier = Modifier.weight(1f),
                 )
-                NavCard(
+                ActionCard(
                     icon = Icons.Default.AttachMoney,
                     label = "Costs",
                     onClick = { onNavigate(Routes.COSTS) },
                     modifier = Modifier.weight(1f),
                 )
             }
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                NavCard(
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                ActionCard(
                     icon = Icons.Default.Terminal,
                     label = "Terminal",
                     onClick = { onNavigate(Routes.TERMINAL) },
                     modifier = Modifier.weight(1f),
                 )
-                NavCard(
-                    icon = Icons.Default.Warning,
+                ActionCard(
+                    icon = if (state.panicActive) Icons.Default.Shield else Icons.Default.Warning,
                     label = if (state.panicActive) "Clear Panic" else "Panic",
                     onClick = { viewModel.togglePanic() },
                     modifier = Modifier.weight(1f),
@@ -151,39 +205,60 @@ fun DashboardScreen(
                 )
             }
 
-            // Costs summary
             state.costs?.let { costs ->
-                Text("Today's Spend", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+                SectionHeader("Today's Spend")
                 costs.agents.forEach { (key, entry) ->
                     CostBar(label = key, spent = entry.spent_usd, cap = entry.cap_usd, pct = entry.pct)
                 }
             }
 
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(24.dp))
         }
     }
 }
 
 @Composable
+private fun SectionHeader(title: String) {
+    Text(
+        title,
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = FontWeight.SemiBold,
+        color = MaterialTheme.colorScheme.onBackground,
+    )
+}
+
+@Composable
 private fun StatusCard(title: String, status: String, subtitle: String) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-    ) {
+    val isHealthy = status == "ok"
+    GlassCard(modifier = Modifier.fillMaxWidth()) {
         Row(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(
-                Icons.Default.CheckCircle,
-                null,
-                tint = if (status == "ok") MaterialTheme.colorScheme.secondary
-                       else MaterialTheme.colorScheme.error,
-            )
-            Spacer(Modifier.width(12.dp))
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .background(
+                        color = if (isHealthy) MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f)
+                        else MaterialTheme.colorScheme.error.copy(alpha = 0.15f),
+                        shape = MaterialTheme.shapes.medium
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    if (isHealthy) Icons.Default.CheckCircle else Icons.Default.Error,
+                    null,
+                    tint = if (isHealthy) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error,
+                )
+            }
+            Spacer(Modifier.width(16.dp))
             Column {
-                Text(title, fontWeight = FontWeight.Bold)
-                Text(subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(title, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleSmall)
+                Text(
+                    subtitle,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
     }
@@ -192,7 +267,7 @@ private fun StatusCard(title: String, status: String, subtitle: String) {
 @Composable
 private fun AgentCard(
     id: String,
-    info: org.dragun.pegasus.domain.model.AgentInfo,
+    info: AgentInfo,
     onClick: () -> Unit,
     onStart: () -> Unit,
     onStop: () -> Unit,
@@ -204,81 +279,94 @@ private fun AgentCard(
         "waiting_hitl" -> MaterialTheme.colorScheme.tertiary
         else -> MaterialTheme.colorScheme.onSurfaceVariant
     }
-    Card(
+
+    GlassCard(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         onClick = onClick,
+        cornerRadius = 18.dp,
     ) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(44.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                        shape = MaterialTheme.shapes.medium
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
                 Icon(
-                    if (id.contains("devsecops")) Icons.Default.Security else Icons.Default.TrendingUp,
+                    if (id.contains("devsecops")) Icons.Default.Security else Icons.Default.SmartToy,
                     null,
                     tint = MaterialTheme.colorScheme.primary,
                 )
-                Spacer(Modifier.width(12.dp))
-                Column(Modifier.weight(1f)) {
-                    Text(id, fontWeight = FontWeight.Bold)
-                    Text(
-                        info.current_task ?: "No active task",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-                Surface(
-                    color = statusColor.copy(alpha = 0.15f),
-                    shape = MaterialTheme.shapes.small,
+            }
+            Spacer(Modifier.width(14.dp))
+            Column(Modifier.weight(1f)) {
+                Text(id, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.titleSmall)
+                Text(
+                    info.current_task ?: "No active task",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                )
+            }
+            Spacer(Modifier.width(8.dp))
+            Surface(
+                color = statusColor.copy(alpha = 0.15f),
+                shape = MaterialTheme.shapes.small,
+            ) {
+                Text(
+                    info.status ?: "unknown",
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = statusColor,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+        }
+        Spacer(Modifier.height(12.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+        ) {
+            if (info.status == "running") {
+                GlassButton(
+                    onClick = onStop,
+                    cornerRadius = 10.dp,
                 ) {
-                    Text(
-                        info.status ?: "unknown",
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = statusColor,
-                        fontWeight = FontWeight.Bold,
-                    )
+                    Icon(Icons.Default.Stop, null, Modifier.size(16.dp))
+                    Spacer(Modifier.width(4.dp))
+                    Text("Stop", style = MaterialTheme.typography.labelSmall)
+                }
+            } else {
+                GlassButton(
+                    onClick = onStart,
+                    cornerRadius = 10.dp,
+                ) {
+                    Icon(Icons.Default.PlayArrow, null, Modifier.size(16.dp))
+                    Spacer(Modifier.width(4.dp))
+                    Text("Start", style = MaterialTheme.typography.labelSmall)
                 }
             }
-            Spacer(Modifier.height(8.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
+            Spacer(Modifier.width(8.dp))
+            GlassButton(
+                onClick = onClick,
+                cornerRadius = 10.dp,
             ) {
-                if (info.status == "running") {
-                    TextButton(
-                        onClick = onStop,
-                        colors = ButtonDefaults.textButtonColors(
-                            contentColor = MaterialTheme.colorScheme.error,
-                        ),
-                    ) {
-                        Icon(Icons.Default.Stop, null, Modifier.size(16.dp))
-                        Spacer(Modifier.width(4.dp))
-                        Text("Stop", style = MaterialTheme.typography.labelSmall)
-                    }
-                } else {
-                    TextButton(
-                        onClick = onStart,
-                        colors = ButtonDefaults.textButtonColors(
-                            contentColor = MaterialTheme.colorScheme.secondary,
-                        ),
-                    ) {
-                        Icon(Icons.Default.PlayArrow, null, Modifier.size(16.dp))
-                        Spacer(Modifier.width(4.dp))
-                        Text("Start", style = MaterialTheme.typography.labelSmall)
-                    }
-                }
-                Spacer(Modifier.width(8.dp))
-                TextButton(onClick = onClick) {
-                    Icon(Icons.Default.Terminal, null, Modifier.size(16.dp))
-                    Spacer(Modifier.width(4.dp))
-                    Text("Stream", style = MaterialTheme.typography.labelSmall)
-                }
+                Icon(Icons.Default.Terminal, null, Modifier.size(16.dp))
+                Spacer(Modifier.width(4.dp))
+                Text("Stream", style = MaterialTheme.typography.labelSmall)
             }
         }
     }
 }
 
 @Composable
-private fun NavCard(
+private fun ActionCard(
     icon: ImageVector,
     label: String,
     badge: Int = 0,
@@ -286,30 +374,39 @@ private fun NavCard(
     modifier: Modifier = Modifier,
     isDestructive: Boolean = false,
 ) {
-    val containerColor = if (isDestructive) MaterialTheme.colorScheme.error.copy(alpha = 0.12f)
-                         else MaterialTheme.colorScheme.surface
-    Card(
-        onClick = onClick,
+    val tint = if (isDestructive) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+
+    GlassCard(
         modifier = modifier,
-        colors = CardDefaults.cardColors(containerColor = containerColor),
+        onClick = onClick,
+        cornerRadius = 16.dp,
     ) {
         Column(
-            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             if (badge > 0) {
-                BadgedBox(badge = { Badge { Text("$badge") } }) {
-                    Icon(icon, null, tint = MaterialTheme.colorScheme.primary)
+                BadgedBox(
+                    badge = {
+                        Badge(
+                            containerColor = MaterialTheme.colorScheme.error,
+                            contentColor = MaterialTheme.colorScheme.onError,
+                        ) {
+                            Text("$badge")
+                        }
+                    }
+                ) {
+                    Icon(icon, null, tint = tint, modifier = Modifier.size(28.dp))
                 }
             } else {
-                Icon(
-                    icon, null,
-                    tint = if (isDestructive) MaterialTheme.colorScheme.error
-                           else MaterialTheme.colorScheme.primary,
-                )
+                Icon(icon, null, tint = tint, modifier = Modifier.size(28.dp))
             }
-            Spacer(Modifier.height(4.dp))
-            Text(label, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
+            Spacer(Modifier.height(8.dp))
+            Text(
+                label,
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.SemiBold,
+            )
         }
     }
 }
@@ -321,9 +418,15 @@ private fun CostBar(label: String, spent: Double, cap: Double, pct: Double) {
         pct >= 80 -> MaterialTheme.colorScheme.tertiary
         else -> MaterialTheme.colorScheme.secondary
     }
+
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(label, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(
+                label,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontWeight = FontWeight.Medium,
+            )
             Text(
                 "$${String.format("%.4f", spent)} / $${String.format("%.2f", cap)}",
                 style = MaterialTheme.typography.bodySmall,
@@ -331,11 +434,17 @@ private fun CostBar(label: String, spent: Double, cap: Double, pct: Double) {
                 color = color,
             )
         }
-        LinearProgressIndicator(
-            progress = { (pct / 100.0).toFloat().coerceIn(0f, 1f) },
-            modifier = Modifier.fillMaxWidth().height(6.dp),
-            color = color,
-            trackColor = MaterialTheme.colorScheme.surfaceVariant,
-        )
+        Spacer(Modifier.height(6.dp))
+        GlassSurface(modifier = Modifier.fillMaxWidth().height(8.dp), cornerRadius = 4.dp) {
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .fillMaxWidth((pct / 100.0).toFloat().coerceIn(0f, 1f))
+                    .background(
+                        color = color,
+                        shape = MaterialTheme.shapes.small
+                    )
+            )
+        }
     }
 }

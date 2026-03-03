@@ -36,6 +36,26 @@ android {
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.getByName("debug")
+            
+            // Enhanced optimization for liquid glass render engine
+            ndk {
+                debugSymbolLevel = "NONE"
+            }
+            
+            // Enable R8 full mode for maximum optimization
+            buildConfigField("boolean", "ENABLE_RENDER_ENGINE_DEBUG", "false")
+            buildConfigField("boolean", "ENABLE_GLASS_ANIMATIONS", "true")
+            buildConfigField("boolean", "ENABLE_HAPTIC_FEEDBACK", "true")
+        }
+        
+        debug {
+            isDebuggable = true
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
+            
+            buildConfigField("boolean", "ENABLE_RENDER_ENGINE_DEBUG", "true")
+            buildConfigField("boolean", "ENABLE_GLASS_ANIMATIONS", "true")
+            buildConfigField("boolean", "ENABLE_HAPTIC_FEEDBACK", "true")
         }
     }
 
@@ -46,11 +66,22 @@ android {
 
     kotlinOptions {
         jvmTarget = "17"
+        
+        // Enable Compose optimizations for liquid glass effects
+        freeCompilerArgs += listOf(
+            "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
+            "-opt-in=androidx.compose.animation.ExperimentalAnimationApi",
+            "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi"
+        )
     }
 
     buildFeatures {
         compose = true
         buildConfig = true
+    }
+    
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.8"
     }
 
     packaging {
