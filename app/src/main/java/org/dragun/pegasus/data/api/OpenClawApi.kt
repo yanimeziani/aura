@@ -21,6 +21,15 @@ interface OpenClawApi {
     @GET("agents")
     suspend fun agents(): Response<Map<String, AgentInfo>>
 
+    @POST("agents/{agent_id}/start")
+    suspend fun startAgent(@Path("agent_id") agentId: String): Response<AgentControlResult>
+
+    @POST("agents/{agent_id}/stop")
+    suspend fun stopAgent(@Path("agent_id") agentId: String): Response<AgentControlResult>
+
+    @GET("agents/{agent_id}/stream")
+    suspend fun streamAgent(@Path("agent_id") agentId: String): Response<String>
+
     // HITL
     @GET("hitl/queue")
     suspend fun hitlQueue(@Query("status") status: String = "pending"): Response<HitlQueue>

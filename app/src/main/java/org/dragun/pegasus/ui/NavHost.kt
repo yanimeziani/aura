@@ -16,6 +16,7 @@ object Routes {
     const val COSTS = "costs"
     const val TERMINAL = "terminal"
     const val SETTINGS = "settings"
+    const val AGENT_STREAM = "agent_stream"
 }
 
 @Composable
@@ -58,6 +59,13 @@ fun PegasusNavHost() {
         }
         composable(Routes.SETTINGS) {
             SettingsScreen(onBack = { navController.popBackStack() })
+        }
+        composable(Routes.AGENT_STREAM + "/{agentId}") { backStackEntry ->
+            val agentId = backStackEntry.arguments?.getString("agentId") ?: ""
+            AgentStreamScreen(
+                agentId = agentId,
+                onBack = { navController.popBackStack() },
+            )
         }
     }
 }

@@ -102,7 +102,13 @@ fun DashboardScreen(
             // Agents
             Text("Agents", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
             state.agents.forEach { (id, info) ->
-                AgentCard(id, info)
+                AgentCard(
+                    id = id,
+                    info = info,
+                    onClick = { onNavigate("${Routes.AGENT_STREAM}/$id") },
+                    onStart = { viewModel.startAgent(id) },
+                    onStop = { viewModel.stopAgent(id) },
+                )
             }
             if (state.agents.isEmpty() && !state.loading) {
                 Text(
@@ -184,7 +190,13 @@ private fun StatusCard(title: String, status: String, subtitle: String) {
 }
 
 @Composable
-private fun AgentCard(id: String, info: org.dragun.pegasus.domain.model.AgentInfo) {
+private fun AgentCard(
+    id: String,
+    info: org.dragun.pegasus.domain.model.AgentInfo,
+    onClick: () -> Unit,
+    onStart: () -> Unit,
+    onStop: () -> Unit,
+) {
     val statusColor = when (info.status) {
         "running" -> MaterialTheme.colorScheme.secondary
         "idle" -> MaterialTheme.colorScheme.onSurfaceVariant
@@ -195,33 +207,71 @@ private fun AgentCard(id: String, info: org.dragun.pegasus.domain.model.AgentInf
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        onClick = onClick,
     ) {
-        Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                if (id.contains("devsecops")) Icons.Default.Security else Icons.Default.TrendingUp,
-                null,
-                tint = MaterialTheme.colorScheme.primary,
-            )
-            Spacer(Modifier.width(12.dp))
-            Column(Modifier.weight(1f)) {
-                Text(id, fontWeight = FontWeight.Bold)
-                Text(
-                    info.current_task ?: "No active task",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+        Column(modifier = Modifier.padding(12.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    if (id.contains("devsecops")) Icons.Default.Security else Icons.Default.TrendingUp,
+                    null,
+                    tint = MaterialTheme.colorScheme.primary,
                 )
+                Spacer(Modifier.width(12.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(id, fontWeight = FontWeight.Bold)
+                    Text(
+                        info.current_task ?: "No active task",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                Surface(
+                    color = statusColor.copy(alpha = 0.15f),
+                    shape = MaterialTheme.shapes.small,
+                ) {
+                    Text(
+                        info.status ?: "unknown",
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = statusColor,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
             }
-            Surface(
-                color = statusColor.copy(alpha = 0.15f),
-                shape = MaterialTheme.shapes.small,
+            Spacer(Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
             ) {
-                Text(
-                    info.status ?: "unknown",
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = statusColor,
-                    fontWeight = FontWeight.Bold,
-                )
+                if (info.status == "running") {
+                    TextButton(
+                        onClick = onStop,
+                        colors = ButtonDefaults.textButtonColors(
+                            contentColor = MaterialTheme.colorScheme.error,
+                        ),
+                    ) {
+                        Icon(Icons.Default.Stop, null, Modifier.size(16.dp))
+                        Spacer(Modifier.width(4.dp))
+                        Text("Stop", style = MaterialTheme.typography.labelSmall)
+                    }
+                } else {
+                    TextButton(
+                        onClick = onStart,
+                        colors = ButtonDefaults.textButtonColors(
+                            contentColor = MaterialTheme.colorScheme.secondary,
+                        ),
+                    ) {
+                        Icon(Icons.Default.PlayArrow, null, Modifier.size(16.dp))
+                        Spacer(Modifier.width(4.dp))
+                        Text("Start", style = MaterialTheme.typography.labelSmall)
+                    }
+                }
+                Spacer(Modifier.width(8.dp))
+                TextButton(onClick = onClick) {
+                    Icon(Icons.Default.Terminal, null, Modifier.size(16.dp))
+                    Spacer(Modifier.width(4.dp))
+                    Text("Stream", style = MaterialTheme.typography.labelSmall)
+                }
             }
         }
     }

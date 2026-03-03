@@ -10,8 +10,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.filled.Link
-import androidx.compose.material.icons.filled.LinkOff
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -28,6 +27,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import org.dragun.pegasus.data.shell.PegasusShell
 import org.dragun.pegasus.data.ssh.SshClientWrapper
 import org.dragun.pegasus.data.store.SessionStore
 import javax.inject.Inject
@@ -35,24 +35,27 @@ import javax.inject.Inject
 data class TermLine(val text: String, val isCommand: Boolean = false, val isError: Boolean = false)
 
 data class TerminalState(
-    val lines: List<TermLine> = listOf(TermLine("Pegasus Terminal — type 'connect' to start SSH session")),
+    val lines: List<TermLine> = listOf(TermLine("Pegasus Terminal — type 'help' for commands")),
     val input: String = "",
     val connected: Boolean = false,
     val connecting: Boolean = false,
     val sshHost: String = "",
     val sshUser: String = "root",
+    val shellMode: Boolean = true,
 )
 
 @HiltViewModel
 class TerminalViewModel @Inject constructor(
     private val ssh: SshClientWrapper,
     private val session: SessionStore,
+    private val shell: PegasusShell,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(TerminalState())
     val state: StateFlow<TerminalState> = _state.asStateFlow()
 
     init {
+        shell.initialize()
         viewModelScope.launch {
             session.sshHost.collect { host ->
                 _state.update { it.copy(sshHost = host ?: "") }
@@ -70,15 +73,42 @@ class TerminalViewModel @Inject constructor(
         appendLine(TermLine("$ $cmd", isCommand = true))
 
         when {
+            cmd == "help" -> showHelp()
+            cmd == "shell" -> _state.update { it.copy(shellMode = true, connected = false) }
+            cmd == "ssh" -> _state.update { it.copy(shellMode = false) }
+            cmd == "mode" -> appendLine(TermLine("Current mode: ${if (_state.value.shellMode) "shell" else "ssh"}"))
             cmd == "connect" || cmd.startsWith("connect ") -> connect(cmd)
             cmd == "disconnect" -> disconnect()
             cmd == "clear" -> _state.update { it.copy(lines = emptyList()) }
             _state.value.connected -> runRemote(cmd)
-            else -> appendLine(TermLine("Not connected. Type 'connect' first.", isError = true))
+            _state.value.shellMode -> runLocal(cmd)
+            else -> appendLine(TermLine("Not connected. Type 'connect' or use shell mode.", isError = true))
         }
     }
 
+    private fun showHelp() {
+        val help = """
+            Pegasus Terminal Commands:
+            
+            Shell Mode (built-in):
+              help              Show this help
+              shell             Switch to shell mode
+              ssh               Switch to SSH mode
+              mode              Show current mode
+              clear             Clear screen
+            
+            SSH Mode:
+              connect [host]    Connect to SSH server
+              disconnect        Disconnect from SSH
+              
+            Both modes:
+              exit              Disconnect and exit
+        """.trimIndent()
+        appendLine(TermLine(help))
+    }
+
     private fun connect(cmd: String) {
+        _state.update { it.copy(shellMode = false) }
         val parts = cmd.split(" ")
         val host = if (parts.size > 1) parts[1] else _state.value.sshHost
         val user = if (parts.size > 2) parts[2] else _state.value.sshUser
@@ -95,7 +125,7 @@ class TerminalViewModel @Inject constructor(
             try {
                 ssh.connect(host, 22, user)
                 _state.update { it.copy(connected = true, connecting = false) }
-                appendLine(TermLine("Connected to $user@$host"))
+                appendLine(TermLine("Connected to $user@$host (SSH mode)"))
             } catch (e: Exception) {
                 _state.update { it.copy(connecting = false) }
                 appendLine(TermLine("Connection failed: ${e.message}", isError = true))
@@ -124,8 +154,27 @@ class TerminalViewModel @Inject constructor(
         }
     }
 
+    private fun runLocal(cmd: String) {
+        viewModelScope.launch {
+            val result = shell.execute(cmd)
+            result.fold(
+                onSuccess = { output ->
+                    if (output.isNotBlank()) appendLine(TermLine(output))
+                },
+                onFailure = { e ->
+                    appendLine(TermLine("Error: ${e.message}", isError = true))
+                }
+            )
+        }
+    }
+
     private fun appendLine(line: TermLine) {
         _state.update { it.copy(lines = it.lines + line) }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        shell.cleanup()
     }
 }
 

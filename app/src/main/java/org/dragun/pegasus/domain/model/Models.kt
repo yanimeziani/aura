@@ -21,6 +21,13 @@ data class AgentInfo(
     val status: String?,
 )
 
+data class AgentControlResult(
+    val success: Boolean,
+    val agent_id: String,
+    val action: String,
+    val message: String?,
+)
+
 data class HitlItem(
     val task_id: String,
     val agent_id: String,

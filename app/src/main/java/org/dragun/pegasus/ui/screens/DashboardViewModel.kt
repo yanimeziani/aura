@@ -76,6 +76,28 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
+    fun startAgent(agentId: String) {
+        viewModelScope.launch {
+            try {
+                api.startAgent(agentId)
+                refresh()
+            } catch (e: Exception) {
+                _state.update { it.copy(error = "Failed to start agent: ${e.message}") }
+            }
+        }
+    }
+
+    fun stopAgent(agentId: String) {
+        viewModelScope.launch {
+            try {
+                api.stopAgent(agentId)
+                refresh()
+            } catch (e: Exception) {
+                _state.update { it.copy(error = "Failed to stop agent: ${e.message}") }
+            }
+        }
+    }
+
     fun logout(onDone: () -> Unit) {
         viewModelScope.launch {
             try { api.logout() } catch (_: Exception) {}
