@@ -9,7 +9,6 @@ import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import okio.Buffer
 import org.dragun.pegasus.data.api.AuthInterceptor
 import org.dragun.pegasus.data.store.SessionStore
 import javax.inject.Inject
@@ -66,29 +65,32 @@ class AgentStreamRepository @Inject constructor(
                 return@callbackFlow
             }
 
-        val buffer = StringBuilder()
-        val source = body.source()
-        val bufferReader = Buffer()
+            val source = body.source()
+            val buffer = StringBuilder()
 
-        while (true) {
-            val line = source.readUtf8Line() ?: break
-            buffer.append(line)
+            while (true) {
+                val line = source.readUtf8Line() ?: break
 
-            if (line.isEmpty()) {
-                val data = buffer.toString()
-                if (data.startsWith("data: ")) {
-                    val content = data.substring(6).trim()
-                    when {
-                        content == "DONE" -> {
-                            trySend(AgentStreamEvent.Disconnected)
-                        }
-                        content.isNotEmpty() -> {
-                            trySend(AgentStreamEvent.Output(content))
+                if (line.isEmpty()) {
+                    val data = buffer.toString()
+                    if (data.startsWith("data: ")) {
+                        val content = data.substring(6).trim()
+                        when {
+                            content == "DONE" -> {
+                                trySend(AgentStreamEvent.Disconnected)
+                            }
+                            content.isNotEmpty() -> {
+                                trySend(AgentStreamEvent.Output(content))
+                            }
                         }
                     }
+                    buffer.clear()
+                } else {
+                    buffer.append(line)
                 }
-                buffer.clear()
             }
+        } catch (e: Exception) {
+            trySend(AgentStreamEvent.Error("Stream error: ${e.message}"))
         }
 
         awaitClose {
