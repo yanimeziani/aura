@@ -289,7 +289,7 @@ fun AgentStreamScreen(
                     )
                 }
 
-                if (state.connected) {
+                if (state.status == "connecting") {
                     item {
                         Row(
                             modifier = Modifier.padding(vertical = 4.dp),
@@ -302,7 +302,28 @@ fun AgentStreamScreen(
                             )
                             Spacer(Modifier.width(8.dp))
                             Text(
-                                "Streaming...",
+                                "Connecting stream...",
+                                fontFamily = FontFamily.Monospace,
+                                fontSize = 11.sp,
+                                color = MaterialTheme.colorScheme.secondary,
+                            )
+                        }
+                    }
+                } else if (state.connected) {
+                    item {
+                        Row(
+                            modifier = Modifier.padding(vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Icon(
+                                Icons.Default.CloudDone,
+                                null,
+                                modifier = Modifier.size(12.dp),
+                                tint = MaterialTheme.colorScheme.secondary,
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text(
+                                "Connected - waiting for events",
                                 fontFamily = FontFamily.Monospace,
                                 fontSize = 11.sp,
                                 color = MaterialTheme.colorScheme.secondary,
