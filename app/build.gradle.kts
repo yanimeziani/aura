@@ -14,8 +14,8 @@ android {
         applicationId = "org.dragun.pegasus"
         minSdk = 28
         targetSdk = 36
-        versionCode = 4
-        versionName = "0.2.2"
+        versionCode = 5
+        versionName = "0.2.3"
 
         ndk {
             abiFilters += "arm64-v8a"

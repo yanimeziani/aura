@@ -4,9 +4,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import okio.Buffer
 import org.dragun.pegasus.data.api.AuthInterceptor
 import org.dragun.pegasus.data.store.SessionStore
 import javax.inject.Inject
@@ -57,31 +60,27 @@ class AgentStreamRepository @Inject constructor(
         }
 
         val buffer = StringBuilder()
-        val reader = body.source().buffer().readUtf8()
+        val source = body.source()
+        val bufferReader = Buffer()
 
-        reader.use { source ->
-            while (true) {
-                val line = source.readUtf8Line() ?: break
-                buffer.append(line)
+        while (true) {
+            val line = source.readUtf8Line() ?: break
+            buffer.append(line)
 
-                if (line == "") {
-                    val data = buffer.toString()
-                    if (data.startsWith("data: ")) {
-                        val content = data.substring(6).trim()
-                        when {
-                            content.startsWith("[") || content.startsWith("{") -> {
-                                trySend(AgentStreamEvent.Output(content))
-                            }
-                            content == "DONE" -> {
-                                trySend(AgentStreamEvent.Disconnected)
-                            }
-                            else -> {
-                                trySend(AgentStreamEvent.Output(content))
-                            }
+            if (line.isEmpty()) {
+                val data = buffer.toString()
+                if (data.startsWith("data: ")) {
+                    val content = data.substring(6).trim()
+                    when {
+                        content == "DONE" -> {
+                            trySend(AgentStreamEvent.Disconnected)
+                        }
+                        content.isNotEmpty() -> {
+                            trySend(AgentStreamEvent.Output(content))
                         }
                     }
-                    buffer.clear()
                 }
+                buffer.clear()
             }
         }
 
@@ -95,7 +94,7 @@ class AgentStreamRepository @Inject constructor(
             val apiUrl = session.apiUrl.first() ?: return@withContext Result.failure(Exception("No API URL"))
             val request = Request.Builder()
                 .url("$apiUrl/agents/$agentId/start")
-                .post(okhttp3.RequestBody.create(null, ByteArray(0)))
+                .post(ByteArray(0).toRequestBody(null))
                 .build()
 
             val response = okHttp.newBuilder()
@@ -119,7 +118,7 @@ class AgentStreamRepository @Inject constructor(
             val apiUrl = session.apiUrl.first() ?: return@withContext Result.failure(Exception("No API URL"))
             val request = Request.Builder()
                 .url("$apiUrl/agents/$agentId/stop")
-                .post(okhttp3.RequestBody.create(null, ByteArray(0)))
+                .post(ByteArray(0).toRequestBody(null))
                 .build()
 
             val response = okHttp.newBuilder()
