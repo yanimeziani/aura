@@ -27,7 +27,7 @@ fun DashboardScreen(
     onLogout: () -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
-    val glassColors = LiquidGlassTheme.glassColors
+    val glassColors = org.dragun.pegasus.ui.theme.LiquidGlassPalette.glassColors
 
     Box(
         modifier = Modifier

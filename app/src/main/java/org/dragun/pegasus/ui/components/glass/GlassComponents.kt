@@ -21,9 +21,10 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import org.dragun.pegasus.ui.theme.LiquidGlassTheme
+import org.dragun.pegasus.ui.theme.LiquidGlassPalette
 
 @Composable
 fun GlassCard(
@@ -34,7 +35,7 @@ fun GlassCard(
     onClick: (() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    val glassColors = LiquidGlassTheme.glassColors
+    val glassColors = LiquidGlassPalette.glassColors
     val shape = RoundedCornerShape(cornerRadius)
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
@@ -91,7 +92,7 @@ fun GlassButton(
     cornerRadius: Dp = 14.dp,
     content: @Composable RowScope.() -> Unit,
 ) {
-    val glassColors = LiquidGlassTheme.glassColors
+    val glassColors = LiquidGlassPalette.glassColors
     val primaryColor = MaterialTheme.colorScheme.primary
     val shape = RoundedCornerShape(cornerRadius)
     val interactionSource = remember { MutableInteractionSource() }
@@ -153,8 +154,9 @@ fun GlassTextField(
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
     singleLine: Boolean = true,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
 ) {
-    val glassColors = LiquidGlassTheme.glassColors
+    val glassColors = LiquidGlassPalette.glassColors
     val shape = RoundedCornerShape(12.dp)
     
     val backgroundColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
@@ -170,6 +172,7 @@ fun GlassTextField(
         leadingIcon = leadingIcon,
         trailingIcon = trailingIcon,
         singleLine = singleLine,
+        visualTransformation = visualTransformation,
         colors = TextFieldDefaults.colors(
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent,
@@ -189,7 +192,7 @@ fun GlassSurface(
     cornerRadius: Dp = 24.dp,
     content: @Composable BoxScope.() -> Unit,
 ) {
-    val glassColors = LiquidGlassTheme.glassColors
+    val glassColors = LiquidGlassPalette.glassColors
     val shape = RoundedCornerShape(cornerRadius)
     
     Box(
@@ -215,7 +218,7 @@ fun GlassTopBar(
     navigationIcon: @Composable (() -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {},
 ) {
-    val glassColors = LiquidGlassTheme.glassColors
+    val glassColors = LiquidGlassPalette.glassColors
     
     Surface(
         modifier = modifier.fillMaxWidth(),

@@ -1,7 +1,6 @@
 package org.dragun.pegasus.ui.theme
 
 import android.app.Activity
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -108,7 +107,7 @@ private val lightGlassColors = LiquidGlassColors(
     liquidGradient = LiquidGlassLight,
 )
 
-object LiquidGlassTheme {
+object LiquidGlassPalette {
     val glassColors: LiquidGlassColors
         @Composable
         get() = if (isSystemInDarkTheme()) darkGlassColors else lightGlassColors
