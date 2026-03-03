@@ -19,7 +19,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TerminalScreen(
-    viewModel: TerminalViewModel = hiltViewModel(),
     onBack: () -> Unit,
 ) {
     val context = LocalContext.current
