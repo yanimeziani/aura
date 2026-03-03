@@ -301,7 +301,7 @@ class LiquidGlassRenderEngine {
                 val x = i * segmentWidth
                 val normalizedX = x / size.width
                 val waveY = size.height * 0.5f + 
-                    sin((normalizedX * animationState.waveFrequency + animationState.timeOffset * 0.001f) * 2 * PI).toFloat() 
+                    sin((normalizedX * animationState.waveFrequency + animationState.timeOffset * 0.001f) * 2 * kotlin.math.PI).toFloat() 
                     * animationState.waveAmplitude * size.height * 0.1f
                 
                 lineTo(x.toFloat(), waveY.toFloat())
