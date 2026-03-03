@@ -71,10 +71,14 @@ jobs:
         
     - name: Build APK (${{ matrix.build_type }})
       run: |
+        # Set environment variables for Android build optimization
+        export GRADLE_OPTS="-Dorg.gradle.jvmargs=-Xmx4096m -Dorg.gradle.parallel=false"
+        export ANDROID_AAPT2_FROM_MAVEN=true
+        
         if [ "${{ matrix.build_type }}" == "release" ]; then
-          ./gradlew assembleRelease --stacktrace
+          ./gradlew assembleRelease --stacktrace --no-daemon --no-parallel
         else
-          ./gradlew assembleDebug --stacktrace
+          ./gradlew assembleDebug --stacktrace --no-daemon --no-parallel
         fi
         
     - name: Sign APK (Release only)

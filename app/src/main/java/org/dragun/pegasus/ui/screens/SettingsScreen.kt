@@ -21,8 +21,8 @@ import org.dragun.pegasus.data.store.SessionStore
 import javax.inject.Inject
 
 data class SettingsState(
-    val apiUrl: String = "https://ops.meziani.org",
-    val sshHost: String = "",
+    val apiUrl: String = "https://pegasus.meziani.org",
+    val sshHost: String = "89.116.170.202",
     val sshPort: String = "22",
     val sshUser: String = "root",
     val saved: Boolean = false,

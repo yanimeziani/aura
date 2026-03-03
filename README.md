@@ -43,7 +43,7 @@ adb install app/build/outputs/apk/debug/app-debug.apk
 |-------|-------|
 | Username | `yani` |
 | Password | `openclaw2026` |
-| API URL | `https://ops.meziani.org` |
+| API URL | `https://pegasus.meziani.org` |
 
 **Change the password after first login** via the API or orchestrator env var.
 

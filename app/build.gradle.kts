@@ -14,14 +14,14 @@ android {
         applicationId = "org.dragun.pegasus"
         minSdk = 28
         targetSdk = 36
-        versionCode = 10
-        versionName = "0.2.8"
+        versionCode = 11
+        versionName = "0.2.9-beta.1"
 
         ndk {
             abiFilters += "arm64-v8a"
         }
 
-        buildConfigField("String", "DEFAULT_API_URL", "\"https://ops.meziani.org\"")
+        buildConfigField("String", "DEFAULT_API_URL", "\"https://pegasus.meziani.org\"")
     }
 
     signingConfigs {
