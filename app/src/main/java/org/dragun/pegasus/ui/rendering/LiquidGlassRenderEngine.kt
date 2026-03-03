@@ -285,8 +285,8 @@ class LiquidGlassRenderEngine {
             ),
             start = Offset(0f, 0f),
             end = Offset(
-                cos(animationState.flowDirection) * size.width,
-                sin(animationState.flowDirection) * size.height
+                cos(animationState.flowDirection).toFloat() * size.width,
+                sin(animationState.flowDirection).toFloat() * size.height
             )
         )
         
@@ -301,7 +301,7 @@ class LiquidGlassRenderEngine {
                 val x = i * segmentWidth
                 val normalizedX = x / size.width
                 val waveY = size.height * 0.5f + 
-                    sin((normalizedX * animationState.waveFrequency + animationState.timeOffset * 0.001f) * 2 * PI) 
+                    sin((normalizedX * animationState.waveFrequency + animationState.timeOffset * 0.001f) * 2 * PI).toFloat() 
                     * animationState.waveAmplitude * size.height * 0.1f
                 
                 lineTo(x.toFloat(), waveY.toFloat())
@@ -341,8 +341,8 @@ class LiquidGlassRenderEngine {
         
         // Dynamic reflection position based on animation state
         val reflectionOffset = Offset(
-            size.width * 0.1f + cos(animationState.timeOffset * 0.0005f) * size.width * 0.05f,
-            size.height * 0.1f + sin(animationState.timeOffset * 0.0005f) * size.height * 0.05f
+            size.width * 0.1f + cos(animationState.timeOffset * 0.0005f).toFloat() * size.width * 0.05f,
+            size.height * 0.1f + sin(animationState.timeOffset * 0.0005f).toFloat() * size.height * 0.05f
         )
         
         val reflectionPath = Path().apply {
