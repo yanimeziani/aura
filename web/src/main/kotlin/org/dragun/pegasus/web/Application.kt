@@ -6,18 +6,9 @@ import io.ktor.server.application.Application
 import io.ktor.server.application.call
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
-import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
-import kotlinx.html.body
-import kotlinx.html.h1
-import kotlinx.html.head
-import kotlinx.html.link
-import kotlinx.html.meta
-import kotlinx.html.script
-import kotlinx.html.stream.createHTML
-import kotlinx.html.style
 
 fun main() {
     val host = System.getenv("PEGASUS_WEB_HOST") ?: "0.0.0.0"
@@ -29,20 +20,20 @@ fun main() {
 }
 
 fun Application.pegasusWebModule() {
-    install(ContentNegotiation)
-
     routing {
         get("/health") {
             call.respondText("ok", ContentType.Text.Plain)
         }
 
         get("/") {
-            val html = createHTML().html {
-                head {
-                    meta(charset = "utf-8")
-                    meta(name = "viewport", content = "width=device-width, initial-scale=1")
-                    style {
-                        +"""
+            val html = """
+                <!doctype html>
+                <html lang="en">
+                <head>
+                  <meta charset="utf-8" />
+                  <meta name="viewport" content="width=device-width, initial-scale=1" />
+                  <title>Pegasus Mission Control</title>
+                  <style>
                         :root { color-scheme: light dark; }
                         * { box-sizing: border-box; }
                         body {
@@ -92,11 +83,8 @@ fun Application.pegasusWebModule() {
                           from { opacity: 0; transform: translateY(16px) scale(0.98); }
                           to { opacity: 1; transform: translateY(0) scale(1); }
                         }
-                        """.trimIndent()
-                    }
-                    script {
-                        unsafe {
-                            +"""
+                  </style>
+                  <script>
                             setInterval(async () => {
                               const target = document.getElementById('api-health');
                               if (!target) return;
@@ -107,28 +95,22 @@ fun Application.pegasusWebModule() {
                                 target.textContent = 'web unreachable';
                               }
                             }, 4000);
-                            """.trimIndent()
-                        }
-                    }
-                }
-                body {
-                    kotlinx.html.div(classes = "card") {
-                        h1 { +"Pegasus Mission Control" }
-                        kotlinx.html.p(classes = "meta") {
-                            +"Kotlin web entrypoint for Cerberus operations."
-                        }
-                        kotlinx.html.div(classes = "row") {
-                            kotlinx.html.span(classes = "chip") { +"Android App: Pegasus" }
-                            kotlinx.html.span(classes = "chip") { +"Backend: Pegasus API" }
-                            kotlinx.html.span(classes = "chip") { +"Runtime: Cerberus" }
-                        }
-                        kotlinx.html.p {
-                            +"Status: "
-                            kotlinx.html.strong { attributes["id"] = "api-health"; +"checking..." }
-                        }
-                    }
-                }
-            }
+                  </script>
+                </head>
+                <body>
+                  <div class="card">
+                    <h1>Pegasus Mission Control</h1>
+                    <p class="meta">Kotlin web entrypoint for Cerberus operations.</p>
+                    <div class="row">
+                      <span class="chip">Android App: Pegasus</span>
+                      <span class="chip">Backend: Pegasus API</span>
+                      <span class="chip">Runtime: Cerberus</span>
+                    </div>
+                    <p>Status: <strong id="api-health">checking...</strong></p>
+                  </div>
+                </body>
+                </html>
+            """.trimIndent()
             call.respondText(html, ContentType.Text.Html, HttpStatusCode.OK)
         }
     }

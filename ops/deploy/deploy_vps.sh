@@ -29,6 +29,9 @@ ssh -p "${VPS_PORT}" "${VPS_USER}@${VPS_HOST}" "cp -n '${REMOTE_DIR}/ops/deploy/
 echo "[4/5] Starting stack with Docker Compose"
 ssh -p "${VPS_PORT}" "${VPS_USER}@${VPS_HOST}" "cd '${REMOTE_DIR}/ops/deploy' && docker compose up -d --build"
 
-echo "[5/5] Deployment complete"
+echo "[5/5] Updating host Caddy routes"
+ssh -p "${VPS_PORT}" "${VPS_USER}@${VPS_HOST}" "cp '${REMOTE_DIR}/ops/caddy/Caddyfile' /etc/caddy/Caddyfile && systemctl reload caddy"
+
+echo "Deployment complete"
 echo "Web: https://pegasus.meziani.org"
 echo "API: https://api.pegasus.meziani.org"

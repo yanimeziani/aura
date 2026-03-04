@@ -4,7 +4,7 @@ This deploy stack runs the full Pegasus project from one repository:
 
 - `pegasus-web` (Kotlin/Ktor web entry)
 - `pegasus-api` (FastAPI backend)
-- `caddy` (TLS + reverse proxy)
+- Host `caddy` service (TLS + reverse proxy)
 
 ## Domains
 

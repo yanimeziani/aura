@@ -8,6 +8,8 @@ services:
     environment:
       PEGASUS_WEB_HOST: 0.0.0.0
       PEGASUS_WEB_PORT: 8080
+    ports:
+      - "127.0.0.1:18080:8080"
     networks:
       - pegasus-net
 
@@ -19,32 +21,15 @@ services:
     restart: unless-stopped
     env_file:
       - .env
+    ports:
+      - "127.0.0.1:18000:8000"
     volumes:
       - pegasus-data:/data/cerberus
     networks:
       - pegasus-net
 
-  caddy:
-    image: caddy:2.8
-    container_name: pegasus-caddy
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ../caddy/Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy-data:/data
-      - caddy-config:/config
-    depends_on:
-      - pegasus-web
-      - pegasus-api
-    networks:
-      - pegasus-net
-
 volumes:
   pegasus-data:
-  caddy-data:
-  caddy-config:
 
 networks:
   pegasus-net:
