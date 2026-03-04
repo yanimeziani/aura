@@ -11,6 +11,10 @@ const PRODUCTION_VARS = [
   'ARCJET_KEY',
   'SENTRY_DSN',
   'NEXT_PUBLIC_SENTRY_DSN',
+  'DEBTOR_PORTAL_SECRET',
+  'STRIPE_PRICE_STARTER',
+  'STRIPE_PRICE_GROWTH',
+  'STRIPE_PRICE_SCALE',
 ] as const;
 
 export function validateEnv() {

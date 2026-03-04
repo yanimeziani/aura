@@ -1,5 +1,5 @@
-import { redirect } from '@/i18n/navigation';
 import { verifyDebtorToken } from '@/lib/debtor-token';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 import ChatClient from '@/components/debtor-portal/ChatClient';
 import { ShieldCheck } from 'lucide-react';
 
@@ -26,5 +26,26 @@ export default async function ChatPage({
     );
   }
 
-  return <ChatClient debtorId={debtorId} token={token!} />;
+  // Fetch debtor + merchant server-side (bypasses RLS via service role key)
+  const { data: debtor } = await supabaseAdmin
+    .from('debtors')
+    .select('id, name, currency, total_debt, merchant:merchants(name, strictness_level)')
+    .eq('id', debtorId)
+    .single();
+
+  // Fetch existing conversation history server-side
+  const { data: conversations } = await supabaseAdmin
+    .from('conversations')
+    .select('role, message')
+    .eq('debtor_id', debtorId)
+    .order('created_at', { ascending: true });
+
+  return (
+    <ChatClient
+      debtorId={debtorId}
+      token={token!}
+      initialDebtor={debtor ?? undefined}
+      initialConversations={conversations ?? undefined}
+    />
+  );
 }

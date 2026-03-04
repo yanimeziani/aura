@@ -1,9 +1,8 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useState } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
-import { createClient } from '@/lib/supabase/client';
 import { ChevronLeft, ShieldCheck, Sparkles, Check, ArrowRight, AlertCircle } from 'lucide-react';
 
 interface Debtor {
@@ -21,30 +20,19 @@ interface Debtor {
 interface Props {
   debtorId: string;
   token: string;
+  /** Server-fetched debtor data (avoids client-side anon-key query) */
+  initialDebtor?: Debtor;
   /** Optional RAG snippet: "Per your agreement…" shown above payment options */
   contractSnippet?: string;
 }
 
-export default function PayClient({ debtorId, token, contractSnippet }: Props) {
+export default function PayClient({ debtorId, token, initialDebtor, contractSnippet }: Props) {
   const t = useTranslations('Pay');
-  const [debtor, setDebtor] = useState<Debtor | null>(null);
-  const [loading, setLoading] = useState(true);
+  const locale = useLocale();
+  const [debtor] = useState<Debtor | null>(initialDebtor ?? null);
+  const loading = false;
   const [payError, setPayError] = useState<string | null>(null);
   const [paying, setPaying] = useState(false);
-  const supabase = useMemo(() => createClient(), []);
-
-  useEffect(() => {
-    async function fetchDebtor() {
-      const { data } = await supabase
-        .from('debtors')
-        .select('*, merchant:merchants(*)')
-        .eq('id', debtorId)
-        .single();
-      setDebtor(data);
-      setLoading(false);
-    }
-    fetchDebtor();
-  }, [debtorId, supabase]);
 
   const handlePayment = async (amount: number, description: string) => {
     if (!debtor || paying) return;
@@ -63,6 +51,7 @@ export default function PayClient({ debtorId, token, contractSnippet }: Props) {
           amount,
           currency: debtor.currency,
           description,
+          locale,
         }),
       });
       const data = await res.json();

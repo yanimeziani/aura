@@ -16,7 +16,7 @@ export async function POST(req: Request) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const { debtorId, amount, currency = 'usd' } = await req.json();
+  const { debtorId, amount, currency = 'usd', locale } = await req.json();
 
   if (!debtorId || typeof debtorId !== 'string') {
     return Response.json({ error: 'Invalid request' }, { status: 400 });
@@ -28,6 +28,8 @@ export async function POST(req: Request) {
   if (typeof amount !== 'number' || amount <= 0 || !isFinite(amount)) {
     return Response.json({ error: 'Invalid amount' }, { status: 400 });
   }
+
+  const normalizedLocale = locale === 'fr' ? 'fr' : 'en';
 
   const { data: debtor, error: debtorError } = await supabaseAdmin
     .from('debtors')
@@ -91,8 +93,8 @@ export async function POST(req: Request) {
       },
     ],
     mode: 'payment',
-    success_url: `${baseUrl}/pay/${debtorId}/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${baseUrl}/chat/${debtorId}`,
+    success_url: `${baseUrl}/${normalizedLocale}/pay/${debtorId}/success?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${baseUrl}/${normalizedLocale}/chat/${debtorId}?token=${encodeURIComponent(debtorToken)}`,
     metadata: {
       debtor_id: debtorId,
       merchant_id: debtor.merchant_id,

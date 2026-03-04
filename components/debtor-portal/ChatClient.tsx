@@ -1,10 +1,9 @@
 'use client';
 
 import { useChat } from '@ai-sdk/react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
-import { createClient } from '@/lib/supabase/client';
 import { ChevronLeft, ShieldCheck, Sparkles, Send, CreditCard } from 'lucide-react';
 
 interface Debtor {
@@ -18,22 +17,30 @@ interface Debtor {
   };
 }
 
+interface ConversationRow {
+  role: string;
+  message: string;
+}
+
 interface Props {
   debtorId: string;
   token: string;
+  /** Server-fetched debtor data (avoids client-side anon-key query) */
+  initialDebtor?: Debtor;
+  /** Server-fetched conversation history */
+  initialConversations?: ConversationRow[];
 }
 
 function generateId() {
   return crypto.randomUUID?.() ?? `msg-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
-export default function ChatClient({ debtorId, token }: Props) {
+export default function ChatClient({ debtorId, token, initialDebtor, initialConversations }: Props) {
   const t = useTranslations('Chat');
-  const [debtor, setDebtor] = useState<Debtor | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [debtor] = useState<Debtor | null>(initialDebtor ?? null);
+  const loading = false;
   const [initiateLoading, setInitiateLoading] = useState(false);
   const initiateRequested = useRef(false);
-  const supabase = useMemo(() => createClient(), []);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const [chatError, setChatError] = useState<string | null>(null);
@@ -43,32 +50,13 @@ export default function ChatClient({ debtorId, token }: Props) {
     onError: () => setChatError(t('agentUnavailable')),
   });
 
-  useEffect(() => {
-    async function fetchDebtor() {
-      const { data } = await supabase
-        .from('debtors')
-        .select('*, merchant:merchants(name, strictness_level)')
-        .eq('id', debtorId)
-        .single();
-      setDebtor(data);
-      setLoading(false);
-    }
-    fetchDebtor();
-  }, [debtorId, supabase]);
-
-  // Load existing conversation or request agent to send the first message
+  // Hydrate conversation from server-provided data or request agent first message
   useEffect(() => {
     if (!debtor || loading) return;
 
     async function hydrateConversation() {
-      const { data: rows } = await supabase
-        .from('conversations')
-        .select('role, message')
-        .eq('debtor_id', debtorId)
-        .order('created_at', { ascending: true });
-
-      if (rows && rows.length > 0) {
-        const hydrated = rows.map((r) => ({
+      if (initialConversations && initialConversations.length > 0) {
+        const hydrated = initialConversations.map((r) => ({
           id: generateId(),
           role: r.role as 'user' | 'assistant' | 'system',
           content: r.message ?? '',
@@ -104,7 +92,7 @@ export default function ChatClient({ debtorId, token }: Props) {
     }
 
     hydrateConversation();
-  }, [debtor, debtorId, token, loading, supabase, setMessages, t]);
+  }, [debtor, debtorId, token, loading, initialConversations, setMessages, t]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });

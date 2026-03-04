@@ -6,7 +6,7 @@ const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 
 const securityHeaders = [
   { key: 'X-DNS-Prefetch-Control', value: 'on' },
-  { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+  { key: 'X-Frame-Options', value: 'DENY' },
   { key: 'X-Content-Type-Options', value: 'nosniff' },
   { key: 'X-Permitted-Cross-Domain-Policies', value: 'none' },
   { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
@@ -29,7 +29,7 @@ const securityHeaders = [
       "object-src 'none'",
       "base-uri 'self'",
       "form-action 'self' https://checkout.stripe.com",
-      "frame-ancestors 'self'",
+      "frame-ancestors 'none'",
       "worker-src 'self' blob: https://*.sentry.io",
     ].join('; '),
   },

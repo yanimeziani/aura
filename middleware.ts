@@ -28,7 +28,7 @@ function isProtectedPath(pathname: string) {
   return PROTECTED_PREFIXES.some((prefix) => normalized === prefix || normalized.startsWith(`${prefix}/`));
 }
 
-export default async function proxy(request: NextRequest) {
+export default async function middleware(request: NextRequest) {
   if (aj && isProtectedPath(request.nextUrl.pathname)) {
     const decision = await aj.protect(request);
     if (decision.isDenied()) {
@@ -36,21 +36,13 @@ export default async function proxy(request: NextRequest) {
     }
   }
 
-  // First update the supabase session
   const supabaseResponse = await updateSession(request);
-
-  // If updateSession returns a redirect, return it immediately
   if (supabaseResponse.status === 307 || supabaseResponse.status === 302) {
     return supabaseResponse;
   }
 
-  // Then run the i18n middleware
-  // Note: we don't easily combine the responses here without more complex logic
-  // but next-intl will generate its own response.
-  // We should ideally pass the cookies from supabaseResponse to the final response.
   const response = await intlMiddleware(request);
 
-  // Copy over cookies from supabaseResponse to the intl response
   supabaseResponse.cookies.getAll().forEach((cookie) => {
     response.cookies.set(cookie.name, cookie.value, {
       ...cookie,

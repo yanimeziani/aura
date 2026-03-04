@@ -35,11 +35,6 @@ CREATE POLICY "Merchants can manage own embeddings" ON contract_embeddings
 CREATE POLICY "Merchants can manage own debtors" ON debtors
   FOR ALL USING (merchant_id = auth.uid());
 
--- Allow public read access to debtors by ID (for the chat interface)
--- NOTE: This relies on the UUID being secret. In a stricter system, we'd use a signed token.
-CREATE POLICY "Public read access to debtors by ID" ON debtors
-  FOR SELECT USING (true); 
-
 -- 5. Conversations Table
 -- Merchants can view conversations for their debtors
 CREATE POLICY "Merchants can view conversations" ON conversations
@@ -50,11 +45,6 @@ CREATE POLICY "Merchants can view conversations" ON conversations
       AND debtors.merchant_id = auth.uid()
     )
   );
-
--- Allow public to insert/select messages if they know the debtor_id
-CREATE POLICY "Public chat access" ON conversations
-  FOR ALL USING (true); -- Again, relying on UUID secrecy/obscurity for the prototype.
-
 -- 6. Payments
 -- Merchants can view payments
 CREATE POLICY "Merchants can view payments" ON payments

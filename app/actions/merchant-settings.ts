@@ -70,7 +70,7 @@ export async function completeOnboarding(data: {
       .from('merchants')
       .update({
         ...data,
-        onboarding_complete: true
+        onboarding_completed: true
       })
       .eq('id', merchantId);
 

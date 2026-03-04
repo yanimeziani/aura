@@ -1,6 +1,6 @@
 {
   "name": "dragun-app",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -20,7 +20,6 @@
     "@ai-sdk/openai": "^3.0.29",
     "@ai-sdk/react": "^0.0.70",
     "@arcjet/next": "^1.1.0",
-    "@google/generative-ai": "^0.24.1",
     "@sentry/nextjs": "^10.40.0",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.96.0",

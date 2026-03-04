@@ -36,10 +36,17 @@ export default async function PaymentPage({
     ? await getRagSnippet(debtorRow.merchant_id, RAG_QUERIES.payPage, 200)
     : '';
 
+  const { data: debtor } = await supabaseAdmin
+    .from('debtors')
+    .select('id, merchant_id, name, currency, total_debt, merchant:merchants(name, settlement_floor)')
+    .eq('id', debtorId)
+    .single();
+
   return (
     <PayClient
       debtorId={debtorId}
       token={token!}
+      initialDebtor={debtor ?? undefined}
       contractSnippet={contractSnippet || undefined}
     />
   );

@@ -1,34 +1,15 @@
-'use client';
+import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 
-import { use, useEffect, useMemo, useState } from 'react';
-import { useTranslations } from 'next-intl';
-import { createClient } from '@/lib/supabase/client';
-
-interface Debtor {
-  name: string;
-  email: string;
-  merchant: {
-    name: string;
-  };
-}
-
-export default function SuccessPage({ params }: { params: Promise<{ debtorId: string }> }) {
-  const { debtorId } = use(params);
-  const t = useTranslations('Success');
-  const [debtor, setDebtor] = useState<Debtor | null>(null);
-  const supabase = useMemo(() => createClient(), []);
-
-  useEffect(() => {
-    async function fetchDebtor() {
-      const { data } = await supabase
-        .from('debtors')
-        .select('*, merchant:merchants(name)')
-        .eq('id', debtorId)
-        .single();
-      setDebtor(data);
-    }
-    fetchDebtor();
-  }, [debtorId, supabase]);
+export default async function SuccessPage({ params }: { params: Promise<{ debtorId: string }> }) {
+  const { debtorId } = await params;
+  const t = await getTranslations('Success');
+  const { data: debtor } = await supabaseAdmin
+    .from('debtors')
+    .select('name, email, merchant:merchants(name)')
+    .eq('id', debtorId)
+    .single();
 
   if (!debtor) return <div className="p-10 text-center">{t('finalizing')}</div>;
 
@@ -57,12 +38,12 @@ export default function SuccessPage({ params }: { params: Promise<{ debtorId: st
         <div className="text-xs font-mono text-base-content/60">DRGN-SETTLMT-{debtorId.slice(0, 8).toUpperCase()}</div>
       </div>
 
-      <button
+      <Link
+        href="/"
         className="btn btn-primary w-full shadow-lg shadow-primary/20 border-none h-12 rounded-xl text-xs font-bold uppercase tracking-widest"
-        onClick={() => window.location.href = '/'}
       >
         {t('returnHome')}
-      </button>
+      </Link>
     </div>
   );
 }

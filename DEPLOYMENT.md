@@ -1,6 +1,9 @@
 # Deployment Guide
 
-This repo now includes an automated GitHub → Vercel CI/CD pipeline (`.github/workflows/ci-cd-vercel.yml`).
+This repo includes an automated GitHub → Vercel CI/CD pipeline via:
+
+- `.github/workflows/ci.yml`
+- `.github/workflows/deploy-vercel.yml`
 
 - Pull Requests to `main` → CI + **Preview deploy**
 - Pushes to `main` → CI + **Production deploy**
@@ -50,7 +53,10 @@ Recommended branch protection for `main`:
      NEXT_PUBLIC_SUPABASE_URL
      NEXT_PUBLIC_SUPABASE_ANON_KEY
      SUPABASE_SERVICE_ROLE_KEY
-     GOOGLE_GENERATIVE_AI_API_KEY
+      DEBTOR_PORTAL_SECRET
+      ARCJET_KEY
+      SENTRY_DSN
+      NEXT_PUBLIC_SENTRY_DSN
      STRIPE_SECRET_KEY
      STRIPE_WEBHOOK_SECRET
      ```
@@ -77,7 +83,10 @@ Recommended branch protection for `main`:
    vercel env add NEXT_PUBLIC_SUPABASE_URL
    vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY
    vercel env add SUPABASE_SERVICE_ROLE_KEY
-   vercel env add GOOGLE_GENERATIVE_AI_API_KEY
+    vercel env add DEBTOR_PORTAL_SECRET
+    vercel env add ARCJET_KEY
+    vercel env add SENTRY_DSN
+    vercel env add NEXT_PUBLIC_SENTRY_DSN
    vercel env add STRIPE_SECRET_KEY
    vercel env add STRIPE_WEBHOOK_SECRET
    ```
