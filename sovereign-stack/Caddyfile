@@ -1,0 +1,38 @@
+# Sole public entry: single domain → hotsinger kvm2 VPS (secure funnel / onboarding)
+# Use https://$DOMAIN in the browser. Using https://<server-ip> causes ERR_SSL_PROTOCOL_ERROR
+# because TLS certs are for the domain only. Ensure DNS for $DOMAIN points to this host.
+{$DOMAIN} {
+  # Request timeouts so a stuck backend doesn't wedge the proxy
+  request_body {
+    max_size 10MB
+  }
+
+  # Payment / backend API (host process)
+  handle_path /api/* {
+    reverse_proxy host.docker.internal:8000 {
+      transport http {
+        read_timeout 30s
+        write_timeout 30s
+        dial_timeout 10s
+      }
+    }
+  }
+
+  # Automation (n8n)
+  handle_path /automation/* {
+    reverse_proxy n8n:5678 {
+      transport http {
+        read_timeout 60s
+        write_timeout 60s
+        dial_timeout 10s
+      }
+    }
+  }
+
+  # Frontend (onboarding funnel): static files when ./frontend is mounted
+  handle {
+    root * /srv/frontend
+    file_server
+    try_files {path} /index.html
+  }
+}

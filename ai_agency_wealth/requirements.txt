@@ -1,0 +1,4 @@
+crewai
+langchain-community
+duckduckgo-search
+python-dotenv

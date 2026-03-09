@@ -1,0 +1,50 @@
+# Dependencies and build outputs
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+venv_*/
+*.egg-info/
+.eggs/
+
+# Secrets and env (never commit)
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.crt
+
+# Sovereign-stack: deploy artifact (built by prod-control.sh deploy)
+sovereign-stack/frontend/
+
+# Backend data and local state (do not commit)
+ai_agency_wealth/agency.db
+ai_agency_wealth/backpack_ledger.json
+ai_agency_wealth/leads.json
+ai_agency_wealth/watchdog_state.json
+ai_agency_wealth/deposit_qr.png
+ai_agency_wealth/*.pdf
+
+# Editor and OS
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.log
+.cursor/
+
+# Ignore everything outside project dirs (optional: uncomment to restrict)
+# /*
+# !/ai_agency_web/
+# !/ai_agency_wealth/
+# !/sovereign-stack/
+# !/AGENTS.md
+# !/.gitignore
