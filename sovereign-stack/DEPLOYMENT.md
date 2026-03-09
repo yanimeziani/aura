@@ -4,6 +4,36 @@ Single public entry: **one domain** → **hotsinger kvm2 VPS** → Caddy → sec
 
 ---
 
+## Approved deployment
+
+**From any device (e.g. on Tailscale):** configure once, then run the full launch sequence.
+
+1. **One-time setup** — in `sovereign-stack/`:
+   ```bash
+   cp sovereign-stack/.env.example sovereign-stack/.env
+   # Edit .env: set DOMAIN, VPS_HOST (Tailscale name), VPS_USER, VPS_REPO_PATH
+   ```
+2. **Run approved deployment:**
+   ```bash
+   ./run lr
+   ```
+   This runs **launch-remote**: build frontend → rsync to VPS → start stack on VPS → run test on VPS.
+
+**On the VPS only:** if you are already on the serving host with Docker and the repo:
+   ```bash
+   ./run lp
+   ```
+   This runs **launch**: deploy then test locally.
+
+**First-time VPS setup (for launch-remote):** The repo must exist on the VPS at `VPS_REPO_PATH`. Clone once (if private repo, add the VPS SSH key as a GitHub deploy key first):
+   ```bash
+   ./run rx "git clone git@github.com:yanimeziani/aura-stack.git /root/aura-stack"
+   ./run rx "cd /root/aura-stack/sovereign-stack && ./bootstrap-vps.sh"
+   ```
+   Then on the VPS: edit `sovereign-stack/.env` (DOMAIN, etc.), copy TLS cert/key into `sovereign-stack/` if Caddy uses them. After that, `./run lr` from any device will deploy and start the stack.
+
+---
+
 ## Devices (same hardware, documented)
 
 | Device / role      | What it is                | What runs on it |
@@ -19,7 +49,15 @@ No other devices or public entry points. Same devices = same execution path belo
 
 ## Execution (how to run it)
 
-All commands assume you are on **hotsinger kvm2** (or a machine with the repo and env). Use one control script: **`sovereign-stack/prod-control.sh`**.
+All commands assume you are on **hotsinger kvm2** (or a machine with the repo and env). For **seamless operations inside** the repo, use the single entry point from repo root:
+
+```bash
+./run deploy          # full deploy (build + copy + start)
+./run deploy-remote   # build locally, rsync to VPS, start on VPS
+./run start|stop|restart|status|test|logs|monitor
+```
+
+Or call **`sovereign-stack/prod-control.sh`** directly when you are already in the stack directory.
 
 | Command | What it does |
 |--------|----------------|
@@ -41,8 +79,9 @@ All commands assume you are on **hotsinger kvm2** (or a machine with the repo an
 
 **Paths (override with env):**
 
-- `SOVEREIGN_STACK_DIR` — directory of sovereign-stack (default: `/home/yani/sovereign-stack`).
-- `FRONTEND_SRC` — directory of ai_agency_web for deploy (default: `/home/yani/ai_agency_web`).
+- `REPO_ROOT` — repo root (auto-detected if it contains `sovereign-stack/` and `ai_agency_web/`).
+- `SOVEREIGN_STACK_DIR` — directory of sovereign-stack (default: `$REPO_ROOT/sovereign-stack`).
+- `FRONTEND_SRC` — directory of ai_agency_web for deploy (default: `$REPO_ROOT/ai_agency_web`).
 
 ---
 
@@ -84,6 +123,26 @@ All commands assume you are on **hotsinger kvm2** (or a machine with the repo an
 
 ---
 
+## Payment API (host process on port 8000)
+
+Caddy proxies `/api/*` to `host.docker.internal:8000`. Run the payment API on the host via systemd:
+
+1. Copy and edit the example unit: `sovereign-stack/payment-api.service.example` → `/etc/systemd/system/payment-api.service` (set `User`, `WorkingDirectory`, `ExecStart`, `EnvironmentFile` to your paths and `ai_agency_wealth/.env`).
+2. In `ai_agency_wealth/.env`: set `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `N8N_WEBHOOK_URL`.
+3. `sudo systemctl daemon-reload && sudo systemctl enable --now payment-api`.
+
+See comments in `payment-api.service.example` for details.
+
+---
+
+## Backups
+
+- **Postgres:** `docker compose exec postgres pg_dump -U $POSTGRES_USER $POSTGRES_DB` (redirect to file or backup tool). Schedule via cron (e.g. daily) and store off-VPS.
+- **n8n data:** Back up the n8n Docker volume (e.g. `docker run --rm -v sovereign-stack_n8n_data:/data -v /backup:/backup alpine tar czf /backup/n8n_data.tar.gz -C /data .`). Schedule similarly.
+- Document your chosen schedule and retention (e.g. daily, keep 7) in runbooks or cron comments.
+
+---
+
 ## Hardening checklist
 
 - [x] Caddy: reverse_proxy timeouts
@@ -91,9 +150,9 @@ All commands assume you are on **hotsinger kvm2** (or a machine with the repo an
 - [x] All services: memory limits
 - [x] Frontend: served from stack when `./frontend` exists
 - [x] prod-control.sh: uses DOMAIN from .env
-- [ ] API: move into compose or document systemd unit for host process
-- [ ] Backups: postgres and n8n_data volume backup schedule
-- [ ] TLS: optional explicit min version / ciphers in Caddy if needed
+- [x] API: systemd unit documented (`payment-api.service.example`)
+- [x] Backups: postgres and n8n volume backup approach documented
+- [x] TLS: Caddy defaults (optional: add `tls min_version` / ciphers in Caddyfile if required by policy)
 
 ---
 
@@ -102,11 +161,81 @@ All commands assume you are on **hotsinger kvm2** (or a machine with the repo an
 From repo root, same devices as above:
 
 ```bash
-./sovereign-stack/prod-control.sh deploy   # full deploy
-./sovereign-stack/prod-control.sh test    # must pass after deploy
+./run deploy      # full deploy (or use prod-control.sh deploy)
+./run test        # must pass after deploy
 ```
 
+Seamless operations (all from repo root):
+
+| Command | Purpose |
+|--------|--------|
+| **Two-letter** | **Full** | |
+| `lp` | launch | **Full sequence:** deploy then test (on this machine) |
+| `lr` | launch-remote | **Full sequence:** deploy-remote then test on VPS |
+| `dp` | deploy | Build frontend, copy to stack, start |
+| `dr` | deploy-remote | Build, rsync to VPS, start stack on VPS |
+| `st` \| `sp` \| `rs` \| `ss` | start \| stop \| restart \| status | Compose control |
+| `te` | test | Smoke check Caddy + n8n |
+| `lo` \| `lo caddy` | logs [service] | Tail stack logs (follow) |
+| `sm` | stream | **Drop-in streaming:** deploy.log + compose logs (Ctrl+C exits) |
+| `sr` \| `re sm` | stream-remote \| remote stream | Stream from VPS (any Tailscale device) |
+| `re <cmd>` | remote &lt;cmd&gt; | Run cmd on VPS (e.g. `re ss`, `re lo caddy`) |
+| `mo` | monitor | Watch status every 5s |
+
+**Drop-in stream monitoring and logging:** run `./run stream` to attach to a single live stream. It tails `sovereign-stack/deploy.log` (prefix `[deploy]`) and, when Docker is available, `docker compose logs -f` (prefix `[compose]`). Use Ctrl+C to exit. For logs of one service only: `./run logs caddy` or `./run logs n8n`.
+
+---
+
+### From any device on your Tailscale network
+
+Use the VPS **Tailscale hostname** in `sovereign-stack/.env` so every device on your Tailnet can run deploy and streaming without being on the VPS:
+
+1. **In `sovereign-stack/.env`** set:
+   - `VPS_HOST=` to the machine’s Tailscale name (e.g. `myvps.5tail12345.ts.net` or the short name shown in the Tailscale admin).
+   - `VPS_USER=` and `VPS_REPO_PATH=` as before.
+
+2. **From any device** (laptop, another PC, etc.) that has the repo and Tailscale:
+   - **Deploy:** `./run deploy-remote` (builds locally, rsyncs to VPS, starts stack).
+   - **Stream logs:** `./run stream-remote` or `./run remote stream` (SSH to VPS and run `./run stream` there; you see the same live stream).
+   - **Status / logs on VPS:** `./run remote status`, `./run remote logs`, `./run remote logs caddy`, `./run remote test`, etc.
+
+No need to SSH manually; `./run remote <cmd>` runs `./run <cmd>` on the VPS. Ensure the device has the repo (clone or sync) and the same `.env` (or at least `VPS_HOST`, `VPS_USER`, `VPS_REPO_PATH`, optional `SSH_KEY_PATH`).
+
 See **Execution** above for all commands and execution order.
+
+### SSH and remote deploy (persist agent access to VPS)
+
+To let the agent (or your machine) deploy to the VPS without interactive SSH prompts:
+
+1. **SSH key (one-time)**  
+   On your machine, use an existing key or create one:
+   ```bash
+   # If you don't have a key:
+   ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -N ""
+   # Copy public key to VPS (run once, then you can log in without password):
+   ssh-copy-id -i ~/.ssh/id_ed25519.pub VPS_USER@VPS_HOST
+   ```
+   Replace `VPS_USER` and `VPS_HOST` with your VPS user and host (e.g. `yani@89.116.170.202`).
+
+2. **Persist VPS credentials in `.env` (not committed)**  
+   In `sovereign-stack/`, copy the example and set VPS variables:
+   ```bash
+   cp sovereign-stack/.env.example sovereign-stack/.env
+   # Edit .env and set at least:
+   # DOMAIN=n8n.meziani.org
+   # VPS_HOST=89.116.170.202
+   # VPS_USER=yani
+   # VPS_REPO_PATH=/home/yani/aura-stack
+   # Optional: SSH_KEY_PATH=/home/yani/.ssh/id_ed25519
+   ```
+   The first SSH connection will add the VPS host key to `~/.ssh/known_hosts` (script uses `StrictHostKeyChecking=accept-new`), so later runs are non-interactive.
+
+3. **Run remote deploy**  
+   From repo root:
+   ```bash
+   ./sovereign-stack/deploy-remote.sh
+   ```
+   This builds the frontend locally, rsyncs it to the VPS, and runs `prod-control.sh start` on the VPS. Logs append to `sovereign-stack/deploy.log`.
 
 ### Deploy to VPS after pushing to GitHub
 

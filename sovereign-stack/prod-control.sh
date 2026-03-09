@@ -71,25 +71,31 @@ case "$cmd" in
     ;;
   deploy)
     _run_preflight deploy || exit 1
-    FRONTEND_SRC="${FRONTEND_SRC:-/home/yani/ai_agency_web}"
-    if [ ! -d "$FRONTEND_SRC" ]; then
-      echo "deploy: missing frontend source: $FRONTEND_SRC (set FRONTEND_SRC)"
-      exit 1
-    fi
-    if ! command -v npm >/dev/null 2>&1; then
-      echo "deploy: npm not found"
-      exit 1
-    fi
-    if ! command -v rsync >/dev/null 2>&1; then
-      echo "deploy: rsync not found"
-      exit 1
-    fi
-    echo "deploy: building frontend..."
-    (cd "$FRONTEND_SRC" && npm run build)
-    mkdir -p "$STACK_DIR/frontend"
-    rsync -a --delete "$FRONTEND_SRC/dist/" "$STACK_DIR/frontend/"
-    echo "deploy: frontend copied; starting stack."
-    sudo docker compose up -d
+    DEPLOY_LOG="${STACK_DIR}/deploy.log"
+    {
+      echo "=== deploy $(date -Iseconds) ==="
+      FRONTEND_SRC="${FRONTEND_SRC:-/home/yani/ai_agency_web}"
+      if [ ! -d "$FRONTEND_SRC" ]; then
+        echo "deploy: missing frontend source: $FRONTEND_SRC (set FRONTEND_SRC)"
+        exit 1
+      fi
+      if ! command -v npm >/dev/null 2>&1; then
+        echo "deploy: npm not found"
+        exit 1
+      fi
+      if ! command -v rsync >/dev/null 2>&1; then
+        echo "deploy: rsync not found"
+        exit 1
+      fi
+      echo "deploy: building frontend..."
+      (cd "$FRONTEND_SRC" && npm run build)
+      mkdir -p "$STACK_DIR/frontend"
+      rsync -a --delete "$FRONTEND_SRC/dist/" "$STACK_DIR/frontend/"
+      echo "deploy: frontend copied; starting stack."
+      sudo docker compose up -d
+      echo "deploy: done."
+    } 2>&1 | tee -a "$DEPLOY_LOG"
+    exit "${PIPESTATUS[0]}"
     ;;
   status)
     sudo docker compose ps

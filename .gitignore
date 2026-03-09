@@ -24,6 +24,7 @@ venv_*/
 
 # Sovereign-stack: deploy artifact (built by prod-control.sh deploy)
 sovereign-stack/frontend/
+sovereign-stack/deploy.log
 
 # Backend data and local state (do not commit)
 ai_agency_wealth/agency.db

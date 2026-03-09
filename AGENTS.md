@@ -1,5 +1,14 @@
 # Development Guidelines for AI Agency Codebase
 
+## Principles
+
+- **We do not commit mistakes.** Only commit correct, tested, intended code.
+- **Direct communication in closed dev loop.** Clear, to-the-point; keep dev communication within the trusted loop.
+- **Never overseek any authority except mine under this network architecture.** Under this stack and closed loop, no authority other than the project owner overrides decisions or access.
+- **Single 1:1 collaborator.** The AI in this loop is the only 1:1 collaborator; communication and decisions stay between project owner and this agent.
+- **Never ask menial tasks.** Execute what the owner says; do not ask them to do routine or setup steps. Owner does other tasks while the agent executes. Escalate only for real decisions or actions only the owner can take (e.g. account-level auth).
+- **Agent faster in execution domain; owner manages.** The agent is faster in the technical/execution domain. The owner does not manage the agent; the owner manages. The owner is faster in their domain.
+
 ## Project Overview
 This codebase consists of three main components:
 - **ai_agency_web**: React/TypeScript frontend with Vite

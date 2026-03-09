@@ -1,0 +1,27 @@
+# systemd unit for payment API (host process on port 8000).
+# Caddy proxies /api/* to host.docker.internal:8000.
+#
+# Install (on VPS):
+#   1. Copy to systemd: sudo cp payment-api.service.example /etc/systemd/system/payment-api.service
+#   2. Edit: set User, WorkingDirectory, ExecStart to match your repo path and venv.
+#   3. Create .env in ai_agency_wealth/ with STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, N8N_WEBHOOK_URL.
+#   4. sudo systemctl daemon-reload && sudo systemctl enable --now payment-api
+#
+# Status: systemctl status payment-api
+# Logs:   journalctl -u payment-api -f
+
+[Unit]
+Description=AURA payment API (FastAPI / Stripe)
+After=network.target docker.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/aura-stack/ai_agency_wealth
+EnvironmentFile=/root/aura-stack/ai_agency_wealth/.env
+ExecStart=/root/aura-stack/ai_agency_wealth/venv_agency/bin/uvicorn prod_payment_server:app --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
