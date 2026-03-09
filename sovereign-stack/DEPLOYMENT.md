@@ -1,6 +1,8 @@
 # Deployment Architecture
 
-Single public entry: **one domain** → **hotsinger kvm2 VPS** → Caddy → secure client funnel (onboarding, API, automation). All client traffic must enter via this domain.
+**End goal (steer prod toward this):** Clients reach the system via the single domain → complete the secure onboarding funnel → see proposals → approve → pay (Stripe). First dollar = first successful payment; then repeat. Prod exists to keep that path up and unblocked.
+
+Single public entry: **one domain** → **Hostinger KVM2 VPS** → Caddy → secure client funnel (onboarding, API, automation). All client traffic must enter via this domain.
 
 ---
 
@@ -25,12 +27,12 @@ Single public entry: **one domain** → **hotsinger kvm2 VPS** → Caddy → sec
    ```
    This runs **launch**: deploy then test locally.
 
-**First-time VPS setup (for launch-remote):** The repo must exist on the VPS at `VPS_REPO_PATH`. Clone once (if private repo, add the VPS SSH key as a GitHub deploy key first):
+**First-time VPS setup (for launch-remote):** Put the repo on the VPS at `VPS_REPO_PATH` (no GitHub key needed):
    ```bash
-   ./run rx "git clone git@github.com:yanimeziani/aura-stack.git /root/aura-stack"
+   ./run sy
    ./run rx "cd /root/aura-stack/sovereign-stack && ./bootstrap-vps.sh"
    ```
-   Then on the VPS: edit `sovereign-stack/.env` (DOMAIN, etc.), copy TLS cert/key into `sovereign-stack/` if Caddy uses them. After that, `./run lr` from any device will deploy and start the stack.
+   `./run sy` (sync-repo) tars the repo and pipes it over SSH. Then set DOMAIN (and copy TLS cert/key into `sovereign-stack/` if Caddy uses them). After that, `./run lr` from any device will deploy and start the stack.
 
 ---
 
@@ -38,8 +40,8 @@ Single public entry: **one domain** → **hotsinger kvm2 VPS** → Caddy → sec
 
 | Device / role      | What it is                | What runs on it |
 |--------------------|----------------------------|-----------------|
-| **hotsinger kvm2** | Single VPS (serving host)  | Docker Compose (Caddy, n8n, Postgres, Redis); optional host process: payment API on port 8000. |
-| **Domain**         | One public hostname        | DNS points here to hotsinger kvm2; Caddy serves this hostname only (HTTPS + HTTP). |
+| **Hostinger KVM2** | Single VPS (serving host)  | Docker Compose (Caddy, n8n, Postgres, Redis); optional host process: payment API on port 8000. |
+| **Domain**         | One public hostname        | DNS points here to Hostinger KVM2; Caddy serves this hostname only (HTTPS + HTTP). |
 | **Frontend**       | Static build (SPA)         | Served by Caddy from `sovereign-stack/frontend/` (populated by deploy). |
 | **API**            | Payment/backend (FastAPI)  | Today: host process (e.g. systemd) on port 8000; Caddy proxies `/api/*` to it. |
 
@@ -49,7 +51,7 @@ No other devices or public entry points. Same devices = same execution path belo
 
 ## Execution (how to run it)
 
-All commands assume you are on **hotsinger kvm2** (or a machine with the repo and env). For **seamless operations inside** the repo, use the single entry point from repo root:
+All commands assume you are on **Hostinger KVM2** (or a machine with the repo and env). For **seamless operations inside** the repo, use the single entry point from repo root:
 
 ```bash
 ./run deploy          # full deploy (build + copy + start)
