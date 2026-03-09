@@ -108,6 +108,26 @@ From repo root, same devices as above:
 
 See **Execution** above for all commands and execution order.
 
+### Deploy to VPS after pushing to GitHub
+
+1. **On your machine:** Push code to GitHub (already done if you used the repo `aura-stack`).
+2. **On the VPS (e.g. SSH in):**
+   ```bash
+   cd /home/yani   # or wherever you keep the repo
+   git pull origin main
+   ./sovereign-stack/prod-control.sh deploy
+   ./sovereign-stack/prod-control.sh test
+   ```
+   If the repo is not on the VPS yet:
+   ```bash
+   git clone https://github.com/yanimeziani/aura-stack.git
+   cd aura-stack
+   # Copy or create sovereign-stack/.env with DOMAIN= and any secrets (do not commit .env)
+   # Copy TLS cert/key into sovereign-stack/ if Caddy uses them
+   ./sovereign-stack/prod-control.sh deploy
+   ./sovereign-stack/prod-control.sh test
+   ```
+
 ---
 
 ## Troubleshooting
