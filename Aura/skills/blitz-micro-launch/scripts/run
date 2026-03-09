@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+AURA_ROOT="${1:-}"
+if [[ -z "$AURA_ROOT" ]]; then
+  echo "[blitz-micro-launch] expected AURA_ROOT arg" >&2
+  exit 2
+fi
+
+INBOX="$AURA_ROOT/vault/docs_inbox/docs"
+mkdir -p "$INBOX"
+
+ts="$(date -Iseconds | tr ':' '-')"
+out="$INBOX/launch_${ts}.md"
+
+cat >"$out" <<'EOF'
+# Blitz Micro Launch (48h)
+
+## Niche + pain
+- **Niche**:
+- **Buyer**:
+- **Pain**:
+- **Urgency trigger**:
+
+## Offer
+- **Promise** (outcome + timeline):
+- **Mechanism** (how):
+- **Deliverable** (micro product / micro SaaS):
+- **Price**:
+- **Guarantee**:
+
+## Build scope (smallest lovable)
+- Core workflow:
+- Inputs:
+- Outputs:
+- “Not doing” list:
+
+## Landing page copy
+- Headline:
+- Subheadline:
+- 5 bullets:
+- Proof:
+- CTA:
+
+## Distribution (pick 3)
+- Channel 1:
+- Channel 2:
+- Channel 3:
+
+## Daily execution checklist
+- [ ] Ship one improvement
+- [ ] Publish one post
+- [ ] Send 10–30 targeted DMs
+- [ ] Share one artifact
+- [ ] Log metrics
+
+## Metrics
+- Views:
+- CTR:
+- Signups:
+- Paid:
+- CAC:
+- Notes:
+EOF
+
+echo "[blitz-micro-launch] wrote $out"

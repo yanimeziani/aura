@@ -1,0 +1,13 @@
+[Unit]
+Description=n8n Workflow Automation
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/n8n start --port 5678
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
