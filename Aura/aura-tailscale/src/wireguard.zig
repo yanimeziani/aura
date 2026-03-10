@@ -175,9 +175,15 @@ pub fn initiationCreate(
     var enc_ts_key: SymKey = undefined;
     hkdf2(&discard, &enc_ts_key, &state.chaining_key, &[_]u8{});
 
-    // TAI64N timestamp stub (random bytes; real impl uses wall clock)
+    // TAI64N timestamp (WireGuard whitepaper §5.4.2).
+    // Format: 8 bytes big-endian TAI64 seconds + 4 bytes big-endian nanoseconds.
+    // TAI64 epoch = 2^62 + unix_seconds (WireGuard skips TAI-UTC leap correction).
     var timestamp: [TIMESTAMP_SIZE]u8 = undefined;
-    crypto.random.bytes(&timestamp);
+    const now: i64 = std.time.timestamp();
+    const unix_secs: u64 = @intCast(@max(@as(i64, 0), now));
+    const tai64_secs: u64 = 0x4000000000000000 + unix_secs;
+    std.mem.writeInt(u64, timestamp[0..8], tai64_secs, .big);
+    std.mem.writeInt(u32, timestamp[8..12], 0, .big); // nanoseconds
 
     var encrypted_timestamp: [TIMESTAMP_SIZE + TAG_SIZE]u8 = undefined;
     const aad2 = state.hash_state;

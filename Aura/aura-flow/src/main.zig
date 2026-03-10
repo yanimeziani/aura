@@ -71,6 +71,9 @@ fn handleConnection(allocator: std.mem.Allocator, conn: net.Server.Connection, s
     if (std.mem.eql(u8, path, "/ops/stripe")) {
         if (!std.mem.eql(u8, method, "POST")) return writePlain(conn, 405, "Method Not Allowed");
         const body = parseBody(req) orelse "";
+        if (!verifyStripeSignature(allocator, req, body)) {
+            return writePlain(conn, 401, "Unauthorized: invalid Stripe-Signature");
+        }
         try spoolNdjson(allocator, spool_dir, "stripe.ndjson", body);
         return writeJson(conn, 200, "{\"status\":\"accepted\",\"source\":\"stripe\"}");
     }
@@ -208,7 +211,7 @@ fn maybeRunPaymentAutomation(ctx: *WorkerCtx, dir: std.fs.Dir, state_file: []con
     var argv = [_][]const u8{ "/bin/sh", "-lc", ctx.payment_cmd };
     var child = std.process.Child.init(&argv, ctx.allocator);
     child.stdout_behavior = .Ignore;
-    child.stderr_behavior = .Ignore;
+    child.stderr_behavior = .Inherit; // surface automation script errors to aura-flow stderr
     _ = child.spawn() catch |err| {
         std.debug.print("worker: failed spawning payment cmd: {}\n", .{err});
         return;
@@ -393,6 +396,66 @@ fn ensureDir(path: []const u8) !void {
     }
 }
 
+// ── Stripe webhook signature verification ─────────────────────────────────────
+
+/// Verify the Stripe-Signature header using HMAC-SHA256.
+/// If STRIPE_WEBHOOK_SECRET is not set, allows all requests (dev mode).
+/// Returns false if the secret is set but the signature is missing or invalid.
+fn verifyStripeSignature(allocator: std.mem.Allocator, request: []const u8, body: []const u8) bool {
+    const secret = std.posix.getenv("STRIPE_WEBHOOK_SECRET") orelse return true; // dev mode
+    const sig_header = parseHeader(request, "Stripe-Signature");
+    if (sig_header.len == 0) {
+        std.debug.print("stripe: missing Stripe-Signature header\n", .{});
+        return false;
+    }
+
+    const t_str = extractSigParam(sig_header, "t") orelse {
+        std.debug.print("stripe: no 't' in Stripe-Signature\n", .{});
+        return false;
+    };
+    const v1_hex = extractSigParam(sig_header, "v1") orelse {
+        std.debug.print("stripe: no 'v1' in Stripe-Signature\n", .{});
+        return false;
+    };
+    if (v1_hex.len != 64) {
+        std.debug.print("stripe: v1 length {} != 64\n", .{v1_hex.len});
+        return false;
+    }
+
+    // Decode expected MAC from hex
+    var expected: [32]u8 = undefined;
+    for (&expected, 0..) |*b, i| {
+        const hi = std.fmt.charToDigit(v1_hex[i * 2], 16) catch return false;
+        const lo = std.fmt.charToDigit(v1_hex[i * 2 + 1], 16) catch return false;
+        b.* = @as(u8, @intCast(hi)) << 4 | @as(u8, @intCast(lo));
+    }
+
+    // Build signed_payload = t_str + "." + body
+    const payload = std.fmt.allocPrint(allocator, "{s}.{s}", .{ t_str, body }) catch return false;
+    defer allocator.free(payload);
+
+    // HMAC-SHA256
+    var computed: [32]u8 = undefined;
+    std.crypto.auth.hmac.Hmac(std.crypto.hash.sha2.Sha256).create(&computed, payload, secret);
+
+    // Constant-time compare
+    var diff: u8 = 0;
+    for (expected, computed) |e, c| diff |= e ^ c;
+    return diff == 0;
+}
+
+/// Extract value for key from a comma-separated "k=v,k=v" string (Stripe-Signature format).
+fn extractSigParam(header: []const u8, key: []const u8) ?[]const u8 {
+    var it = std.mem.splitScalar(u8, header, ',');
+    while (it.next()) |part| {
+        const trimmed = std.mem.trim(u8, part, " \t");
+        const eq = std.mem.indexOfScalar(u8, trimmed, '=') orelse continue;
+        const k = std.mem.trim(u8, trimmed[0..eq], " \t");
+        if (std.mem.eql(u8, k, key)) return trimmed[eq + 1 ..];
+    }
+    return null;
+}
+
 fn parseMethod(request: []const u8) []const u8 {
     const space1 = std.mem.indexOfScalar(u8, request, ' ') orelse return "GET";
     return request[0..space1];
@@ -428,6 +491,57 @@ fn writePlain(conn: net.Server.Connection, status: u16, body: []const u8) !void 
     );
     _ = try conn.stream.write(hdr);
     _ = try conn.stream.write(body);
+}
+
+// ── Unit tests ────────────────────────────────────────────────────────────────
+
+test "parseMethod extracts GET" {
+    try std.testing.expectEqualStrings("GET", parseMethod("GET /health HTTP/1.1\r\n\r\n"));
+}
+
+test "parseMethod extracts POST" {
+    try std.testing.expectEqualStrings("POST", parseMethod("POST /ops/stripe HTTP/1.1\r\n\r\n"));
+}
+
+test "parsePath strips query string" {
+    try std.testing.expectEqualStrings("/ops/webhook", parsePath("POST /ops/webhook?debug=1 HTTP/1.1\r\n\r\n"));
+}
+
+test "parsePath extracts path with source" {
+    try std.testing.expectEqualStrings("/ops/webhook/stripe", parsePath("POST /ops/webhook/stripe HTTP/1.1\r\n\r\n"));
+}
+
+test "parseHeader returns value" {
+    const req = "POST / HTTP/1.1\r\nContent-Type: application/json\r\n\r\n";
+    try std.testing.expectEqualStrings("application/json", parseHeader(req, "Content-Type"));
+}
+
+test "parseHeader returns empty for missing header" {
+    const req = "POST / HTTP/1.1\r\n\r\n";
+    try std.testing.expectEqualStrings("", parseHeader(req, "Stripe-Signature"));
+}
+
+test "extractSigParam parses t and v1" {
+    const header = "t=1614346800,v1=abc123xyz,v0=old";
+    const t = extractSigParam(header, "t");
+    const v1 = extractSigParam(header, "v1");
+    try std.testing.expect(t != null);
+    try std.testing.expectEqualStrings("1614346800", t.?);
+    try std.testing.expect(v1 != null);
+    try std.testing.expectEqualStrings("abc123xyz", v1.?);
+}
+
+test "extractSigParam returns null for missing key" {
+    const header = "t=123,v1=abc";
+    try std.testing.expect(extractSigParam(header, "v0") == null);
+}
+
+test "verifyStripeSignature: allows if no secret set" {
+    // STRIPE_WEBHOOK_SECRET not set in test env → should allow (dev mode)
+    const a = std.testing.allocator;
+    const req = "POST /ops/stripe HTTP/1.1\r\n\r\n";
+    const allowed = verifyStripeSignature(a, req, "{}");
+    try std.testing.expect(allowed == true);
 }
 
 fn writeJson(conn: net.Server.Connection, status: u16, body: []const u8) !void {

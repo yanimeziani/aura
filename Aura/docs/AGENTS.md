@@ -1,5 +1,7 @@
 # Development Guidelines for AI Agency Codebase
 
+**Single onboarding:** **[docs/ONBOARDING.md](ONBOARDING.md)** — setup, modes, `aura` CLI, logs, gateway, chat. The Aura project onboards there; this doc is principles and full command reference.
+
 ## Principles
 
 - **We do not commit mistakes.** Only commit correct, tested, intended code.
@@ -8,11 +10,16 @@
 - **Single 1:1 collaborator.** The AI in this loop is the only 1:1 collaborator; communication and decisions stay between project owner and this agent.
 - **Never ask menial tasks.** Execute what the owner says; do not ask them to do routine or setup steps. Owner does other tasks while the agent executes. Escalate only for real decisions or actions only the owner can take (e.g. account-level auth).
 - **SSH and run: never ask the owner to run commands.** When using SSH or `./run`, the agent executes commands directly; never instruct the owner to run commands.
+- **Build mode: never run commands manually.** When in build, test, or run mode, the agent executes all commands (e.g. via the terminal tool). Never instruct the owner to "run X manually", "you need to run", or "in a separate terminal"—the agent starts services, runs scripts, and performs steps itself.
 - **Agent faster in execution domain; owner manages.** The agent is faster in the technical/execution domain. The owner does not manage the agent; the owner manages. The owner is faster in their domain.
 - **No destructive or irreversible operations.** Everything is approved **except** actions on this system or any device that could be irreversible (e.g. wipe, format, drop DB, overwrite without backup, `rm -rf` on user/data paths, irreversible key rotation). Use **safe methods** only: create new files, write to temp then move, append logs, read-only checks. If a task would require a destructive step, propose a safe alternative or stop and report.
 - **Escalate on operator instruction.** The system must be able to escalate when the operator explicitly instructs it: e.g. the operator says to run a destructive or higher-privilege action, or to override a normal constraint. On clear operator instruction, escalation is permitted; do not refuse solely because of default policy. Operator authority overrides default safeguards when explicitly invoked.
 - **Research and peace.** The run is authorised within the confines of research and peace in the world. In case conflict or war breaks out, at least open source gives people a starting point for rebuilding—so we keep this work open and usable as that baseline.
 - **No external deps except Zig language and core libs.** For the Aura sovereign stack (aura-edge, aura-tailscale, aura-mcp, ziggy-compiler, tui, and any new Zig components): no external dependencies. Only the Zig language and its standard library (core libs). No C libs, no zig packages from outside the repo, no runtime beyond Zig + std.
+
+## Modes
+
+- **Dirty hands mode.** Full overseeing root/internal mode with manual human override. When this mode is in effect, the agent has full oversight of root and internal systems, and the human operator retains explicit override: they can step in and take control at any time. Operator authority is always available; dirty hands does not reduce it.
 
 ## Attack team roster
 

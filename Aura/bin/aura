@@ -20,6 +20,7 @@ function show_help() {
     echo "  lynx        Zig text browser (aura-lynx <url>)"
     echo "  api         Run aura-api (VPS HTTP server; AURA_API_PORT=9000)"
     echo "  gateway     Start syncing gateway (IDEs, TUIs, LLM clients through Aura)"
+    echo "  chat        Minimal TUI chat with Aura agent (requires gateway; agent starts gateway if needed)"
     echo "  opensea     OpenSea ops (read-only): assets / collections / watch"
     echo "  skill       Aura skills belt (list/show/run)"
     echo "  docs-maid   Docs maid: persistent sweep of vault/docs_inbox → docs/, channel, vault"
@@ -97,6 +98,11 @@ case "$CMD" in
     gateway)
         export AURA_ROOT="$AURA_ROOT" AURA_VAULT_FILE="${AURA_VAULT_FILE:-$AURA_ROOT/vault/aura-vault.json}"
         cd "$AURA_ROOT" && python3 -m uvicorn gateway.app:app --host 0.0.0.0 --port "${AURA_GATEWAY_PORT:-8765}"
+        ;;
+    chat)
+        # Minimal TUI chat with agent; ensure gateway URL is set (default 8765). Agent should start gateway in background when in build mode.
+        export AURA_ROOT="$AURA_ROOT" AURA_VAULT_FILE="${AURA_VAULT_FILE:-$AURA_ROOT/vault/aura-vault.json}"
+        exec python3 "$AURA_ROOT/gateway/aura_tui_chat.py"
         ;;
     opensea)
         shift

@@ -62,10 +62,27 @@ pub fn main() !void {
     }
 }
 
+/// Extract just the IP (no port) from a net.Address into buf. Returns a slice of buf.
+fn formatClientIp(addr: net.Address, buf: []u8) []const u8 {
+    var fbs = std.io.fixedBufferStream(buf);
+    std.fmt.format(fbs.writer(), "{f}", .{addr}) catch return "unknown";
+    const full = fbs.getWritten();
+    if (full.len == 0) return "unknown";
+    if (full[0] == '[') {
+        // IPv6: [::1]:port — strip :port after the closing bracket
+        const bracket = mem.lastIndexOfScalar(u8, full, ']') orelse return full;
+        return full[0 .. bracket + 1];
+    }
+    // IPv4: 1.2.3.4:port — strip :port
+    const colon = mem.lastIndexOfScalar(u8, full, ':') orelse return full;
+    return full[0..colon];
+}
+
 fn handleConnection(conn: net.Server.Connection, protection: *ProtectionLayer) !void {
     defer conn.stream.close();
 
-    const client_ip = "127.0.0.1"; // In a real scenario, extract from conn.address
+    var ip_buf: [64]u8 = undefined;
+    const client_ip = formatClientIp(conn.address, &ip_buf);
 
     if (!try protection.isAllowed(client_ip)) {
         const response = "HTTP/1.1 429 Too Many Requests\r\nContent-Length: 26\r\n\r\n🛡️ Aura: Rate Limit Exceeded";

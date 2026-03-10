@@ -92,6 +92,59 @@ fn httpGet(allocator: std.mem.Allocator, host: []const u8, port: u16, path: []co
     return body;
 }
 
+// ── Tests ─────────────────────────────────────────────────────────────────────
+
+test "parseUrl: basic http URL" {
+    const a = std.testing.allocator;
+    const p = try parseUrl(a, "http://example.com/path");
+    defer a.free(p.host);
+    defer a.free(p.path);
+    try std.testing.expectEqualStrings("example.com", p.host);
+    try std.testing.expectEqualStrings("/path", p.path);
+    try std.testing.expectEqual(@as(u16, 80), p.port);
+}
+
+test "parseUrl: URL with custom port" {
+    const a = std.testing.allocator;
+    const p = try parseUrl(a, "http://localhost:8080/");
+    defer a.free(p.host);
+    defer a.free(p.path);
+    try std.testing.expectEqualStrings("localhost", p.host);
+    try std.testing.expectEqual(@as(u16, 8080), p.port);
+    try std.testing.expectEqualStrings("/", p.path);
+}
+
+test "parseUrl: rejects non-http scheme" {
+    const a = std.testing.allocator;
+    const err = parseUrl(a, "https://example.com");
+    try std.testing.expectError(error.UnsupportedScheme, err);
+}
+
+test "htmlToText: strips tags" {
+    const a = std.testing.allocator;
+    const text = try htmlToText(a, "<p>Hello <b>world</b></p>");
+    defer a.free(text);
+    try std.testing.expect(std.mem.indexOf(u8, text, "Hello") != null);
+    try std.testing.expect(std.mem.indexOf(u8, text, "world") != null);
+    try std.testing.expect(std.mem.indexOf(u8, text, "<b>") == null);
+}
+
+test "htmlToText: decodes HTML entities" {
+    const a = std.testing.allocator;
+    const text = try htmlToText(a, "&lt;script&gt;&amp;");
+    defer a.free(text);
+    try std.testing.expect(std.mem.indexOf(u8, text, "<") != null);
+    try std.testing.expect(std.mem.indexOf(u8, text, ">") != null);
+    try std.testing.expect(std.mem.indexOf(u8, text, "&") != null);
+}
+
+test "htmlToText: extracts href links" {
+    const a = std.testing.allocator;
+    const text = try htmlToText(a, "<a href=\"http://example.com\">click</a>");
+    defer a.free(text);
+    try std.testing.expect(std.mem.indexOf(u8, text, "http://example.com") != null);
+}
+
 /// Strip HTML to plain text; extract links.
 fn htmlToText(allocator: std.mem.Allocator, html: []const u8) ![]const u8 {
     var out = std.array_list.Managed(u8).init(allocator);

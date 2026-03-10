@@ -1,5 +1,7 @@
 # 🤖 AI Agency System
 
+> **Onboarding (one place):** **[docs/ONBOARDING.md](ONBOARDING.md)** — setup, modes, `aura` CLI, logs, gateway, chat.
+
 > **Autonomous business infrastructure**  
 > Multi-agent systems working 24/7 under your command
 > 

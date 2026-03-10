@@ -306,8 +306,10 @@ fn writeJson(conn: net.Server.Connection, status: u16, body: []const u8) !void {
 fn statusLine(code: u16) []const u8 {
     return switch (code) {
         200 => "200 OK",
+        400 => "400 Bad Request",
         404 => "404 Not Found",
         405 => "405 Method Not Allowed",
+        500 => "500 Internal Server Error",
         else => "500 Internal Server Error",
     };
 }

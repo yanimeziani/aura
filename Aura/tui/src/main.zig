@@ -8,7 +8,7 @@ pub fn main() !void {
     while (true) {
         // Clear screen and reset cursor
         std.debug.print("\x1B[2J\x1B[H", .{});
-        std.debug.print("=== \x1B[36;1m🔮 AURA COMMAND CENTER\x1B[0m ===\n\n", .{});
+        std.debug.print("=== \x1B[36;1mAURA COMMAND CENTER\x1B[0m ===\n\n", .{});
         
         // Fetch Systemctl Status
         var status_proc = std.process.Child.init(&[_][]const u8{"systemctl", "is-active", "aura_autopilot.service", "ai_pay.service", "ai_agency_web.service"}, allocator);
@@ -33,11 +33,27 @@ pub fn main() !void {
             i += 1;
         }
 
-        // Mesh Status (Real-time dashboard stub)
+        // Mesh Status — live from aura-api (falls back gracefully if offline)
         std.debug.print("\n\x1B[33m[ Mesh & Traffic ]\x1B[0m\n", .{});
-        std.debug.print("  Mesh Nodes : \x1B[32m4 Active\x1B[0m (LA, LDN, TYO, FRA)\n", .{});
-        std.debug.print("  Traffic    : \x1B[36m1.2 MB/s\x1B[0m (In) / \x1B[35m450 KB/s\x1B[0m (Out)\n", .{});
-        std.debug.print("  Handshake  : \x1B[32mNoise_IK [Ready]\x1B[0m\n", .{});
+        var mesh_proc = std.process.Child.init(
+            &[_][]const u8{ "curl", "-sf", "--max-time", "2", "http://localhost:9000/mesh" },
+            allocator,
+        );
+        mesh_proc.stdout_behavior = .Pipe;
+        mesh_proc.stderr_behavior = .Ignore;
+        const mesh_spawned = mesh_proc.spawn();
+        if (mesh_spawned) |_| {
+            const mesh_out = mesh_proc.stdout.?.readToEndAlloc(allocator, 4096) catch "";
+            defer if (mesh_out.len > 0) allocator.free(mesh_out);
+            _ = mesh_proc.wait() catch {};
+            if (mesh_out.len > 0) {
+                std.debug.print("  {s}\n", .{mesh_out});
+            } else {
+                std.debug.print("  aura-api offline (run: aura-api)\n", .{});
+            }
+        } else |_| {
+            std.debug.print("  curl not found; start aura-api and check PATH\n", .{});
+        }
 
         std.debug.print("\n\x1B[33m[ Controls ]\x1B[0m\n", .{});
         std.debug.print("  \x1B[1m1.\x1B[0m Start Services\n", .{});

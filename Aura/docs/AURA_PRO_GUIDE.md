@@ -1,6 +1,6 @@
 # Aura: The Pro's Guide
 
-**Sovereign stack, mesh, MCP, Ziggy, and how to run it all.**
+**Single onboarding:** **[docs/ONBOARDING.md](ONBOARDING.md)** — the Aura project onboards in one place. This guide is the deep dive (sovereign stack, mesh, MCP, Ziggy, and how to run it all).
 
 This document is your single source of truth for understanding and handling Aura like a pro. It is written to support deep learning, audio narration, and visual presentation—so every section builds a clear mental model and gives you the exact commands and concepts you need.
 

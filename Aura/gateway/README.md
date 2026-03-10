@@ -1,5 +1,7 @@
 # Aura Syncing Gateway
 
+**Onboarding (one place):** **[docs/ONBOARDING.md](../docs/ONBOARDING.md)** — gateway, chat, and all Aura setup.
+
 Single entry point for **IDEs, TUIs, and LLM clients** (Cursor, Gemini CLI, Groq, etc.) so everything runs through Aura with vault-backed keys and optional session sync.
 
 ## Run
@@ -41,6 +43,16 @@ curl -X POST http://localhost:8765/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{"model":"llama3-70b-8192","messages":[{"role":"user","content":"Hello"}]}'
 ```
+
+### Minimal TUI chat (agent0)
+
+Start gateway (e.g. `aura gateway` in background or via systemd), then:
+
+```bash
+aura chat
+```
+
+Uses `AURA_GATEWAY_URL` (default `http://127.0.0.1:8765`). **RAG-style context:** the TUI loads key Aura docs (`docs/AGENTS.md`, `ONBOARDING.md`, `AURA_PRO_GUIDE.md`, `README.md`) and optional session sync from the gateway, so the agent has full project context. Commands: `/quit`, `/clear`, `/reload` (reload context from docs + session). Env: `AURA_ROOT` (repo root), `AURA_CHAT_WORKSPACE` (sync key, default `aura`). In build mode the agent starts gateway and chat as needed; no manual steps.
 
 ### Session sync (IDE + TUI + CLI)
 

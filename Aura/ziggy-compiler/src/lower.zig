@@ -1,9 +1,9 @@
 //! AST to IR Lowering — Ziggy compiler.
+//! Phase 1: fn_decl lowering with per-function symbol table.
 
 const std = @import("std");
 const parse = @import("parse.zig");
 const ir = @import("ir.zig");
-const types = @import("type.zig");
 
 pub const Lowerer = struct {
     allocator: std.mem.Allocator,
@@ -11,12 +11,22 @@ pub const Lowerer = struct {
     module: ir.IrModule,
     current_fn: ?*ir.IrFunction = null,
     current_blk: ?*ir.BasicBlock = null,
+    /// Maps identifier name → virtual register Value for the current function scope.
+    symbol_table: std.StringHashMap(ir.Value),
 
     pub fn init(allocator: std.mem.Allocator, ast: *const parse.Ast) Lowerer {
-        return .{ .allocator = allocator, .ast = ast, .module = ir.IrModule.init(allocator) };
+        return .{
+            .allocator = allocator,
+            .ast = ast,
+            .module = ir.IrModule.init(allocator),
+            .symbol_table = std.StringHashMap(ir.Value).init(allocator),
+        };
     }
 
-    pub fn deinit(self: *Lowerer) void { self.module.deinit(self.allocator); }
+    pub fn deinit(self: *Lowerer) void {
+        self.symbol_table.deinit();
+        self.module.deinit(self.allocator);
+    }
 
     pub fn lower(self: *Lowerer) !*ir.IrModule {
         const root = &self.ast.nodes[self.ast.nodes.len - 1];
@@ -36,6 +46,10 @@ pub const Lowerer = struct {
         var ir_fn = try ir.IrFunction.init(self.allocator, name);
         try self.module.functions.append(ir_fn);
         self.current_fn = &self.module.functions.items[self.module.functions.items.len - 1];
+
+        // Clear symbol table for this function's scope.
+        self.symbol_table.clearRetainingCapacity();
+
         const entry = try self.addBlock();
         self.current_blk = entry;
         try self.lowerBlock(node.data[1]);
@@ -61,6 +75,7 @@ pub const Lowerer = struct {
     }
 
     fn lowerExpr(self: *Lowerer, idx: parse.NodeIndex) !ir.Value {
+        if (idx == parse.NULL_NODE or idx >= self.ast.nodes.len) return .none;
         const node = self.ast.nodes[idx];
         switch (node.kind) {
             .int_literal => {
@@ -74,8 +89,30 @@ pub const Lowerer = struct {
                 try self.current_blk.?.instructions.append(.{ .op = .add, .dest = dest, .src1 = lhs, .src2 = rhs });
                 return dest;
             },
+            .const_decl, .var_decl => {
+                // Allocate a vreg for this name and register it in the symbol table.
+                const name_tok_idx = node.data[0];
+                const dest = self.current_fn.?.nextVreg();
+                if (name_tok_idx < self.ast.tokens.len) {
+                    const tok = self.ast.tokens[name_tok_idx];
+                    if (tok.start < self.ast.source.len and tok.end <= self.ast.source.len) {
+                        const name = self.ast.source[tok.start..tok.end];
+                        try self.symbol_table.put(name, dest);
+                    }
+                }
+                return dest;
+            },
             .identifier => {
-                return .{ .vreg = 0 }; // stub
+                // Look up in symbol table; fall back gracefully for builtins/unknowns.
+                const tok_idx = node.tok_start;
+                if (tok_idx < self.ast.tokens.len) {
+                    const tok = self.ast.tokens[tok_idx];
+                    if (tok.start < self.ast.source.len and tok.end <= self.ast.source.len) {
+                        const name = self.ast.source[tok.start..tok.end];
+                        if (self.symbol_table.get(name)) |v| return v;
+                    }
+                }
+                return .none; // unknown identifier (builtin or unresolved)
             },
             else => return .none,
         }

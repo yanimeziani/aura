@@ -1,4 +1,5 @@
 import os
+import signal
 from crewai import Agent, Task, Crew, Process
 from langchain_community.tools import DuckDuckGoSearchRun
 from dotenv import load_dotenv
@@ -11,16 +12,62 @@ load_dotenv()
 # instead of using LLM tool-calling (which can fail on some providers/models).
 _search_tool = DuckDuckGoSearchRun()
 
-def _web_snippet(query: str, limit_chars: int = 2000) -> str:
+# Patterns that likely indicate prompt injection attempts in search results.
+_INJECTION_PATTERNS = (
+    "ignore previous",
+    "ignore all previous",
+    "new instructions:",
+    "disregard",
+    "you are now",
+    "forget everything",
+    "act as",
+    "jailbreak",
+    "system prompt",
+    "override your",
+)
+
+
+def _sanitize_search_result(text: str, limit_chars: int = 2000) -> str:
+    """Strip lines containing likely prompt-injection content and cap length."""
+    if not isinstance(text, str):
+        return ""
+    safe_lines = []
+    for line in text.splitlines():
+        lower = line.lower()
+        if any(pat in lower for pat in _INJECTION_PATTERNS):
+            continue
+        safe_lines.append(line)
+    result = "\n".join(safe_lines)
+    if len(result) > limit_chars:
+        result = result[:limit_chars] + "\n...(truncated)..."
+    return result
+
+
+def _web_snippet(query: str, timeout_sec: int = 15) -> str:
+    """Run a web search with timeout and sanitize results against prompt injection."""
     try:
-        s = _search_tool.run(query)
-        if isinstance(s, str) and len(s) > limit_chars:
-            return s[:limit_chars] + "\n...(truncated)..."
-        return s
+        # Use SIGALRM on Unix to enforce a hard timeout on the blocking search call.
+        def _timeout_handler(signum, frame):
+            raise TimeoutError(f"web search timed out after {timeout_sec}s")
+
+        old_handler = signal.signal(signal.SIGALRM, _timeout_handler)
+        signal.alarm(timeout_sec)
+        try:
+            raw = _search_tool.run(query)
+        finally:
+            signal.alarm(0)
+            signal.signal(signal.SIGALRM, old_handler)
+
+        return _sanitize_search_result(raw)
+    except TimeoutError as e:
+        return f"(web search timed out for {query!r}: {e})"
     except Exception as e:
-        return f"(web search failed for {query!r}: {e})"
+        return f"(web search failed for {query!r}: {type(e).__name__})"
 
 # --- 1. Agents ---
+
+_model_name = os.getenv("OPENAI_MODEL_NAME") or "llama3-70b-8192"
+_llm_id = f"groq/{_model_name}"
 
 research_agent = Agent(
     role='Lead Market Researcher (Incubator Dept)',
@@ -28,7 +75,7 @@ research_agent = Agent(
     backstory='You are a sharp-eyed digital entrepreneur who excels at finding niche opportunities, software automation, and passive income streams that require zero to low capital.',
     verbose=True,
     allow_delegation=False,
-    llm=f"groq/{os.getenv('OPENAI_MODEL_NAME')}"
+    llm=_llm_id,
 )
 
 marketing_agent = Agent(
@@ -37,7 +84,7 @@ marketing_agent = Agent(
     backstory='You are an expert copywriter who knows exactly how to build an audience and monetize through affiliate links and digital products (Gumroad, Substack).',
     verbose=True,
     allow_delegation=False,
-    llm=f"groq/{os.getenv('OPENAI_MODEL_NAME')}"
+    llm=_llm_id,
 )
 
 finance_agent = Agent(
@@ -46,7 +93,7 @@ finance_agent = Agent(
     backstory='A quantitative finance wizard and health strategy specialist who ensures capital is always efficiently deployed, including private-first healthcare access.',
     verbose=True,
     allow_delegation=False,
-    llm=f"groq/{os.getenv('OPENAI_MODEL_NAME')}"
+    llm=_llm_id,
 )
 
 # --- 2. Tasks ---
@@ -113,8 +160,11 @@ if __name__ == "__main__":
         try:
             result = agency_crew.kickoff()
             print("\n================================================")
-            print("📈 AGENCY FINAL REPORT 📈")
+            print("AGENCY FINAL REPORT")
             print("================================================")
             print(result)
+        except KeyboardInterrupt:
+            print("\nAborted by operator.")
         except Exception as e:
-            print(f"Agency encountered an error: {e}")
+            print(f"\nAgency error ({type(e).__name__}): {e}")
+            print("Check GROQ_API_KEY, OPENAI_MODEL_NAME, and network connectivity.")
