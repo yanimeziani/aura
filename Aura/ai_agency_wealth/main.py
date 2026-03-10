@@ -1,7 +1,6 @@
 import os
 import signal
-from crewai import Agent, Task, Crew, Process
-from langchain_community.tools import DuckDuckGoSearchRun
+from sovereign_crew import Agent, Task, Crew, Process
 from dotenv import load_dotenv
 
 # Load environment variables (API keys, etc.)
@@ -10,7 +9,7 @@ load_dotenv()
 # We will use DuckDuckGo Search as our free open-source research tool.
 # Note: We run web search directly in Python and inject results into prompts,
 # instead of using LLM tool-calling (which can fail on some providers/models).
-_search_tool = DuckDuckGoSearchRun()
+from sovereign_crew import web_snippet as _web_search_fn
 
 # Patterns that likely indicate prompt injection attempts in search results.
 _INJECTION_PATTERNS = (
@@ -53,7 +52,7 @@ def _web_snippet(query: str, timeout_sec: int = 15) -> str:
         old_handler = signal.signal(signal.SIGALRM, _timeout_handler)
         signal.alarm(timeout_sec)
         try:
-            raw = _search_tool.run(query)
+            raw = _web_search_fn(query)
         finally:
             signal.alarm(0)
             signal.signal(signal.SIGALRM, old_handler)

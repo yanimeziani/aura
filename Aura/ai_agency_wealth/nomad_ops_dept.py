@@ -1,16 +1,15 @@
 import os
-from crewai import Agent, Task, Crew, Process
-from langchain_community.tools import DuckDuckGoSearchRun
+from sovereign_crew import Agent, Task, Crew, Process
 from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
 
-_search_tool = DuckDuckGoSearchRun()
+from sovereign_crew import web_snippet as _web_search_fn
 
 def _web_snippet(query: str, limit_chars: int = 2000) -> str:
     try:
-        s = _search_tool.run(query)
+        s = _web_search_fn(query)
         if isinstance(s, str) and len(s) > limit_chars:
             return s[:limit_chars] + "\n...(truncated)..."
         return s

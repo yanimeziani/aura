@@ -1,7 +1,6 @@
 import os
 import json
-from crewai import Agent, Task, Crew, Process
-from langchain_community.tools import DuckDuckGoSearchRun
+from sovereign_crew import Agent, Task, Crew, Process
 from dotenv import load_dotenv
 
 load_dotenv()

@@ -8,20 +8,6 @@
         "type": "tabs",
         "children": [
           {
-            "id": "c3dd0f85b4bf9551",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "roster.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "roster"
-            }
-          },
-          {
             "id": "56b1b244babdad5f",
             "type": "leaf",
             "state": {
@@ -35,8 +21,7 @@
               "title": "QN"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -110,7 +95,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "QN.md",
+                "file": "roster.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -120,7 +105,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for QN"
+              "title": "Backlinks for roster"
             }
           },
           {
@@ -129,12 +114,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "QN.md",
+                "file": "roster.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from QN"
+              "title": "Outgoing links from roster"
             }
           },
           {
@@ -172,13 +157,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "QN.md",
+                "file": "roster.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of QN"
+              "title": "Outline of roster"
             }
           }
         ]
@@ -199,10 +184,49 @@
       "bases:Create new base": false
     }
   },
-  "active": "56b1b244babdad5f",
+  "floating": {
+    "id": "6f8ae9c3352fcf27",
+    "type": "floating",
+    "children": [
+      {
+        "id": "c411341708367445",
+        "type": "window",
+        "children": [
+          {
+            "id": "d98e6df0d5887e69",
+            "type": "tabs",
+            "children": [
+              {
+                "id": "c3dd0f85b4bf9551",
+                "type": "leaf",
+                "state": {
+                  "type": "markdown",
+                  "state": {
+                    "file": "roster.md",
+                    "mode": "source",
+                    "source": false
+                  },
+                  "icon": "lucide-file",
+                  "title": "roster"
+                }
+              }
+            ]
+          }
+        ],
+        "direction": "vertical",
+        "x": 160,
+        "y": 59,
+        "width": 600,
+        "height": 615,
+        "maximize": false,
+        "zoom": 0
+      }
+    ]
+  },
+  "active": "c3dd0f85b4bf9551",
   "lastOpenFiles": [
-    "roster.md",
     "QN.md",
+    "roster.md",
     "whats-slowing-us-down.md",
     "steady-cashflow-freedom-of-time.md",
     "skills-blitkrieg-contemporary.md",
