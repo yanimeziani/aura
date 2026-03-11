@@ -119,7 +119,9 @@ export default function LandingPage() {
       if (accessRes.ok) {
         const accessData = await accessRes.json()
         if (accessData.access) {
-          window.location.href = accessData.redirect || '/dashboard'
+          // If already has access, we just mark as success but don't redirect automatically
+          // This allows the user to see the confirmation or manually navigate
+          setStatus('success')
           return
         }
       }

@@ -2,6 +2,7 @@ import os
 import stripe
 import httpx
 import json
+import ipaddress
 from fastapi import BackgroundTasks, FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse, PlainTextResponse
 from pydantic import BaseModel
@@ -12,6 +13,7 @@ import uvicorn
 load_dotenv()
 
 ADMIN_TOKEN = os.getenv("AURA_ADMIN_TOKEN")
+VAULT_TOKEN = os.getenv("AURA_VAULT_TOKEN")
 
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
 STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
@@ -41,13 +43,42 @@ app = FastAPI(title="Sovereign Payment Gateway")
 def _require_admin(request: Request) -> None:
     """
     Optional admin guard.
-    If AURA_ADMIN_TOKEN is set, callers must send header: X-Aura-Admin-Token.
+    Checks for either AURA_ADMIN_TOKEN, AURA_VAULT_TOKEN,
+    or if request comes from within the Tailscale mesh.
     """
-    if not ADMIN_TOKEN:
+    # 1. Check tokens
+    token = request.headers.get("x-aura-admin-token") or request.headers.get("x-aura-vault-token")
+    if token and (token == ADMIN_TOKEN or token == VAULT_TOKEN):
         return
-    token = request.headers.get("x-aura-admin-token")
-    if token != ADMIN_TOKEN:
-        raise HTTPException(status_code=401, detail="Unauthorized")
+
+    # 2. Check Mesh Access
+    client_ip = request.client.host if request.client else ""
+    try:
+        # Trust Tailscale mesh range (100.64.0.0/10) or common local private IPs
+        addr = ipaddress.ip_address(client_ip)
+        if addr.is_private or client_ip.startswith("100."):
+            return
+    except:
+        pass
+    
+    # If no tokens are set in env, we allow access (dev mode)
+    if not ADMIN_TOKEN and not VAULT_TOKEN:
+        return
+        
+    raise HTTPException(status_code=401, detail="Unauthorized")
+
+@app.get("/sys/network")
+async def get_network_processes(request: Request):
+    """Returns live network process info (Root/Admin only)."""
+    _require_admin(request)
+    import subprocess
+    try:
+        # Get established connections and listening ports with process info
+        # Using ss -tulpn or netstat -tulpn
+        result = subprocess.check_output(["ss", "-tulpn"], text=True)
+        return {"network_processes": result}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to inspect network: {e}")
 
 @app.get("/")
 async def root():
@@ -206,10 +237,10 @@ class ValidateAccessRequest(BaseModel):
 
 @app.post("/validate-access")
 async def validate_access(req: ValidateAccessRequest):
-    """Public endpoint: check if email has access. Returns redirect URL on success."""
+    """Public endpoint: check if email has access."""
     result = _has_access(req.email)
     if result["access"]:
-        return {"access": True, "redirect": PORTAL_REDIRECT_URL}
+        return {"access": True}
     return {"access": False}
 
 

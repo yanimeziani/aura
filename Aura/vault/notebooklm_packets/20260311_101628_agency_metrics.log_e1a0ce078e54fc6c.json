@@ -1,0 +1,17 @@
+{
+  "title": "NotebookLM Packet \u2014 agency_metrics.log",
+  "source": "/home/yani/Aura/ai_agency_wealth/agency_metrics.log",
+  "created_at": "2026-03-11T10:16:28",
+  "window": "tail(200)",
+  "summary": [
+    "No error/exception signals detected in the recent window.",
+    "4 high-signal events extracted (warn/ok/error)."
+  ],
+  "key_events": [
+    "\u23ed\ufe0f  Already processing LPA-CGR. Skipping.",
+    "\u23ed\ufe0f  Already processing Polsinelli. Skipping.",
+    "\u23ed\ufe0f  Already processing UAE Medical Distributors. Skipping.",
+    "For instance, companies like Tesla and Google are already investing heavily in local AI solutions, with Tesla's Autopilot system relying on a combination of cloud-based and local AI processing. Meanwhile, startups like Groq are developing specialized AI hardware designed to run locally, reducing the need for cloud infrastructure and improving overall performance."
+  ],
+  "errors": []
+}

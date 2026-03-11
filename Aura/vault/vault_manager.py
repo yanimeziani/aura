@@ -18,6 +18,8 @@ VAULT_REGISTRY = {
     "N8N_WEBHOOK_URL": {"desc": "URL of your n8n MCP/Gateway webhook", "default": "http://localhost:5678/webhook/mcp-gateway"},
     "OPS_AUTOMATION_WEBHOOK_URL": {"desc": "URL of Aura ops automation webhook (preferred over n8n)", "default": "http://127.0.0.1:9100/ops/stripe"},
     "GEMINI_API_KEY": {"desc": "Google Gemini API Key (for Gemini CLI / gateway)", "required": False},
+    "OWNER_EMAIL": {"desc": "Email of the system owner", "default": "yani@meziani.ai"},
+    "AURA_VAULT_TOKEN": {"desc": "Secret token for vault-level operations", "required": True},
 }
 
 VAULT_FILE = Path("/home/yani/Aura/vault/aura-vault.json")

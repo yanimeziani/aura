@@ -2,51 +2,52 @@
   # Global options
 }
 
+# Snippet for CORS headers
+(cors_headers) {
+  header Access-Control-Allow-Origin "https://meziani.ai"
+  header Access-Control-Allow-Methods "GET, POST, OPTIONS"
+  header Access-Control-Allow-Headers "Content-Type, Authorization"
+  header Access-Control-Allow-Credentials "true"
+}
+
 # Operations Center (meziani.org)
 meziani.org, www.meziani.org {
-  # CORS Configuration for the entire ecosystem
-  header {
-    Access-Control-Allow-Origin "https://meziani.ai"
-    Access-Control-Allow-Methods "GET, POST, OPTIONS"
-    Access-Control-Allow-Headers "Content-Type, Authorization"
-    Access-Control-Allow-Credentials "true"
-    # Existing security headers
-    Strict-Transport-Security "max-age=31536000;"
-  }
-
-  # Handle CORS preflight (OPTIONS)
-  @cors_preflight method OPTIONS
-  handle @cors_preflight {
+  # Handle OPTIONS at the very top level
+  @options method OPTIONS
+  handle @options {
+    import cors_headers
     respond "" 204
   }
 
   handle_path /api/* {
-    reverse_proxy host.docker.internal:8000
+    import cors_headers
+    reverse_proxy host.docker.internal:8765
   }
+
   handle_path /ops/* {
+    import cors_headers
     reverse_proxy host.docker.internal:9100
   }
+
   handle_path /automation/* {
+    import cors_headers
     reverse_proxy n8n:5678
   }
+
   handle {
+    import cors_headers
     root * /srv/frontend
     file_server
     try_files {path} {path}/ /index.html
+  }
+
+  header {
+    Strict-Transport-Security "max-age=31536000;"
   }
 }
 
 # Company Landing Page (meziani.ai)
 meziani.ai, www.meziani.ai {
-  handle_path /api/* {
-    reverse_proxy host.docker.internal:8000
-  }
-  handle_path /ops/* {
-    reverse_proxy host.docker.internal:9100
-  }
-  handle_path /automation/* {
-    reverse_proxy n8n:5678
-  }
   handle {
     root * /srv/landing_page
     file_server
@@ -54,58 +55,75 @@ meziani.ai, www.meziani.ai {
   }
 }
 
-# VPS Tailscale Access (Hostname)
+# Tailscale Access blocks (similar pattern)
 srv723879.tailafcdba.ts.net {
   tls /etc/caddy/srv723879.tailafcdba.ts.net.crt /etc/caddy/srv723879.tailafcdba.ts.net.key
+  
+  @options method OPTIONS
+  handle @options {
+    import cors_headers
+    respond "" 204
+  }
 
   handle_path /api/* {
-    reverse_proxy host.docker.internal:8000
+    import cors_headers
+    reverse_proxy host.docker.internal:8765
   }
+  
   handle_path /ops/* {
+    import cors_headers
     reverse_proxy host.docker.internal:9100
   }
+
   handle_path /automation/* {
+    import cors_headers
     reverse_proxy n8n:5678
   }
+
   handle {
+    import cors_headers
     root * /srv/frontend
     file_server
     try_files {path} {path}/ /index.html
   }
 }
 
-# VPS Tailscale Access (Fallback IP - HTTP Only)
 http://100.103.216.112 {
+  @options method OPTIONS
+  handle @options {
+    import cors_headers
+    respond "" 204
+  }
+
   handle_path /api/* {
-    reverse_proxy host.docker.internal:8000
+    import cors_headers
+    reverse_proxy host.docker.internal:8765
   }
-  handle_path /ops/* {
-    reverse_proxy host.docker.internal:9100
-  }
-  handle_path /automation/* {
-    reverse_proxy n8n:5678
-  }
+
   handle {
+    import cors_headers
     root * /srv/frontend
     file_server
     try_files {path} {path}/ /index.html
   }
 }
 
-# Local Fedora Tailscale Access (Hostname)
 fedora.tailafcdba.ts.net {
   tls /etc/caddy/fedora.tailafcdba.ts.net.crt /etc/caddy/fedora.tailafcdba.ts.net.key
+  
+  @options method OPTIONS
+  handle @options {
+    import cors_headers
+    respond "" 204
+  }
 
   handle_path /api/* {
-    reverse_proxy host.docker.internal:8000
+    import cors_headers
+    reverse_proxy host.docker.internal:8765
   }
-  handle_path /ops/* {
-    reverse_proxy host.docker.internal:9100
-  }
-  handle_path /automation/* {
-    reverse_proxy n8n:5678
-  }
+
   handle {
+    import cors_headers
     root * /srv/frontend
     file_server
     try_files {path} {path}/ /index.html
