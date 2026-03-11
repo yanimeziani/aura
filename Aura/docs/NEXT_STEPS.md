@@ -77,6 +77,7 @@
 - `vault_manager.py` — add OWNER_EMAIL to active use (notifications, auth fallback)
 
 ### Dragun.app
+- Immutable autobuild architecture now lives in `docs/DRAGUN_AUTOBUILD_IMMUTABLE_ARCHITECTURE.md`
 - Debtor portal `/pay/:id` — Stripe checkout integration
 - RAG pipeline with Groq — pgvector schema migrations needed
 - Merchant dashboard `/dashboard` — recovery queue KPIs

@@ -107,6 +107,7 @@ All of this is automated from the single onboarding flow; in build mode the agen
 | Principles, modes, build/run commands | **docs/AGENTS.md** |
 | Sovereign stack, mesh, MCP, Ziggy | **docs/AURA_PRO_GUIDE.md** |
 | Gateway API, vault, Cursor | **gateway/README.md** |
+| Aura-owned Dragun autobuild architecture | **docs/DRAGUN_AUTOBUILD_IMMUTABLE_ARCHITECTURE.md** |
 | Deployment, devices, control script | **sovereign-stack/DEPLOYMENT.md**, **sovereign-stack/prod-control.sh** |
 | Zig version and compiler | **docs/ZIG_VERSION.md**, **docs/ziggy-compiler.md** |
 
