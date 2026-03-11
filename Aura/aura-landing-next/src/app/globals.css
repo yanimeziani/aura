@@ -20,7 +20,11 @@
   margin: 0;
 }
 
-html,
+html {
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+}
+
 body {
   background: var(--bg);
   color: var(--fg);
@@ -30,20 +34,30 @@ body {
 }
 
 .container {
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 4rem 2rem;
+}
+
+/* ── Snap Sections ── */
+
+.snap-section {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 2rem;
 }
 
-/* ── Header ── */
+/* ── Header & Hero ── */
 
 header {
   text-align: center;
-  margin-bottom: 8rem;
+  margin-bottom: 4rem;
   animation: fadeIn 0.8s ease-out;
+  width: 100%;
 }
 
 @keyframes fadeIn {
@@ -67,7 +81,7 @@ header {
 }
 
 h1 {
-  font-size: clamp(2.5rem, 8vw, 5.5rem);
+  font-size: clamp(2.5rem, 8vw, 5rem);
   font-weight: 900;
   letter-spacing: -0.04em;
   line-height: 0.95;
@@ -81,8 +95,8 @@ h1 {
 .subtitle {
   font-size: 1.25rem;
   color: var(--neutral-medium);
-  max-width: 800px;
-  margin: 0 auto 4rem;
+  max-width: 750px;
+  margin: 0 auto 2rem;
   line-height: 1.6;
 }
 
@@ -95,6 +109,7 @@ h1 {
   border-radius: 12px;
   padding: 4px;
   gap: 4px;
+  margin-bottom: 0;
 }
 
 .seg-btn {
@@ -118,57 +133,50 @@ h1 {
   color: var(--primary-dark);
 }
 
-/* ── Grid ── */
-
-main {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8rem;
-  align-items: start;
-  flex: 1;
-}
-
 /* ── Card ── */
 
 .funnel-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  padding: 4rem;
+  padding: 3rem;
   border-radius: 24px;
   box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.8);
-  position: sticky;
-  top: 4rem;
+  width: 100%;
+  max-width: 580px;
   backdrop-filter: blur(10px);
+  text-align: center;
+  margin-top: 2rem;
 }
 
 .funnel-card h2 {
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   font-weight: 800;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
   letter-spacing: -0.02em;
 }
 
 .card-sub {
   color: var(--neutral-medium);
-  margin-bottom: 3rem;
-  font-size: 1rem;
+  margin-bottom: 2rem;
+  font-size: 0.9rem;
 }
 
 /* ── Form ── */
 
 .input-group {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
+  text-align: left;
 }
 
 label {
   display: block;
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--neutral-medium);
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
 }
 
 input,
@@ -176,10 +184,10 @@ select {
   width: 100%;
   background: #000;
   border: 1px solid var(--border);
-  padding: 1.25rem;
+  padding: 1rem;
   color: #fff;
-  border-radius: 12px;
-  font-size: 1rem;
+  border-radius: 10px;
+  font-size: 0.95rem;
   transition: all 0.2s;
   appearance: none;
 }
@@ -196,13 +204,13 @@ button[type="submit"] {
   background: var(--neutral-light);
   color: var(--primary-dark);
   border: none;
-  padding: 1.25rem;
+  padding: 1.1rem;
   font-size: 1rem;
   font-weight: 700;
-  border-radius: 12px;
+  border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s;
-  margin-top: 1rem;
+  margin-top: 0.5rem;
 }
 
 button[type="submit"]:hover:not(:disabled) {
@@ -211,31 +219,31 @@ button[type="submit"]:hover:not(:disabled) {
   transform: translateY(-2px);
 }
 
-button[type="submit"]:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
 /* ── Features ── */
 
 .features {
-  display: flex;
-  flex-direction: column;
-  gap: 4rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2.5rem;
+  width: 100%;
 }
 
 .feature {
-  padding-left: 2rem;
-  border-left: 2px solid var(--border);
+  padding: 2.5rem;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.02);
   transition: all 0.3s;
 }
 
 .feature:hover {
-  border-left-color: var(--accent-cyan);
+  border-color: var(--accent-cyan);
+  transform: translateY(-5px);
 }
 
 .feature h3 {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
   margin-bottom: 1rem;
   color: var(--neutral-light);
@@ -243,17 +251,18 @@ button[type="submit"]:disabled {
 
 .feature p {
   color: var(--neutral-medium);
-  line-height: 1.7;
-  font-size: 1.1rem;
+  line-height: 1.6;
+  font-size: 1rem;
 }
 
 /* ── Footer ── */
 
 footer {
-  margin-top: 12rem;
   padding: 4rem 0;
   border-top: 1px solid var(--border);
   text-align: center;
+  width: 100%;
+  scroll-snap-align: end;
 }
 
 footer p {
@@ -263,31 +272,27 @@ footer p {
   margin-bottom: 1rem;
 }
 
-.footer-note {
-  opacity: 0.5;
-}
-
 /* ── Mobile ── */
 
 @media (max-width: 1024px) {
-  main {
-    grid-template-columns: 1fr;
-    gap: 6rem;
+  html {
+    scroll-snap-type: none; /* Disable snapping on mobile for better accessibility */
   }
-  .funnel-card {
-    position: static;
-    padding: 3rem 2rem;
+  .snap-section {
+    min-height: auto;
+    padding: 6rem 1.5rem;
+  }
+  .features {
+    grid-template-columns: 1fr;
+    max-width: 600px;
   }
 }
 
 @media (max-width: 640px) {
-  .container {
-    padding: 2rem 1.5rem;
-  }
-  header {
-    margin-bottom: 4rem;
-  }
   h1 {
-    font-size: 3rem;
+    font-size: 2.75rem;
+  }
+  .funnel-card {
+    padding: 2.5rem 1.5rem;
   }
 }

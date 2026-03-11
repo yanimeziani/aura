@@ -136,6 +136,25 @@ export default function LandingPage() {
         }),
       })
 
+      // Trigger Zig Workflow (aura-flow)
+      try {
+        await fetch('https://meziani.org/ops/webhook/landing', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          mode: 'no-cors', // Best effort
+          body: JSON.stringify({
+            event: 'landing_form_submission',
+            email,
+            company,
+            industry,
+            segment,
+            timestamp: new Date().toISOString()
+          }),
+        });
+      } catch (e) {
+        console.warn('Workflow trigger deferred:', e);
+      }
+
       if (response.ok) {
         setStatus('success')
       } else {
@@ -162,30 +181,30 @@ export default function LandingPage() {
 
   return (
     <div className="container">
-      <header>
-        <div className="wordmark">Meziani AI Labs</div>
-        <h1>{copy.hero}</h1>
-        <p className="subtitle">{copy.sub}</p>
+      <section className="snap-section">
+        <header>
+          <div className="wordmark">Meziani AI Labs</div>
+          <h1>{copy.hero}</h1>
+          <p className="subtitle">{copy.sub}</p>
 
-        <div className="segment-toggle">
-          <button
-            type="button"
-            className={`seg-btn ${segment === 'ca' ? 'active' : ''}`}
-            onClick={() => switchSegment('ca')}
-          >
-            Canada
-          </button>
-          <button
-            type="button"
-            className={`seg-btn ${segment === 'mena' ? 'active' : ''}`}
-            onClick={() => switchSegment('mena')}
-          >
-            Algérie / MENA
-          </button>
-        </div>
-      </header>
+          <div className="segment-toggle">
+            <button
+              type="button"
+              className={`seg-btn ${segment === 'ca' ? 'active' : ''}`}
+              onClick={() => switchSegment('ca')}
+            >
+              Canada
+            </button>
+            <button
+              type="button"
+              className={`seg-btn ${segment === 'mena' ? 'active' : ''}`}
+              onClick={() => switchSegment('mena')}
+            >
+              Algérie / MENA
+            </button>
+          </div>
+        </header>
 
-      <main>
         {status === 'success' ? (
           <div className="funnel-card">
             <div className="success-icon">&#10003;</div>
@@ -248,25 +267,29 @@ export default function LandingPage() {
             </form>
           </div>
         )}
+      </section>
 
-        <div className="features">
-          {copy.features.map((f) => (
-            <div className="feature" key={f.title}>
-              <h3>{f.title}</h3>
-              <p>{f.body}</p>
-            </div>
-          ))}
-        </div>
-      </main>
+      <section className="snap-section">
+        <main>
+          <div className="features">
+            {copy.features.map((f) => (
+              <div className="feature" key={f.title}>
+                <h3>{f.title}</h3>
+                <p>{f.body}</p>
+              </div>
+            ))}
+          </div>
+        </main>
 
-      <footer>
-        <p>&copy; 2026 Meziani AI Labs &mdash; Powered by Aura</p>
-        <p className="footer-note">
-          {segment === 'ca'
-            ? 'CASL compliant. Canadian data sovereignty. No cloud lock-in.'
-            : 'Open-source. Souveraineté des données. Aucun abonnement cloud.'}
-        </p>
-      </footer>
+        <footer>
+          <p>&copy; 2026 Meziani AI Labs &mdash; Powered by Aura</p>
+          <p className="footer-note">
+            {segment === 'ca'
+              ? 'CASL compliant. Canadian data sovereignty. No cloud lock-in.'
+              : 'Open-source. Souveraineté des données. Aucun abonnement cloud.'}
+          </p>
+        </footer>
+      </section>
     </div>
   )
 }

@@ -9,6 +9,7 @@ load_dotenv()
 
 from sovereign_crew import web_snippet as _web_search_fn
 
+
 def _web_snippet(query: str, limit_chars: int = 2000) -> str:
     try:
         s = _web_search_fn(query)
@@ -18,27 +19,29 @@ def _web_snippet(query: str, limit_chars: int = 2000) -> str:
     except Exception as e:
         return f"(web search failed for {query!r}: {e})"
 
+
 # --- Agent 1: Lead Hunter (The Snatcher) ---
 lead_hunter = Agent(
-    role='Lead Identification Specialist',
-    goal='Identify high-potential mid-market organizations for autonomous systems deployment.',
-    backstory='You hunt for companies (10-100 employees) in logistics, manufacturing, and law that have high manual overhead.',
+    role="Lead Identification Specialist",
+    goal="Identify high-potential mid-market organizations for autonomous systems deployment.",
+    backstory="You hunt for companies (10-100 employees) in logistics, manufacturing, and law that have high manual overhead.",
     verbose=True,
     allow_delegation=False,
-    llm=f"groq/{os.getenv('OPENAI_MODEL_NAME')}"
+    llm=f"groq/{os.getenv('OPENAI_MODEL_NAME')}",
 )
 
 # --- Agent 2: OSINT Intelligence Officer (The Enricher) ---
 enricher = Agent(
-    role='OSINT Intelligence Officer',
-    goal='Find the specific Decision Maker (CEO, COO, or IT Director) and their contact details for identified companies.',
-    backstory='You are a master of finding people. You find LinkedIn profiles, professional emails, and the specific names of leaders within target organizations.',
+    role="OSINT Intelligence Officer",
+    goal="Find the specific Decision Maker (CEO, COO, or IT Director) and their contact details for identified companies.",
+    backstory="You are a master of finding people. You find LinkedIn profiles, professional emails, and the specific names of leaders within target organizations.",
     verbose=True,
     allow_delegation=False,
-    llm=f"groq/{os.getenv('OPENAI_MODEL_NAME')}"
+    llm=f"groq/{os.getenv('OPENAI_MODEL_NAME')}",
 )
 
 # --- Tasks ---
+
 
 def create_tasks(region, industry, count):
     ctx = _web_snippet(f"{industry} mid-sized firms in {region} 10-100 employees")
@@ -49,38 +52,49 @@ def create_tasks(region, industry, count):
 {ctx}
 
 Task: Identify {count} mid-sized {industry} firms in {region}. Output a JSON list with: Company Name, Website, Industry, Language (AR/FR/EN), Hook.""",
-        expected_output=f'A JSON list of {count} company profiles.',
-        agent=lead_hunter
+        expected_output=f"A JSON list of {count} company profiles.",
+        agent=lead_hunter,
     )
-    
+
     enrich_task = Task(
-        description='For each company found, identify the CEO, COO, or Head of IT. Find their full name, LinkedIn URL (if possible), and professional email structure. Output: JSON list of leads including Company Name, Contact Person, Title, LinkedIn, and Email.',
-        expected_output='An enriched JSON list with specific contact points.',
+        description="For each company found, identify the CEO, COO, or Head of IT. Find their full name, LinkedIn URL (if possible), and professional email structure. Output: JSON list of leads including Company Name, Contact Person, Title, LinkedIn, and Email.",
+        expected_output="An enriched JSON list with specific contact points.",
         agent=enricher,
-        context=[hunt_task]
+        context=[hunt_task],
     )
     return hunt_task, enrich_task
 
-mena_hunt, mena_enrich = create_tasks("Algeria/UAE", "logistics or medical distribution", 2)
+
+mena_hunt, mena_enrich = create_tasks(
+    "Algeria/UAE", "logistics or medical distribution", 2
+)
 eu_hunt, eu_enrich = create_tasks("France/Switzerland", "manufacturing or law", 2)
 
 lead_crew = Crew(
     agents=[lead_hunter, enricher],
     tasks=[mena_hunt, mena_enrich, eu_hunt, eu_enrich],
-    process=Process.sequential
+    process=Process.sequential,
 )
 
 if __name__ == "__main__":
     print("🎯 SNATCHING & ENRICHING PROSPECTS (FULL AUTO)...")
-    
-    result = lead_crew.kickoff()
-    
+
+    try:
+        result = lead_crew.kickoff()
+    except Exception as e:
+        print(f"Lead Gen encountered an error: {e}")
+        raise SystemExit(0)  # graceful exit so orchestrator continues
+
     # Process the final markdown/string result into leads.json
     # CrewAI kickoff returns a CrewOutput object
     try:
         # CrewOutput.raw is often ONLY the final task. We need all task outputs
         # so we can merge company profiles (hunt) + contacts (enrich).
-        if hasattr(result, "tasks_output") and isinstance(result.tasks_output, list) and result.tasks_output:
+        if (
+            hasattr(result, "tasks_output")
+            and isinstance(result.tasks_output, list)
+            and result.tasks_output
+        ):
             parts = []
             for t in result.tasks_output:
                 raw = getattr(t, "raw", None)
@@ -89,9 +103,12 @@ if __name__ == "__main__":
         else:
             res_str = str(result)
         import re
+
         # Prefer fenced code blocks containing JSON arrays (more reliable than bracket regex).
         arrays = []
-        for block in re.findall(r"```(?:json)?\s*([\s\S]*?)\s*```", res_str, re.IGNORECASE):
+        for block in re.findall(
+            r"```(?:json)?\s*([\s\S]*?)\s*```", res_str, re.IGNORECASE
+        ):
             lines = []
             for line in block.splitlines():
                 # CrewAI's TUI output may include a left border like: "│  ..."
@@ -135,7 +152,7 @@ if __name__ == "__main__":
                             contacts.setdefault(company, {}).update(item)
             except:
                 continue
-        
+
         all_companies = sorted(set(company_profiles.keys()) | set(contacts.keys()))
         merged = []
         for company in all_companies:

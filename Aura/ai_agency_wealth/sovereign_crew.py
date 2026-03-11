@@ -21,7 +21,17 @@ from typing import Optional
 
 _GROQ_BASE = "https://api.groq.com/openai/v1"
 _DEFAULT_MODEL = os.getenv("OPENAI_MODEL_NAME", "llama3-70b-8192")
-_GROQ_KEY = os.getenv("GROQ_API_KEY", "")
+
+
+def _get_groq_key() -> str:
+    """Read GROQ_API_KEY lazily so callers can load_dotenv() before first LLM call."""
+    key = os.getenv("GROQ_API_KEY", "")
+    if not key:
+        raise RuntimeError(
+            "GROQ_API_KEY is not set. "
+            "Ensure load_dotenv() is called or export the variable before running."
+        )
+    return key
 
 
 def _call_llm(system: str, user: str, model: str) -> str:
@@ -33,7 +43,7 @@ def _call_llm(system: str, user: str, model: str) -> str:
     response = httpx.post(
         f"{_GROQ_BASE}/chat/completions",
         headers={
-            "Authorization": f"Bearer {_GROQ_KEY}",
+            "Authorization": f"Bearer {_get_groq_key()}",
             "Content-Type": "application/json",
         },
         json={
@@ -95,6 +105,7 @@ def web_snippet(query: str, timeout_sec: int = 15) -> str:
 
 # ── Agent ─────────────────────────────────────────────────────────────────────
 
+
 class Agent:
     def __init__(
         self,
@@ -124,6 +135,7 @@ class Agent:
 
 # ── Task ──────────────────────────────────────────────────────────────────────
 
+
 class Task:
     def __init__(
         self,
@@ -142,6 +154,7 @@ class Task:
 
 
 # ── Crew ──────────────────────────────────────────────────────────────────────
+
 
 class Crew:
     def __init__(
@@ -204,6 +217,7 @@ class CrewResult:
 
 
 # ── Process compat shim ───────────────────────────────────────────────────────
+
 
 class Process:
     sequential = "sequential"

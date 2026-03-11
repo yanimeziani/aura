@@ -1,53 +1,113 @@
-# Core Server Configuration for meziani.org and meziani.ai
-# Optimized for automatic HTTPS (Let's Encrypt) 
-
-meziani.org, www.meziani.org, meziani.ai, www.meziani.ai {
-    root * /var/www/html/ai_agency_web
-    file_server
-    try_files {path} {path}/ /index.html
-
-    # Backend SaaS API
-    handle_path /api/* {
-        reverse_proxy 127.0.0.1:8000
-    }
-
-    # n8n Automation Backend
-    handle_path /automation/* {
-        reverse_proxy 127.0.0.1:5678 {
-            header_up Host {host}
-            header_up X-Real-IP {remote_host}
-        }
-    }
-
-    # Custom styling for mobile/tablet (Z Fold 5)
-    header {
-        # Enable compression for faster mobile loading
-        Access-Control-Allow-Origin *
-        Strict-Transport-Security "max-age=31536000;"
-    }
+{
+  # Global options
 }
 
-# Stripe should POST directly to a webhook endpoint (no redirects).
-# Dedicated host avoids mixing webhook traffic with frontend routing.
-pay.meziani.org {
-    encode zstd gzip
+# Operations Center (meziani.org)
+meziani.org, www.meziani.org {
+  # CORS Configuration for the entire ecosystem
+  header {
+    Access-Control-Allow-Origin "https://meziani.ai"
+    Access-Control-Allow-Methods "GET, POST, OPTIONS"
+    Access-Control-Allow-Headers "Content-Type, Authorization"
+    Access-Control-Allow-Credentials "true"
+    # Existing security headers
+    Strict-Transport-Security "max-age=31536000;"
+  }
 
-    # Webhooks
-    handle_path /webhook* {
-        request_body {
-            max_size 10MB
-        }
-        reverse_proxy 127.0.0.1:8000 {
-            header_up Host {host}
-            header_up X-Real-IP {remote_host}
-        }
-    }
+  # Handle CORS preflight (OPTIONS)
+  @cors_preflight method OPTIONS
+  handle @cors_preflight {
+    respond "" 204
+  }
 
-    # Optional: everything else goes to API (safe default)
-    handle {
-        reverse_proxy 127.0.0.1:8000 {
-            header_up Host {host}
-            header_up X-Real-IP {remote_host}
-        }
-    }
+  handle_path /api/* {
+    reverse_proxy host.docker.internal:8000
+  }
+  handle_path /ops/* {
+    reverse_proxy host.docker.internal:9100
+  }
+  handle_path /automation/* {
+    reverse_proxy n8n:5678
+  }
+  handle {
+    root * /srv/frontend
+    file_server
+    try_files {path} {path}/ /index.html
+  }
+}
+
+# Company Landing Page (meziani.ai)
+meziani.ai, www.meziani.ai {
+  handle_path /api/* {
+    reverse_proxy host.docker.internal:8000
+  }
+  handle_path /ops/* {
+    reverse_proxy host.docker.internal:9100
+  }
+  handle_path /automation/* {
+    reverse_proxy n8n:5678
+  }
+  handle {
+    root * /srv/landing_page
+    file_server
+    try_files {path} {path}/ /index.html
+  }
+}
+
+# VPS Tailscale Access (Hostname)
+srv723879.tailafcdba.ts.net {
+  tls /etc/caddy/srv723879.tailafcdba.ts.net.crt /etc/caddy/srv723879.tailafcdba.ts.net.key
+
+  handle_path /api/* {
+    reverse_proxy host.docker.internal:8000
+  }
+  handle_path /ops/* {
+    reverse_proxy host.docker.internal:9100
+  }
+  handle_path /automation/* {
+    reverse_proxy n8n:5678
+  }
+  handle {
+    root * /srv/frontend
+    file_server
+    try_files {path} {path}/ /index.html
+  }
+}
+
+# VPS Tailscale Access (Fallback IP - HTTP Only)
+http://100.103.216.112 {
+  handle_path /api/* {
+    reverse_proxy host.docker.internal:8000
+  }
+  handle_path /ops/* {
+    reverse_proxy host.docker.internal:9100
+  }
+  handle_path /automation/* {
+    reverse_proxy n8n:5678
+  }
+  handle {
+    root * /srv/frontend
+    file_server
+    try_files {path} {path}/ /index.html
+  }
+}
+
+# Local Fedora Tailscale Access (Hostname)
+fedora.tailafcdba.ts.net {
+  tls /etc/caddy/fedora.tailafcdba.ts.net.crt /etc/caddy/fedora.tailafcdba.ts.net.key
+
+  handle_path /api/* {
+    reverse_proxy host.docker.internal:8000
+  }
+  handle_path /ops/* {
+    reverse_proxy host.docker.internal:9100
+  }
+  handle_path /automation/* {
+    reverse_proxy n8n:5678
+  }
+  handle {
+    root * /srv/frontend
+    file_server
+    try_files {path} {path}/ /index.html
+  }
 }

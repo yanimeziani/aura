@@ -42,7 +42,12 @@ while true; do
 
   git reset --hard "$INTERNAL_REMOTE/main"
 
-  echo "aura-deploy: restarting Aura services for commit $latest_sha"
+  echo "aura-deploy: Building and deploying Next.js landing page..."
+  if [ -f "/home/yani/Aura/sovereign-stack/deploy-next.sh" ]; then
+    /home/yani/Aura/sovereign-stack/deploy-next.sh || echo "aura-deploy: Next.js deployment failed"
+  fi
+
+  echo "aura-deploy: restarting local Aura services for commit $latest_sha"
   sudo systemctl restart aura_autopilot.service ai_pay.service ai_agency_web.service || true
 
   echo "$latest_sha" > "$DEPLOYED_FILE"
