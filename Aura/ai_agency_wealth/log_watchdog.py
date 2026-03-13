@@ -1,9 +1,14 @@
 import os
+import subprocess
 import time
 import json
 from datetime import datetime
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+REPO_ROOT = os.path.dirname(SCRIPT_DIR)
+
+# Layer 0 — Zig compiler runtime
+ZIGGYC_BIN = os.path.join(REPO_ROOT, "ziggy-compiler", "zig-out", "bin", "ziggyc")
 
 LOG_FILES = {
     # Prefer the actual uvicorn log file name in this repo.
@@ -40,12 +45,48 @@ def _read_tail(path: str, *, max_lines: int = 400) -> str:
     except Exception:
         return ""
 
+def check_zig_layer() -> dict | None:
+    """Layer 0: verify ziggyc binary is present and responsive.
+    Returns an issue dict on failure, None on pass."""
+    if not os.path.isfile(ZIGGYC_BIN):
+        return {"layer": 0, "component": "ziggyc", "severity": "CRITICAL",
+                "msg": f"ziggyc binary missing at {ZIGGYC_BIN}"}
+    if not os.access(ZIGGYC_BIN, os.X_OK):
+        return {"layer": 0, "component": "ziggyc", "severity": "CRITICAL",
+                "msg": "ziggyc binary not executable"}
+    try:
+        result = subprocess.run(
+            [ZIGGYC_BIN],
+            capture_output=True, timeout=5
+        )
+        # ziggyc exits non-zero when given no file — that's expected.
+        # A crash (signal, timeout, or unexpected stderr) is what we flag.
+        stderr = result.stderr.decode(errors="replace")
+        if result.returncode < 0:          # killed by signal
+            return {"layer": 0, "component": "ziggyc", "severity": "CRITICAL",
+                    "msg": f"ziggyc terminated by signal {-result.returncode}"}
+    except subprocess.TimeoutExpired:
+        return {"layer": 0, "component": "ziggyc", "severity": "CRITICAL",
+                "msg": "ziggyc health probe timed out (>5s)"}
+    except Exception as e:
+        return {"layer": 0, "component": "ziggyc", "severity": "CRITICAL",
+                "msg": f"ziggyc probe failed: {e}"}
+    return None  # healthy
+
+
 def validate_logs():
     health_report = {
         "timestamp": datetime.now().isoformat(),
         "status": "HEALTHY",
         "issues": []
     }
+
+    # ── Layer 0: Zig compiler runtime ──────────────────────────────────────
+    zig_issue = check_zig_layer()
+    if zig_issue:
+        health_report["status"] = "CRITICAL"
+        health_report["issues"].append(zig_issue)
+        return health_report  # halt — no point checking higher layers
 
     # 1. Check Payment Server (Stripe)
     for key in ("payment_server", "payment_server_debug"):
