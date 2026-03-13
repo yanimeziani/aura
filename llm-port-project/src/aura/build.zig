@@ -9,6 +9,7 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
+    const aura_vault_dep = b.dependency("aura_vault", .{ .target = target, .optimize = optimize });
     const aura_edge_dep = b.dependency("aura_edge", .{ .target = target, .optimize = optimize });
     const aura_api_dep = b.dependency("aura_api", .{ .target = target, .optimize = optimize });
     const aura_flow_dep = b.dependency("aura_flow", .{ .target = target, .optimize = optimize });
@@ -18,6 +19,7 @@ pub fn build(b: *std.Build) void {
     const tui_dep = b.dependency("tui", .{ .target = target, .optimize = optimize });
     const ziggy_compiler_dep = b.dependency("ziggy_compiler", .{ .target = target, .optimize = optimize });
 
+    b.getInstallStep().dependOn(aura_vault_dep.builder.getInstallStep());
     b.getInstallStep().dependOn(aura_edge_dep.builder.getInstallStep());
     b.getInstallStep().dependOn(aura_api_dep.builder.getInstallStep());
     b.getInstallStep().dependOn(aura_flow_dep.builder.getInstallStep());
