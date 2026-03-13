@@ -20,6 +20,16 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Self-hosting / distribution
+
+For your own deployment, set these environment variables so the landing page talks to your backend (not the default URLs):
+
+- `NEXT_PUBLIC_ACCESS_ENDPOINT` — access validation API
+- `NEXT_PUBLIC_LEAD_ENDPOINT` — lead submission API
+- `NEXT_PUBLIC_WEBHOOK_ENDPOINT` — ops webhook for landing events
+
+See `src/app/page.tsx` for how they are used.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

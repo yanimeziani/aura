@@ -35,3 +35,8 @@
 - **Parallel:** Runner(s) + Implementer(s) + Reviewer + Scout run in parallel; coordination and task split via CHANNEL.md.
 - **Comms:** Single fluid channel = `vault/roster/CHANNEL.md`; markdown; append; all roles read/write.
 - **Docs:** All roles can read all docs; write to docs as needed for their task/spec.
+
+## Cross-Cutting Governance
+
+- The permanent security/governance branch is defined in [CYBERSEC_AI_BRANCH.md](CYBERSEC_AI_BRANCH.md).
+- Security-critical or high-impact AI work can require review by the `Ethics Committee` before production release.

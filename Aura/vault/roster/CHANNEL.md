@@ -313,3 +313,15 @@ Dispatching G17 + G18 + G19.
 [Lead] [G100] CULMINATION — Aura Benchmark.
   Final fixes applied to main.zig, control.zig, and registry.zig.
   Full workspace build and test sequence initiated.
+# Consolidate Local Node Task
+## Role: Implementer
+## Description: Ensure all components of the local node are correctly configured and running.
+Steps:
+1. Review project structure and documentation.
+2. Set up environment variables and configure the vault.
+3. Build and run necessary components (e.g., , , ).
+4. Configure mesh VPN using .
+5. Test and verify the system's health and component functionalities.
+6. Consult logs for any issues and update documentation as necessary.
+## Responsible: [Your Name]
+## Deadline: [Insert Deadline]

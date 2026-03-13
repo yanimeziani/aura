@@ -9,3 +9,6 @@ litellm==1.82.0
 ccxt>=4.3.0
 requests>=2.31.0
 web3>=6.0.0
+faster-whisper>=1.2.0
+# ── Dev / test ──
+pytest>=9.0.0

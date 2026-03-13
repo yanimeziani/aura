@@ -21,6 +21,7 @@ flowchart TD
     M --> DRAGUN
     M --> AURA
     M --> AUTO
+    M --> CYBR
 
     YM["👤  Yani Meziani\nChairman · Product · Delivery\nyani@meziani.ai"]:::owner
 
@@ -31,6 +32,7 @@ flowchart TD
     AURA["⚙️  AURA OS\nMonorepo  /home/yani/Aura"]:::tech
 
     AUTO["🤖  AUTOMATION STACK\nMeziani AI Labs"]:::auto
+    CYBR["🛡️  CYBERSEC + AI BRANCH\nSecurity · AI safety · governance"]:::infra
 
     %% ── DRAGUN ────────────────────────────────────────────────
     DRAGUN --> DG_AUTH
@@ -71,6 +73,13 @@ flowchart TD
     DG_PILOT["Production Pilot"]:::pilot
     DG_PILOT --> DP1["Venice Gym Charlesbourg\nMounir — first paying client"]:::pilot
     DG_PILOT --> DP2["Competitive target\nReplace Debtor Raptor"]:::pilot
+
+    %% ── CYBERSEC + AI ────────────────────────────────────────
+    CYBR --> CY1["Security Engineering\nAuth · secrets · hardening · review gates"]:::infra
+    CYBR --> CY2["AI Safety + Evaluation\nMisuse testing · jailbreak resistance · model review"]:::agent
+    CYBR --> CY3["Privacy + Data Governance\nRetention · access · disclosure boundaries"]:::tech
+    CYBR --> CY4["Red Team\nAdversarial testing across Aura + Dragun"]:::pilot
+    CYBR --> CY5["Ethics Committee\nApprove · constrain · defer · block"]:::owner
 
     %% ── AURA OS ───────────────────────────────────────────────
     AURA --> AO_PY
@@ -126,3 +135,9 @@ flowchart TD
 
     INF_GH["GitHub → Vercel\nci.yml · deploy-vercel.yml\nPreview on PR · Prod on main merge"]:::infra
 ```
+
+## Branch Addition
+
+- Canonical charter: [CYBERSEC_AI_BRANCH.md](CYBERSEC_AI_BRANCH.md)
+- This branch sits across Aura, Dragun, gateway, vault, and deployment surfaces.
+- The `Ethics Committee` is part of this branch and is required for high-impact AI and security-sensitive launches.

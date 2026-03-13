@@ -1,1 +1,1 @@
-{"file":"src/main.zig","line":1,"col":0,"severity":"warn","rule_id":"example","message":"lint-only stub"}
+{"file":"src/main.zig","line":1,"col":1,"severity":"warn","rule_id":"stub.lint","message":"lint pipeline stub active"}

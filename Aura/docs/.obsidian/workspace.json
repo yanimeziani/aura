@@ -4,21 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "e1c0b90bc5904699",
+        "id": "40923da7bd7dd0b8",
         "type": "tabs",
         "children": [
           {
-            "id": "56b1b244babdad5f",
+            "id": "bf2ab9691ec255fd",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "QN.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "QN"
+              "title": "New tab"
             }
           }
         ]
@@ -78,8 +74,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "right": {
     "id": "ca0227c9b6d18349",
@@ -184,13 +179,16 @@
       "bases:Create new base": false
     }
   },
-  "active": "56b1b244babdad5f",
+  "active": "ff90245c50cddd87",
   "lastOpenFiles": [
-    "roster.md",
-    "QN.md",
-    "whats-slowing-us-down.md",
+    "STATUS_2026-03-11.md",
+    "STATUS_2026-03-11.md.tmp.342658.1773270920712",
+    "CYBERSEC_AI_BRANCH.md",
     "steady-cashflow-freedom-of-time.md",
-    "skills-blitkrieg-contemporary.md",
-    "BMAD_DOCUMENTATION.md"
+    "BMAD_DOCUMENTATION.md",
+    "whats-slowing-us-down.md",
+    "QN.md",
+    "roster.md",
+    "skills-blitkrieg-contemporary.md"
   ]
 }

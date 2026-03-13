@@ -310,9 +310,46 @@ if __name__ == "__main__":
     if args.live:
         print("\n" + "!" * 65)
         print("  WARNING: LIVE TRADING MODE")
-        print("  Real money will be used. Ensure you have:")
-        print("  1. Backtested this strategy (python quant_backtest.py)")
-        print("  2. Verified your API keys have trade permissions")
+        print("  Real money will be used.")
+        print("!" * 65)
+
+        # ── Pre-flight checks ──────────────────────────────────────
+        preflight_ok = True
+
+        # 1. API keys present
+        api_key    = os.getenv("COINBASE_API_KEY")
+        api_secret = os.getenv("COINBASE_API_SECRET")
+        if not api_key or not api_secret:
+            print("  [FAIL] COINBASE_API_KEY / COINBASE_API_SECRET missing in .env")
+            preflight_ok = False
+        else:
+            print("  [OK]   API keys present")
+
+        # 2. Exchange connectivity + balance check
+        if preflight_ok:
+            try:
+                ex_check = ccxt.coinbaseadvanced({"apiKey": api_key, "secret": api_secret, "enableRateLimit": True})
+                bal = ex_check.fetch_balance()
+                usdc_bal = bal.get("total", {}).get("USDC", 0) or 0
+                if usdc_bal < CAPITAL * 0.5:
+                    print(f"  [WARN] USDC balance ${usdc_bal:,.2f} < 50% of configured capital ${CAPITAL:,.2f}")
+                else:
+                    print(f"  [OK]   Exchange balance: USDC ${usdc_bal:,.2f}")
+            except Exception as e:
+                print(f"  [FAIL] Exchange connectivity check failed: {e}")
+                preflight_ok = False
+
+        # 3. Remind about backtest (cannot auto-run but link the command)
+        print(f"  [INFO] Backtest before going live: python quant_backtest.py --symbol BTC/USDC --days 30 --capital {CAPITAL}")
+
+        if not preflight_ok:
+            print("\n  Pre-flight checks FAILED. Fix the issues above before live trading.")
+            sys.exit(1)
+
+        print("\n  Pre-flight checks passed.")
+        print("  Ensure you have:")
+        print("  1. Reviewed recent backtest results")
+        print("  2. Verified API key has trade permissions")
         print("  3. Accepted the risk of total capital loss")
         answer = input("\n  Type 'I ACCEPT' to continue: ")
         if answer.strip() != "I ACCEPT":
@@ -336,7 +373,13 @@ if __name__ == "__main__":
     while True:
         try:
             trader.run_cycle()
+        except KeyboardInterrupt:
+            trader._shutdown()
+        except ccxt.NetworkError as e:
+            print(f"  ⚠ Network error (will retry): {e}")
+        except ccxt.ExchangeError as e:
+            print(f"  ⚠ Exchange error (will retry): {e}")
         except Exception as e:
-            print(f"  ⚠ Cycle error: {e}")
+            print(f"  ⚠ Unexpected cycle error: {type(e).__name__}: {e}")
         trader.save_log()
         time.sleep(args.interval)

@@ -4,9 +4,13 @@ Indicators: MACD, Bollinger Bands, Stoch RSI, ADX, VWAP, OBV, Williams %R
 Sentiment: Fear & Greed, Whale Alerts, CoinGlass liquidations
 """
 
+import logging
 import math
+import time
 import requests
 from dataclasses import dataclass, field
+
+log = logging.getLogger(__name__)
 
 # ─── INDICATOR LIBRARY ────────────────────────────────────────────────────────
 
@@ -200,28 +204,38 @@ class Indicators:
 # ─── SENTIMENT SIGNALS ───────────────────────────────────────────────────────
 
 class SentimentSignals:
+    # Track last-success timestamps for staleness detection
+    _fng_last_ok: float = 0.0
+    _btc_dom_last_ok: float = 0.0
+    _coinglass_last_ok: float = 0.0
+    STALE_AFTER_S: float = 300.0  # warn if data older than 5 minutes
 
     @staticmethod
     def fear_and_greed() -> dict:
-        """Returns value (0-100) and classification."""
+        """Returns value (0-100) and classification. Logs on failure."""
         try:
             r = requests.get("https://api.alternative.me/fng/?limit=2", timeout=5)
+            r.raise_for_status()
             data = r.json()["data"]
             current = int(data[0]["value"])
             previous = int(data[1]["value"]) if len(data) > 1 else current
+            SentimentSignals._fng_last_ok = time.time()
             return {
                 "value": current,
                 "label": data[0]["value_classification"],
-                "delta": current - previous,   # positive = greed increasing
+                "delta": current - previous,
+                "stale": False,
             }
-        except Exception:
-            return {"value": 50, "label": "Neutral", "delta": 0}
+        except Exception as exc:
+            age = time.time() - SentimentSignals._fng_last_ok
+            log.warning("F&G API unavailable (%.0fs stale): %s — using neutral default", age, exc)
+            return {"value": 50, "label": "Neutral", "delta": 0, "stale": True}
 
     @staticmethod
     def coinglass_liquidations(symbol="BTC") -> dict:
         """
         Fetch recent liquidation data from CoinGlass public API.
-        High liquidations = volatility incoming.
+        High liquidations = volatility incoming. Logs on failure.
         """
         try:
             url = f"https://open-api.coinglass.com/public/v2/liquidation_history?symbol={symbol}&time_type=h4"
@@ -230,23 +244,32 @@ class SentimentSignals:
                 data = r.json().get("data", [])
                 if data:
                     latest = data[-1]
+                    SentimentSignals._coinglass_last_ok = time.time()
                     return {
                         "long_liq_usd": float(latest.get("longLiquidationUsd", 0)),
                         "short_liq_usd": float(latest.get("shortLiquidationUsd", 0)),
                         "dominant": "longs" if float(latest.get("longLiquidationUsd", 0)) >
                                                float(latest.get("shortLiquidationUsd", 0)) else "shorts",
+                        "stale": False,
                     }
-        except Exception:
-            pass
-        return {"long_liq_usd": 0, "short_liq_usd": 0, "dominant": "unknown"}
+            log.warning("CoinGlass returned status %d for %s", r.status_code, symbol)
+        except Exception as exc:
+            age = time.time() - SentimentSignals._coinglass_last_ok
+            log.warning("CoinGlass API unavailable (%.0fs stale): %s", age, exc)
+        return {"long_liq_usd": 0, "short_liq_usd": 0, "dominant": "unknown", "stale": True}
 
     @staticmethod
     def btc_dominance() -> float:
-        """BTC dominance % from CoinGecko global data."""
+        """BTC dominance % from CoinGecko global data. Logs on failure."""
         try:
             r = requests.get("https://api.coingecko.com/api/v3/global", timeout=5)
-            return round(r.json()["data"]["market_cap_percentage"].get("btc", 50.0), 2)
-        except Exception:
+            r.raise_for_status()
+            dom = round(r.json()["data"]["market_cap_percentage"].get("btc", 50.0), 2)
+            SentimentSignals._btc_dom_last_ok = time.time()
+            return dom
+        except Exception as exc:
+            age = time.time() - SentimentSignals._btc_dom_last_ok
+            log.warning("BTC dominance API unavailable (%.0fs stale): %s — defaulting to 50%%", age, exc)
             return 50.0
 
     @staticmethod
@@ -263,6 +286,7 @@ class SentimentSignals:
                 "?vs_currency=usd&days=1&interval=hourly",
                 timeout=5
             )
+            r.raise_for_status()
             volumes = r.json().get("total_volumes", [])
             if not volumes:
                 return []
@@ -271,8 +295,8 @@ class SentimentSignals:
             if recent_vol > avg_vol * 1.5:
                 return [{"type": "volume_spike", "usd": recent_vol,
                           "vs_avg": round(recent_vol / avg_vol, 2)}]
-        except Exception:
-            pass
+        except Exception as exc:
+            log.warning("Whale alert proxy unavailable: %s", exc)
         return []
 
 

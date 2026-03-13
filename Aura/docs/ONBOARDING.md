@@ -65,6 +65,7 @@ No manual “you run this, then you run that.” In build mode the agent runs th
 | `aura mesh up \| down \| status` | Sovereign mesh VPN |
 | `aura gateway` | Syncing gateway (IDEs, TUIs, LLM clients) |
 | `aura chat` | Minimal TUI chat with Aura agent (gateway required) |
+| `aura voice` | Local Fedora voice ingress (`start`, `status`, `logs`, `transcribe`) |
 | `aura api` | aura-api HTTP server (e.g. port 9000) |
 | `aura skill` | Skills belt (list/show/run) |
 | `aura docs-maid` | Docs sweep (inbox → docs/, channel) |
@@ -108,6 +109,7 @@ All of this is automated from the single onboarding flow; in build mode the agen
 | Sovereign stack, mesh, MCP, Ziggy | **docs/AURA_PRO_GUIDE.md** |
 | Gateway API, vault, Cursor | **gateway/README.md** |
 | Aura-owned Dragun autobuild architecture | **docs/DRAGUN_AUTOBUILD_IMMUTABLE_ARCHITECTURE.md** |
+| Cybersec + AI branch charter | **docs/CYBERSEC_AI_BRANCH.md** |
 | Deployment, devices, control script | **sovereign-stack/DEPLOYMENT.md**, **sovereign-stack/prod-control.sh** |
 | Zig version and compiler | **docs/ZIG_VERSION.md**, **docs/ziggy-compiler.md** |
 

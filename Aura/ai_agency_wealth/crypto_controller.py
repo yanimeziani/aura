@@ -55,7 +55,8 @@ class CryptoController:
                 "address": new_acc.address,
                 "private_key": Web3.to_hex(new_acc.key)
             }
-            with open(WALLET_PATH, 'w') as f:
+            fd = os.open(WALLET_PATH, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+            with os.fdopen(fd, 'w') as f:
                 json.dump(wallet_data, f, indent=4)
             print(f"✅ New Wallet Created and Saved to {WALLET_PATH}")
             print(f"Address: {new_acc.address}")
@@ -64,11 +65,18 @@ class CryptoController:
     def get_balances(self):
         """Fetch balances from both Coinbase and Local Wallet."""
         balances = {"coinbase": {}, "local": {}}
-        
-        # 1. Local Balance (Mocking provider for now)
-        # balances["local"]["ETH"] = self.w3.from_wei(self.w3.eth.get_balance(self.wallet.address), 'ether')
+
+        # 1. Local wallet — ETH balance via Web3 if available
         balances["local"]["address"] = self.wallet.address
-        
+        if self.w3 and self.w3.is_connected():
+            try:
+                eth_wei = self.w3.eth.get_balance(self.wallet.address)
+                balances["local"]["ETH"] = float(self.w3.from_wei(eth_wei, "ether"))
+            except Exception as e:
+                balances["local"]["ETH_error"] = str(e)
+        else:
+            balances["local"]["ETH"] = None  # Web3 not configured
+
         # 2. Coinbase Balance
         if self.coinbase:
             try:
@@ -76,22 +84,40 @@ class CryptoController:
                 balances["coinbase"] = {k: v for k, v in cb_bal['total'].items() if v > 0}
             except Exception as e:
                 balances["coinbase"] = {"error": str(e)}
-        
+
         return balances
 
-    def auto_bridge_to_local(self, asset="USDC", amount=10.0):
-        """Example: Withdraw from Coinbase to Local Wallet."""
+    def auto_bridge_to_local(self, asset="USDC", amount=10.0, dry_run=True):
+        """Withdraw from Coinbase to Local Wallet.
+
+        Args:
+            asset:   Coin symbol (e.g. "USDC", "ETH").
+            amount:  Amount to withdraw (must be > 0).
+            dry_run: When True (default) only simulate — never touch real funds.
+        """
         if not self.coinbase:
             return "Error: Coinbase not configured."
-            
-        print(f"🚀 Initiating withdrawal: {amount} {asset} from Coinbase -> {self.wallet.address}")
-        # In production:
-        # try:
-        #     self.coinbase.withdraw(asset, amount, self.wallet.address)
-        #     return "Success"
-        # except Exception as e:
-        #     return f"Failed: {str(e)}"
-        return "DRY RUN: Withdrawal simulation successful."
+
+        if amount <= 0:
+            return "Error: amount must be greater than zero."
+
+        destination = self.wallet.address
+        # Validate destination is a well-formed EIP-55 checksummed address
+        if self.w3:
+            if not self.w3.is_address(destination):
+                return f"Error: destination address '{destination}' is not a valid Ethereum address."
+            destination = self.w3.to_checksum_address(destination)
+
+        print(f"🚀 Withdrawal: {amount} {asset} from Coinbase -> {destination}")
+
+        if dry_run:
+            return f"DRY RUN: Would withdraw {amount} {asset} to {destination} (set dry_run=False to execute)."
+
+        try:
+            result = self.coinbase.withdraw(asset, amount, destination)
+            return f"Success: {result}"
+        except Exception as e:
+            return f"Failed: {e}"
 
 if __name__ == "__main__":
     controller = CryptoController()

@@ -1,4 +1,3 @@
-
 # Zig build cache
 .zig-cache/
 
@@ -6,10 +5,29 @@
 .env
 .env.*
 !.env.example
+!.env.production.example
+!.env.local.example
 
-# Vault plaintext
+# Vault plaintext and generated artifacts
 vault/aura-vault.json
+vault/radio/
+vault/notebooklm_packets/
+vault/chrome_backup/
+vault/static/deck_state.json
+vault/goals.json
+vault/aura_owner_profile.json
 
+# Agency/wealth local data (DBs, wallets, paystubs, leads)
+ai_agency_wealth/*.db
+ai_agency_wealth/local_wallet.json
+ai_agency_wealth/leads.json
+ai_agency_wealth/deposit_qr.png
+ai_agency_wealth/paystub_*.pdf
+ai_agency_wealth/server.log
+ai_agency_wealth/server_debug.log
+ai_agency_wealth/agency_metrics.log
+ai_agency_wealth/n8n.log
+ai_agency_wealth/fulfiller.log
 # Python virtualenvs
 venv/
 venv312/
@@ -22,3 +40,8 @@ __pycache__/
 
 # Build artifacts
 zig-out/
+
+# IDE / local config (optional; uncomment if you want to ignore)
+# .vscode/
+# .idea/
+# .cursor/

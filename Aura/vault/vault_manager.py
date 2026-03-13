@@ -18,14 +18,16 @@ VAULT_REGISTRY = {
     "N8N_WEBHOOK_URL": {"desc": "URL of your n8n MCP/Gateway webhook", "default": "http://localhost:5678/webhook/mcp-gateway"},
     "OPS_AUTOMATION_WEBHOOK_URL": {"desc": "URL of Aura ops automation webhook (preferred over n8n)", "default": "http://127.0.0.1:9100/ops/stripe"},
     "GEMINI_API_KEY": {"desc": "Google Gemini API Key (for Gemini CLI / gateway)", "required": False},
-    "OWNER_EMAIL": {"desc": "Email of the system owner", "default": "yani@meziani.ai"},
+    "OWNER_EMAIL": {"desc": "Email of the system owner", "default": ""},
     "AURA_VAULT_TOKEN": {"desc": "Secret token for vault-level operations", "required": True},
 }
 
-VAULT_FILE = Path("/home/yani/Aura/vault/aura-vault.json")
+_VAULT_DIR = Path(__file__).resolve().parent
+AURA_ROOT = Path(os.environ.get("AURA_HOME", _VAULT_DIR.parent))
+VAULT_FILE = _VAULT_DIR / "aura-vault.json"
 ENV_TARGETS = [
-    Path("/home/yani/Aura/ai_agency_wealth/.env"),
-    Path("/home/yani/.n8n/.env")
+    AURA_ROOT / "ai_agency_wealth" / ".env",
+    Path.home() / ".n8n" / ".env",
 ]
 
 WEBHOOK_KEYS = [
@@ -42,10 +44,10 @@ def load_vault():
         return json.load(f)
 
 def save_vault(data):
-    with open(VAULT_FILE, "w") as f:
+    # Write with 0o600 atomically: open with O_CREAT|O_WRONLY and mode 0o600
+    fd = os.open(VAULT_FILE, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    with os.fdopen(fd, "w") as f:
         json.dump(data, f, indent=4)
-    # Secure permissions
-    os.chmod(VAULT_FILE, 0o600)
 
 def validate_key(name, value):
     """Placeholder for future verification logic (e.g., calling Groq's /models)"""
@@ -128,7 +130,8 @@ def configure_webhooks():
         print(f"\nKey: {key}")
         print(f"Description: {info.get('desc', 'Webhook-related key')}")
         if current_val:
-            print(f"Current value: {current_val}")
+            masked = current_val[:4] + "*" * max(0, len(current_val) - 4)
+            print(f"Current value: {masked}")
         else:
             print("Current value: <not set>")
 

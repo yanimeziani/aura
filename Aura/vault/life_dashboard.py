@@ -7,14 +7,17 @@ from datetime import datetime
 from pathlib import Path
 from shutil import get_terminal_size
 
+# Repo root: set AURA_HOME to override (e.g. for installs outside repo)
+_VAULT_DIR = Path(__file__).resolve().parent
+AURA_ROOT = Path(os.environ.get("AURA_HOME", _VAULT_DIR.parent))
 
-BASE_DIR = Path("/home/yani/Aura/vault")
+BASE_DIR = _VAULT_DIR
 GOALS_FILE = BASE_DIR / "goals.json"
 PROFILE_FILE = BASE_DIR / "aura_owner_profile.json"
 VAULT_JSON = BASE_DIR / "aura-vault.json"
 ENV_TARGETS = [
-    Path("/home/yani/Aura/ai_agency_wealth/.env"),
-    Path("/home/yani/.n8n/.env"),
+    AURA_ROOT / "ai_agency_wealth" / ".env",
+    Path.home() / ".n8n" / ".env",
 ]
 
 
@@ -187,30 +190,33 @@ def render_life_dashboard() -> str:
 
     # Operations toolbox: the core commands to operate the machine.
     lines.append(section("OPERATIONS TOOLBOX"))
+    root, vault = str(AURA_ROOT), str(BASE_DIR)
     lines.append("Core vault + ops commands:")
-    lines.append("  - Dashboard:        python /home/yani/Aura/vault/life_dashboard.py")
-    lines.append("  - Vault setup:      python /home/yani/Aura/vault/vault_manager.py")
-    lines.append("  - Vault sync/env:   python /home/yani/Aura/vault/vault_manager.py sync")
+    lines.append(f"  - Dashboard:        python {vault}/life_dashboard.py")
+    lines.append(f"  - Vault setup:      python {vault}/vault_manager.py")
+    lines.append(f"  - Vault sync/env:   python {vault}/vault_manager.py sync")
     lines.append("")
     lines.append("Agency / wealth machine:")
-    lines.append("  - Run full agency:  python /home/yani/Aura/ai_agency_wealth/main.py")
-    lines.append("  - Payments server:  python /home/yani/Aura/ai_agency_wealth/prod_payment_server.py")
-    lines.append("  - Log watchdog:     python /home/yani/Aura/ai_agency_wealth/log_watchdog.py")
+    lines.append(f"  - Run full agency:  python {root}/ai_agency_wealth/main.py")
+    lines.append(f"  - Payments server:  python {root}/ai_agency_wealth/prod_payment_server.py")
+    lines.append(f"  - Log watchdog:     python {root}/ai_agency_wealth/log_watchdog.py")
     lines.append("")
     lines.append("Newsletter + content:")
-    lines.append("  - Latest newsletter: less /home/yani/Aura/ai_agency_wealth/latest_newsletter.md")
+    lines.append(f"  - Latest newsletter: less {root}/ai_agency_wealth/latest_newsletter.md")
     lines.append("")
     lines.append("NotebookLM streams (logs → packet → audio/video):")
-    lines.append("  - Packet (agency):  python /home/yani/Aura/vault/log2notebooklm.py --source agency_metrics --tail 1500")
-    lines.append("  - Packet (payments):python /home/yani/Aura/vault/log2notebooklm.py --source payment_server --tail 1500")
-    lines.append("  - With AV stream:   python /home/yani/Aura/vault/log2notebooklm.py --source agency_metrics --tail 1500 --audio")
+    lines.append(f"  - Packet (agency):  python {vault}/log2notebooklm.py --source agency_metrics --tail 1500")
+    lines.append(f"  - Packet (payments):python {vault}/log2notebooklm.py --source payment_server --tail 1500")
+    lines.append(f"  - With AV stream:   python {vault}/log2notebooklm.py --source agency_metrics --tail 1500 --audio")
     lines.append("")
     lines.append("Mission Control GUI (fluid state view):")
     lines.append("  - Start GUI:        uvicorn mission_control_gui:app --host 127.0.0.1 --port 8787")
-    lines.append("  - Open GUI:         python /home/yani/Aura/vault/life_dashboard.py open-gui")
+    lines.append(f"  - Open GUI:         python {vault}/life_dashboard.py open-gui")
+    lines.append("  - Aura Radio:       use the browser GUI to broadcast live log bulletins with audio playback")
+    lines.append(f"  - Aura Voice:       {root}/bin/aura voice start")
     lines.append("")
     lines.append("Quick actions:")
-    lines.append("  - Open launcher N:  python /home/yani/Aura/vault/life_dashboard.py open N")
+    lines.append(f"  - Open launcher N:  python {BASE_DIR}/life_dashboard.py open N")
 
     lines.append("")
     return "\n".join(lines)
@@ -266,4 +272,3 @@ def main(argv: list[str] | None = None):
 
 if __name__ == "__main__":
     main()
-

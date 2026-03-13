@@ -61,10 +61,6 @@ def _require_admin(request: Request) -> None:
     except:
         pass
     
-    # If no tokens are set in env, we allow access (dev mode)
-    if not ADMIN_TOKEN and not VAULT_TOKEN:
-        return
-        
     raise HTTPException(status_code=401, detail="Unauthorized")
 
 @app.get("/sys/network")

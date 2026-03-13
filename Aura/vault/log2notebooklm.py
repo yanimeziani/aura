@@ -10,15 +10,17 @@ from datetime import datetime
 from pathlib import Path
 
 
-BASE_DIR = Path("/home/yani/Aura/vault")
-
+BASE_DIR = Path(__file__).resolve().parent
+AURA_ROOT = Path(os.environ.get("AURA_HOME", BASE_DIR.parent))
+_AGENCY = AURA_ROOT / "ai_agency_wealth"
 
 DEFAULT_LOGS = {
-    "payment_server": "/home/yani/Aura/ai_agency_wealth/server.log",
-    "payment_server_debug": "/home/yani/Aura/ai_agency_wealth/server_debug.log",
-    "agency_metrics": "/home/yani/Aura/ai_agency_wealth/agency_metrics.log",
-    "n8n": "/home/yani/Aura/ai_agency_wealth/n8n.log",
-    "fulfiller": "/home/yani/Aura/ai_agency_wealth/fulfiller.log",
+    "payment_server": str(_AGENCY / "server.log"),
+    "payment_server_debug": str(_AGENCY / "server_debug.log"),
+    "agency_metrics": str(_AGENCY / "agency_metrics.log"),
+    "n8n": str(_AGENCY / "n8n.log"),
+    "fulfiller": str(_AGENCY / "fulfiller.log"),
+    "voice_stream": str(AURA_ROOT / ".aura" / "voice" / "voice.log"),
 }
 
 
@@ -253,7 +255,7 @@ def _render_script(packet: Packet) -> str:
     return "\n".join(parts)
 
 
-def _make_audio_and_video(packet: Packet, out_dir: Path, *, basename: str) -> dict:
+def make_audio_and_video_from_script(script_text: str, out_dir: Path, *, basename: str) -> dict:
     """
     Creates:
     - <basename>.wav (via local TTS)
@@ -266,7 +268,6 @@ def _make_audio_and_video(packet: Packet, out_dir: Path, *, basename: str) -> di
         result["reason"] = "ffmpeg not available"
         return result
 
-    script_text = _render_script(packet)
     wav = out_dir / f"{basename}.wav"
     mp3 = out_dir / f"{basename}.mp3"
     mp4 = out_dir / f"{basename}.mp4"
@@ -285,6 +286,8 @@ def _make_audio_and_video(packet: Packet, out_dir: Path, *, basename: str) -> di
     if r1.returncode != 0:
         result["reason"] = "ffmpeg mp3 transcode failed"
         return result
+    result["files"] = {"wav": str(wav), "mp3": str(mp3), "srt": str(srt)}
+    result["ok"] = True
 
     # mp3 -> waveform mp4 (with burned-in captions)
     # Use a black background + showwaves. Burn the single cue captions in.
@@ -318,9 +321,13 @@ def _make_audio_and_video(packet: Packet, out_dir: Path, *, basename: str) -> di
         result["reason"] = "ffmpeg mp4 render failed"
         return result
 
-    result["ok"] = True
-    result["files"] = {"wav": str(wav), "mp3": str(mp3), "mp4": str(mp4), "srt": str(srt)}
+    result["files"]["mp4"] = str(mp4)
+    result["reason"] = ""
     return result
+
+
+def _make_audio_and_video(packet: Packet, out_dir: Path, *, basename: str) -> dict:
+    return make_audio_and_video_from_script(_render_script(packet), out_dir, basename=basename)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -384,4 +391,3 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
