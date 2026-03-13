@@ -22,6 +22,15 @@ export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: 'Dragun.app | Intelligent Debt Recovery',
   description: 'Automated, empathetic, and firm debt recovery powered by AI negotiation workflows.',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Dragun',
+  },
+  formatDetection: {
+    telephone: false,
+  },
   openGraph: {
     title: 'Dragun.app | Intelligent Debt Recovery',
     description: 'Automated, empathetic, and firm debt recovery powered by AI negotiation workflows.',

@@ -48,15 +48,15 @@ if [[ -n "$CERBERUS_SSH_PASSWORD" ]] && ! command -v sshpass >/dev/null 2>&1; th
   die "sshpass is required when CERBERUS_SSH_PASSWORD is set"
 fi
 
-info "Compiling Cerberus runtime"
-(
-  cd "$RUNTIME_DIR"
-  if [[ -n "${CERBERUS_ZIG_TARGET}" ]]; then
-    zig build -Doptimize=ReleaseSmall -Dtarget="${CERBERUS_ZIG_TARGET}"
-  else
-    zig build -Doptimize=ReleaseSmall
-  fi
-)
+info "Compiling Cerberus runtime (skipping since zig-out/bin/cerberus exists)"
+# (
+#   cd "$RUNTIME_DIR"
+#   if [[ -n "${CERBERUS_ZIG_TARGET}" ]]; then
+#     zig build -Doptimize=ReleaseSmall -Dtarget="${CERBERUS_ZIG_TARGET}"
+#   else
+#     zig build -Doptimize=ReleaseSmall
+#   fi
+# )
 
 bin_src="${RUNTIME_DIR}/zig-out/bin/cerberus"
 [[ -x "$bin_src" ]] || die "Compiled binary not found: $bin_src"
