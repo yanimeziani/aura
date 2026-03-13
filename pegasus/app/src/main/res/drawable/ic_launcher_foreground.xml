@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Pegasus "P" wing icon -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,28 C54,28 42,38 42,52 C42,62 48,70 54,74 C60,70 66,62 66,52 C66,38 54,28 54,28Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,34 L38,54 L42,56 L54,42 L66,56 L70,54 Z" />
+    <path
+        android:fillColor="#BBDEFB"
+        android:pathData="M46,58 L54,46 L62,58 L58,60 L54,54 L50,60 Z" />
+</vector>

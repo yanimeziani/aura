@@ -1,0 +1,77 @@
+name: Android Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  JAVA_VERSION: "17"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: temurin
+          cache: gradle
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Prepare release keystore
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          PEGASUS_RELEASE_STORE_PASSWORD: ${{ secrets.PEGASUS_RELEASE_STORE_PASSWORD }}
+          PEGASUS_RELEASE_KEY_ALIAS: ${{ secrets.PEGASUS_RELEASE_KEY_ALIAS }}
+          PEGASUS_RELEASE_KEY_PASSWORD: ${{ secrets.PEGASUS_RELEASE_KEY_PASSWORD }}
+        run: |
+          test -n "$ANDROID_KEYSTORE_BASE64"
+          test -n "$PEGASUS_RELEASE_STORE_PASSWORD"
+          test -n "$PEGASUS_RELEASE_KEY_ALIAS"
+          test -n "$PEGASUS_RELEASE_KEY_PASSWORD"
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/pegasus-release.jks"
+
+      - name: Build signed release APK
+        env:
+          PEGASUS_RELEASE_STORE_FILE: ${{ runner.temp }}/pegasus-release.jks
+          PEGASUS_RELEASE_STORE_PASSWORD: ${{ secrets.PEGASUS_RELEASE_STORE_PASSWORD }}
+          PEGASUS_RELEASE_KEY_ALIAS: ${{ secrets.PEGASUS_RELEASE_KEY_ALIAS }}
+          PEGASUS_RELEASE_KEY_PASSWORD: ${{ secrets.PEGASUS_RELEASE_KEY_PASSWORD }}
+        run: |
+          ./gradlew verifyReleaseSigning lint testDebugUnitTest assembleRelease --stacktrace --no-daemon
+
+      - name: Package release artifact
+        run: |
+          VERSION="${GITHUB_REF_NAME:-manual}"
+          cp app/build/outputs/apk/release/app-release.apk "pegasus-${VERSION}-arm64.apk"
+          echo "APK_NAME=pegasus-${VERSION}-arm64.apk" >> "$GITHUB_ENV"
+          echo "VERSION=${VERSION}" >> "$GITHUB_ENV"
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.VERSION }}
+          name: Pegasus ${{ env.VERSION }}
+          body: |
+            ## Pegasus ${{ env.VERSION }}
+
+            Signed Android release build for Cerberus mission control.
+
+            ### Included checks
+            - `lint`
+            - `testDebugUnitTest`
+            - `assembleRelease`
+          files: ${{ env.APK_NAME }}
+          draft: false
+          prerelease: false
+          generate_release_notes: false
