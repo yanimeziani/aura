@@ -1,0 +1,20 @@
+project: dragun-app
+owner: meziani-ai
+status: production-pilot
+lastUpdated: 2026-02-27
+stack:
+  frontend: Next.js 16.1.6 + React 19 + Tailwind v4 + DaisyUI v5
+  backend: Supabase (PostgreSQL + pgvector)
+  ai: Gemini 2.0 Flash via OpenRouter + Google AI embeddings
+  payments: Stripe Connect
+  hosting: Vercel
+  monitoring: Sentry + Arcjet
+  i18n: next-intl (en, fr)
+  auth: Supabase Auth (Google OAuth)
+currentPriority: ship production pilot for Venice Gym Charlesbourg
+pilotClient: Mounir (Venice Gym)
+keyDecisions:
+  - DaisyUI themes cupcake/business for light/dark
+  - Performance-based pricing (5% recovery fee)
+  - BMAD v6 strict for all agent orchestration
+  - Single canonical codebase at ~/workspace/meziani.ai/products/dragun-app
