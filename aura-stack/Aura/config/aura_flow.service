@@ -1,0 +1,21 @@
+[Unit]
+Description=Aura Flow (Ops Automation Runner)
+After=network.target
+
+[Service]
+User=yani
+WorkingDirectory=/home/yani/Aura/aura-flow
+Environment=AURA_FLOW_PORT=9100
+Environment=AURA_FLOW_WORKER=1
+Environment=AURA_FLOW_SPOOL_DIR=/home/yani/Aura/var/aura-flow/spool
+# Run at most once every 5 minutes on bursts of payment events
+Environment=AURA_FLOW_PAYMENT_MIN_INTERVAL_SEC=300
+# Trigger the existing automation cycle on payment
+Environment=AURA_FLOW_PAYMENT_CMD=/bin/bash /home/yani/Aura/ai_agency_wealth/automation_master.sh
+ExecStart=/home/yani/Aura/aura-flow/zig-out/bin/aura-flow
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target
+

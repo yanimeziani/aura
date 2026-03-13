@@ -1,0 +1,13 @@
+[Unit]
+Description=Meziani AI Labs Web Frontend
+After=network.target
+
+[Service]
+User=yani
+WorkingDirectory=/home/yani/Aura/ai_agency_web
+ExecStart=/usr/bin/npm run dev -- --host 0.0.0.0 --port 5173
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
