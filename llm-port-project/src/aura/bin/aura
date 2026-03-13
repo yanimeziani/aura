@@ -24,6 +24,7 @@ function show_help() {
     echo "  opensea     OpenSea ops (read-only): assets / collections / watch"
     echo "  skill       Aura skills belt (list/show/run)"
     echo "  docs-maid   Docs maid: persistent sweep of vault/docs_inbox → docs/, channel, vault"
+    echo "  runtime-maid Runtime optimization maid for heavy tasks on constrained devices"
     echo "  gs [N]      G100 benchmark: full workspace build + test; N epochs (default 1)"
     echo "  stub        Run a command under persistent stub (respawn on exit/kill)"
     echo "  stub-duplicate  Run a command under stub duplication (inner + outer respawn)"
@@ -115,6 +116,10 @@ case "$CMD" in
     docs-maid)
         shift
         exec "$AURA_ROOT/bin/docs-maid" "${@:-run}"
+        ;;
+    runtime-maid)
+        shift
+        exec "$AURA_ROOT/bin/runtime-maid" "$@"
         ;;
     gs)
         exec "$AURA_ROOT/bin/aura-gs" "${@:2}"

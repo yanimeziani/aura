@@ -1,0 +1,80 @@
+#!/bin/bash
+# Aura Runtime Maid
+# Optimization service for heavy tasks on constrained devices (e.g., Z Fold 5 / mobile nodes).
+# Runs in a continuous loop to reclaim memory, clear stale temp files, and manage logs.
+
+MAID_INTERVAL_SEC=${MAID_INTERVAL_SEC:-120}
+AURA_ROOT=${AURA_ROOT:-$(pwd)}
+mkdir -p "$AURA_ROOT/vault"
+LOG_FILE="$AURA_ROOT/vault/runtime-maid.log"
+
+log() {
+    echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
+}
+
+sweep_tmp() {
+    log "Sweeping stale temporary files..."
+    # Remove files in /tmp older than 1 hour (useful for webm/mp3 orphans from radio)
+    if [ -d "/tmp" ]; then
+        find /tmp -type f -mmin +60 -exec rm -f {} \; 2>/dev/null
+    fi
+    
+    # Termux specific tmp
+    if [ -n "$PREFIX" ] && [ -d "$PREFIX/tmp" ]; then
+        find "$PREFIX/tmp" -type f -mmin +60 -exec rm -f {} \; 2>/dev/null
+    fi
+}
+
+trim_logs() {
+    log "Trimming large logs..."
+    # Keep logs from growing over 50MB
+    find "$AURA_ROOT" -type f -name "*.log" -size +50M | while read logfile; do
+        log "Truncating $logfile"
+        tail -n 1000 "$logfile" > "$logfile.tmp" && mv "$logfile.tmp" "$logfile"
+    done
+}
+
+drop_caches() {
+    # Attempt to drop caches. This requires root. On proot/termux, it may fail silently.
+    if [ "$(id -u)" -eq 0 ]; then
+        log "Dropping pagecache, dentries, and inodes..."
+        sync; bash -c "echo 3 > /proc/sys/vm/drop_caches" 2>/dev/null || true
+    fi
+}
+
+kill_zombies() {
+    # Attempt to reap zombie processes safely
+    ZOMBIES=$(ps -A -ostat,pid | awk '/[zZ]/ {print $2}')
+    if [ -n "$ZOMBIES" ]; then
+        log "Found zombies, attempting cleanup..."
+        # In Linux, init usually reaps them, but we can try to send SIGCHLD to their parents
+        for z in $ZOMBIES; do
+            kill -s SIGCHLD $(ps -o ppid= -p "$z") 2>/dev/null || true
+        done
+    fi
+}
+
+optimize_runtime() {
+    log "--- Starting Runtime Optimization Cycle ---"
+    sweep_tmp
+    trim_logs
+    drop_caches
+    kill_zombies
+    
+    # Optional: Swap memory cleanup if swap is heavily used and RAM is free
+    # (Requires root and is aggressive, so disabled by default unless needed)
+    
+    log "--- Cycle Complete. Sleeping for $MAID_INTERVAL_SEC seconds ---"
+}
+
+if [ "$1" = "sweep" ]; then
+    optimize_runtime
+    exit 0
+fi
+
+log "Starting Aura Runtime Maid in continuous mode (Interval: ${MAID_INTERVAL_SEC}s)..."
+
+while true; do
+    optimize_runtime
+    sleep "$MAID_INTERVAL_SEC"
+done
