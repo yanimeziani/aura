@@ -1,0 +1,86 @@
+# Risk Label Policy — Growth Agent / Cerberus / Pegasus
+# Every growth task must be assigned exactly one label before work begins.
+
+version: "1.0"
+
+labels:
+
+  SAFE:
+    code: SAFE
+    color: green
+    description: >
+      No external impact. No user comms. No real user data. No spend.
+      Work is entirely internal: code generation, template builds, report
+      generation, analytics scaffolding, dry-run scrapers.
+    can_auto_deploy: true
+    requires_hitl: false
+    examples:
+      - "Generate 20 SEO page templates (not deployed yet)"
+      - "Write email sequence draft (not sent)"
+      - "Add analytics event tracking code (not activated)"
+      - "Build A/B variant code behind a disabled feature flag"
+      - "Generate weekly growth report from existing data"
+      - "Write a scraper in dry-run mode (no requests fired)"
+
+  REVIEW:
+    code: REVIEW
+    color: yellow
+    description: >
+      Work that touches external systems, live users, paid channels, or
+      third-party targets. Must be reviewed and approved by Yani before
+      execution/activation/deployment.
+    can_auto_deploy: false
+    requires_hitl: true
+    hitl_gate_refs:
+      - email_send
+      - sms_push_send
+      - paid_ads_activation
+      - scraper_first_run
+      - ab_test_high_traffic
+    examples:
+      - "Activate A/B test routing live traffic"
+      - "Send email sequence to real users"
+      - "Run scraper against a third-party site"
+      - "Deploy SEO pages to production"
+      - "Enable feature flag for >10% of users"
+      - "Post content to social media via API"
+    agent_instructions: >
+      Complete all code/config work. Open PR on agent/growth/* branch.
+      Write HITL_REQUEST with full context. Do NOT execute/send/activate
+      until Pegasus shows APPROVED status.
+
+  BLOCKED:
+    code: BLOCKED
+    color: red
+    description: >
+      Task involves known ToS violation, PII export without consent,
+      illegal scraping, spam, or any action with clear legal/compliance risk.
+      Do not proceed. Escalate immediately.
+    can_auto_deploy: false
+    requires_hitl: false      # not HITL — fully blocked, not just gated
+    action: escalate_to_yani_immediately
+    examples:
+      - "Scrape a site that explicitly forbids it in ToS"
+      - "Export user email list without consent/legal basis"
+      - "Send unsolicited commercial messages (spam)"
+      - "Impersonate another service in scraper requests"
+      - "Collect or store credit card / financial data"
+      - "Any task violating GDPR/CCPA without legal review"
+    agent_instructions: >
+      STOP immediately. Do not write any code. Write a BLOCKED_REASON note
+      with: task description, why it's blocked, and the specific
+      ToS/legal/compliance issue. Route to Yani with full context.
+
+# ToS risk assessment guidance for scrapers
+scraper_tos_assessment:
+  questions:
+    - "Does robots.txt disallow the path?"
+    - "Does the site's ToS explicitly forbid scraping?"
+    - "Would this cause server load harm (no rate limiting)?"
+    - "Does the data contain PII?"
+    - "Is this data behind a login wall?"
+  scoring:
+    0_yes: SAFE
+    1_yes: REVIEW
+    2_or_more_yes: BLOCKED
+    pii_or_login: BLOCKED       # automatic BLOCKED regardless of other answers

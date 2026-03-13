@@ -1,0 +1,33 @@
+# LOCAL AURA BACKEND
+# VPS terminates TLS; this layer does HTTP routing only.
+# No local_certs — prevents 308 HTTP→HTTPS loops breaking the VPS proxy.
+
+{
+    auto_https off
+}
+
+# --- PUBLIC PORTAL: meziani.org + meziani.ai ---
+# Both domains serve the same React frontend + API backend.
+http://meziani.org, http://www.meziani.org, http://meziani.ai, http://www.meziani.ai {
+    # Payment + access API
+    handle_path /api/* {
+        reverse_proxy host.docker.internal:8000
+    }
+
+    # Vault (password manager)
+    handle_path /vault/* {
+        reverse_proxy vaultwarden:80
+    }
+
+    # React frontend (Vite dev server)
+    handle {
+        reverse_proxy host.docker.internal:5173 {
+            header_up Host {host}
+        }
+    }
+}
+
+# --- AUTOMATION: n8n on subdomain ---
+http://automation.meziani.org {
+    reverse_proxy n8n:5678
+}

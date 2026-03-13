@@ -1,0 +1,7 @@
+.*
+!.gitignore
+node_modules/
+android-sdk/
+Downloads/
+*.log
+*.tar.gz

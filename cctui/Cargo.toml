@@ -1,0 +1,15 @@
+[package]
+name    = "cctui"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "cctui"
+path = "src/main.rs"
+
+[dependencies]
+ratatui              = "0.29"
+crossterm            = "0.28"
+portable-pty         = "0.8"
+strip-ansi-escapes   = "0.2"
+anyhow               = "1"

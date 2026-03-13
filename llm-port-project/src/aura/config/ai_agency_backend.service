@@ -1,0 +1,12 @@
+[Unit]
+Description=Meziani AI Labs Backend
+After=network.target
+
+[Service]
+User=root
+WorkingDirectory=/root/ai_agency_wealth
+ExecStart=/root/ai_agency_wealth/venv/bin/uvicorn prod_payment_server:app --host 127.0.0.1 --port 8000
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

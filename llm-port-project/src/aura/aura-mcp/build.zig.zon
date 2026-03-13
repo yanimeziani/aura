@@ -1,0 +1,13 @@
+.{
+    .name = .aura_mcp,
+    .version = "0.0.0",
+    .fingerprint = 0xe83f7c28c95cb316,
+    // Repo lock: Zig 0.15.2 only. See docs/ZIG_VERSION.md and .zig-version.
+    .minimum_zig_version = "0.15.2",
+    .dependencies = .{},
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}

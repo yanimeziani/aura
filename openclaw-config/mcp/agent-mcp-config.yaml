@@ -1,0 +1,45 @@
+# MCP Configuration for OpenClaw Agents
+# These MCP servers run alongside each agent container via Claude Code's --mcp-config
+
+# Common MCPs both agents use
+common:
+  - github        # PR creation, issue management, branch ops, code search
+  - filesystem    # Read/write dragun repo and openclaw artifacts
+  - fetch         # Health checks, web scraping, API calls
+  - memory        # Persistent knowledge graph across agent sessions
+
+# Agent-specific MCP overrides
+agents:
+  devsecops:
+    servers:
+      - github
+      - filesystem
+      - fetch
+      - memory
+      - sequential-thinking
+    github_scopes:
+      - repo:read
+      - repo:write
+      - issues:write
+      - pulls:write
+      - actions:read
+    filesystem_paths:
+      - /data/dragun
+      - /data/openclaw/artifacts/devsecops
+      - /data/openclaw/config
+
+  growth:
+    servers:
+      - github
+      - filesystem
+      - fetch
+      - memory
+      - sequential-thinking
+    github_scopes:
+      - repo:read
+      - repo:write
+      - issues:write
+      - pulls:write
+    filesystem_paths:
+      - /data/dragun
+      - /data/openclaw/artifacts/growth

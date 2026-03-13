@@ -1,0 +1,137 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Resolve Aura repo root dynamically (override with AURA_ROOT if needed).
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+AURA_ROOT="${AURA_ROOT:-$(cd "$SCRIPT_DIR/.." && pwd)}"
+
+function show_help() {
+    echo "🔮 Aura CLI - Autonomous Multi-Agent Command Center"
+    echo "Usage: aura <command> [options]"
+    echo ""
+    echo "Commands:"
+    echo "  status      Check system health and agent states"
+    echo "  start       Start all Aura daemons (Autopilot, Web, API)"
+    echo "  stop        Stop all Aura daemons"
+    echo "  vault       Manage API keys and secrets"
+    echo "  logs        Tail the live agent metrics log"
+    echo "  tui         Launch the Zig-based Terminal User Interface"
+    echo "  mesh        Sovereign mesh VPN (Tailscale-like, Zig); up / down / status"
+    echo "  lynx        Zig text browser (aura-lynx <url>)"
+    echo "  api         Run aura-api (VPS HTTP server; AURA_API_PORT=9000)"
+    echo "  gateway     Start syncing gateway (IDEs, TUIs, LLM clients through Aura)"
+    echo "  chat        Minimal TUI chat with Aura agent (requires gateway; agent starts gateway if needed)"
+    echo "  opensea     OpenSea ops (read-only): assets / collections / watch"
+    echo "  skill       Aura skills belt (list/show/run)"
+    echo "  docs-maid   Docs maid: persistent sweep of vault/docs_inbox → docs/, channel, vault"
+    echo "  gs [N]      G100 benchmark: full workspace build + test; N epochs (default 1)"
+    echo "  stub        Run a command under persistent stub (respawn on exit/kill)"
+    echo "  stub-duplicate  Run a command under stub duplication (inner + outer respawn)"
+    echo "  cd          Print Aura repo root (use shell integration to cd)"
+    echo "  help        Show this help message"
+}
+
+CMD="${1:-}"
+case "$CMD" in
+    ""|help|-h|--help)
+        show_help
+        ;;
+    status)
+        echo "📊 Aura System Status:"
+        sudo systemctl is-active aura_autopilot.service ai_pay.service ai_agency_web.service || true
+        echo ""
+        echo "Health Report:"
+        cat "$AURA_ROOT/ai_agency_wealth/watchdog_state.json" 2>/dev/null || echo "No health data yet."
+        ;;
+    start)
+        echo "🚀 Starting Aura Systems..."
+        sudo systemctl start aura_autopilot.service ai_pay.service ai_agency_web.service
+        echo "✅ Services started."
+        ;;
+    stop)
+        echo "🛑 Stopping Aura Systems..."
+        sudo systemctl stop aura_autopilot.service ai_pay.service ai_agency_web.service
+        echo "✅ Services stopped."
+        ;;
+    vault)
+        python3 "$AURA_ROOT/vault/vault_manager.py"
+        ;;
+    logs)
+        tail -f "$AURA_ROOT/ai_agency_wealth/agency_metrics.log"
+        ;;
+    tui)
+        if [ -x "$AURA_ROOT/tui/zig-out/bin/aura-tui" ]; then
+            "$AURA_ROOT/tui/zig-out/bin/aura-tui"
+        else
+            echo "⚙️ Building TUI for the first time..."
+            cd "$AURA_ROOT/tui" && zig build
+            "$AURA_ROOT/tui/zig-out/bin/aura-tui"
+        fi
+        ;;
+    mesh)
+        if [ -x "$AURA_ROOT/aura-tailscale/zig-out/bin/aura-mesh" ]; then
+            "$AURA_ROOT/aura-tailscale/zig-out/bin/aura-mesh" "${@:2}"
+        else
+            echo "⚙️ Building Aura mesh (aura-tailscale) for the first time..."
+            cd "$AURA_ROOT/aura-tailscale" && zig build
+            "$AURA_ROOT/aura-tailscale/zig-out/bin/aura-mesh" "${@:2}"
+        fi
+        ;;
+    lynx)
+        if [ -x "$AURA_ROOT/aura-lynx/zig-out/bin/aura-lynx" ]; then
+            "$AURA_ROOT/aura-lynx/zig-out/bin/aura-lynx" "${@:2}"
+        else
+            echo "⚙️ Building aura-lynx for the first time..."
+            cd "$AURA_ROOT/aura-lynx" && zig build
+            "$AURA_ROOT/aura-lynx/zig-out/bin/aura-lynx" "${@:2}"
+        fi
+        ;;
+    api)
+        if [ -x "$AURA_ROOT/aura-api/zig-out/bin/aura-api" ]; then
+            "$AURA_ROOT/aura-api/zig-out/bin/aura-api" "${@:2}"
+        else
+            echo "⚙️ Building aura-api for the first time..."
+            cd "$AURA_ROOT/aura-api" && zig build
+            "$AURA_ROOT/aura-api/zig-out/bin/aura-api" "${@:2}"
+        fi
+        ;;
+    gateway)
+        export AURA_ROOT="$AURA_ROOT" AURA_VAULT_FILE="${AURA_VAULT_FILE:-$AURA_ROOT/vault/aura-vault.json}"
+        cd "$AURA_ROOT" && python3 -m uvicorn gateway.app:app --host 0.0.0.0 --port "${AURA_GATEWAY_PORT:-8765}"
+        ;;
+    chat)
+        # Minimal TUI chat with agent; ensure gateway URL is set (default 8765). Agent should start gateway in background when in build mode.
+        export AURA_ROOT="$AURA_ROOT" AURA_VAULT_FILE="${AURA_VAULT_FILE:-$AURA_ROOT/vault/aura-vault.json}"
+        exec python3 "$AURA_ROOT/gateway/aura_tui_chat.py"
+        ;;
+    opensea)
+        shift
+        exec "$AURA_ROOT/bin/aura-opensea" "$@"
+        ;;
+    skill)
+        shift
+        exec "$AURA_ROOT/bin/aura-skill" "$@"
+        ;;
+    docs-maid)
+        shift
+        exec "$AURA_ROOT/bin/docs-maid" "${@:-run}"
+        ;;
+    gs)
+        exec "$AURA_ROOT/bin/aura-gs" "${@:2}"
+        ;;
+    stub)
+        shift
+        exec "$AURA_ROOT/bin/aura-stub" run -- "$@"
+        ;;
+    stub-duplicate)
+        shift
+        exec "$AURA_ROOT/bin/aura-stub" duplicate -- "$@"
+        ;;
+    cd)
+        echo "$AURA_ROOT"
+        echo "Tip: in zsh, source '$AURA_ROOT/bin/aura.zsh' to enable 'aura cd' to cd in-place."
+        ;;
+    *)
+        show_help
+        ;;
+esac

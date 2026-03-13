@@ -1,0 +1,4 @@
+[Unit]
+Description=Aura Mesh Node
+[Service]
+ExecStart=/home/yani/Aura/bin/aura-mesh daemon

@@ -1,0 +1,8 @@
+crewai
+langchain-community
+duckduckgo-search
+python-dotenv
+qrcode[pil]
+fpdf2
+resend
+litellm

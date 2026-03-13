@@ -1,0 +1,20 @@
+.{
+    .name = .aura,
+    .version = "0.1.0",
+    .fingerprint = 0xd758af7bec700d7d,
+    .minimum_zig_version = "0.15.2",
+    .dependencies = .{
+        .aura_edge = .{ .path = "aura-edge" },
+        .aura_api = .{ .path = "aura-api" },
+        .aura_flow = .{ .path = "aura-flow" },
+        .aura_lynx = .{ .path = "aura-lynx" },
+        .aura_mcp = .{ .path = "aura-mcp" },
+        .aura_tailscale = .{ .path = "aura-tailscale" },
+        .tui = .{ .path = "tui" },
+        .ziggy_compiler = .{ .path = "ziggy-compiler" },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+    },
+}

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Meziani</string>
+    <string name="mailbox_title">Mailbox</string>
+    <string name="mission_control">Mission Control</string>
+</resources>

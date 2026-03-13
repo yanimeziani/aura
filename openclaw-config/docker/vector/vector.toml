@@ -1,0 +1,84 @@
+# vector.toml — Log aggregation for OpenClaw / Dragun.app
+# Collects structured logs from all containers, adds metadata, writes to disk.
+# Optional: uncomment sinks to push to Telegram/Discord on ERROR+.
+
+# ── Sources ──────────────────────────────────────────────────────────────────
+
+[sources.docker_logs]
+type = "docker_logs"
+# Collect from all containers (filter below by label)
+include_labels = { "openclaw.component" = "*" }
+
+[sources.caddy_access]
+type = "file"
+include = ["/data/logs/caddy-access.log"]
+read_from = "end"
+
+# ── Transforms ───────────────────────────────────────────────────────────────
+
+# Parse and enrich container logs
+[transforms.parse_container_logs]
+type   = "remap"
+inputs = ["docker_logs"]
+source = '''
+  . = merge(., {
+    "host":      get_env_var!("HOSTNAME"),
+    "container": .container_name,
+    "agent":     get(., ["label", "openclaw.agent"]) ?? "system",
+    "component": get(., ["label", "openclaw.component"]) ?? "unknown",
+  })
+  # Parse JSON log lines if present
+  if is_string(.message) {
+    parsed, err = parse_json(.message)
+    if err == null {
+      . = merge(., parsed)
+    }
+  }
+'''
+
+# Route ERROR and above to alert sink
+[transforms.route_by_level]
+type   = "route"
+inputs = ["parse_container_logs"]
+
+[transforms.route_by_level.route]
+errors = '.level == "error" || .level == "fatal" || .level == "critical"'
+info   = '.level == "info" || .level == "debug"'
+
+# ── Sinks: disk ──────────────────────────────────────────────────────────────
+
+[sinks.disk_all]
+type        = "file"
+inputs      = ["parse_container_logs", "caddy_access"]
+path        = "/data/logs/openclaw-{{ component }}-{{ agent }}.log"
+encoding.codec = "json"
+
+[sinks.disk_all.framing]
+method = "newline_delimited"
+
+# ── Sinks: Telegram alert on ERROR ───────────────────────────────────────────
+# Uncomment once ALERT_WEBHOOK_URL is set in .env
+
+# [sinks.telegram_errors]
+# type    = "http"
+# inputs  = ["route_by_level.errors"]
+# uri     = "${ALERT_WEBHOOK_URL}"
+# method  = "post"
+# encoding.codec = "json"
+#
+# [sinks.telegram_errors.request]
+#   headers = { "Content-Type" = "application/json" }
+#
+# [sinks.telegram_errors.encoding]
+#   only_fields = ["timestamp", "level", "component", "agent", "message"]
+
+# ── Internal metrics (optional) ──────────────────────────────────────────────
+
+[sources.vector_metrics]
+type = "internal_metrics"
+
+[sinks.metrics_log]
+type   = "file"
+inputs = ["vector_metrics"]
+path   = "/data/logs/vector-metrics.log"
+encoding.codec = "json"

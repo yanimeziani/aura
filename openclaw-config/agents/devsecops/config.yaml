@@ -1,0 +1,101 @@
+# DevSecOps Agent — OpenClaw Configuration
+# BMAD v6 | Dragun.app
+
+agent:
+  id: devsecops
+  name: "DevSecOps Agent"
+  version: "1.0"
+  schedule: always_on          # never paused unless panic_mode forces shutdown
+  branch_prefix: agent/devsecops
+
+# Model routing — cheapest model that can do the job
+model_routing:
+  cheap:
+    model: claude-haiku-4-5-20251001
+    use_for:
+      - log_parsing
+      - lint_output_summary
+      - dependency_audit_triage
+      - routine_doc_updates
+      - cost_report_formatting
+      - uptime_check_summary
+  mid:
+    model: claude-sonnet-4-6
+    use_for:
+      - bug_investigation
+      - pipeline_fix
+      - security_scan_triage
+      - dockerfile_refactor
+      - moderate_infra_change
+  top:
+    model: claude-sonnet-4-6    # swap to claude-opus-4-6 for production incidents
+    use_for:
+      - production_incident
+      - security_architecture
+      - complex_infra_redesign
+      - threat_modeling
+
+# Spend caps
+cost_caps:
+  daily_usd: 3.00
+  per_task_usd: 0.50
+  warning_threshold_pct: 80
+  hard_cap_action: downgrade_to_cheap_and_alert
+
+# Tools available (MCP-first)
+tools:
+  - name: ripgrep
+    use_for: repo_search
+  - name: diff_viewer
+    use_for: patch_preview
+  - name: gitleaks
+    use_for: secrets_scanning
+  - name: trivy
+    use_for: container_vuln_scan
+  - name: osv_scanner
+    use_for: dependency_audit
+  - name: docker_compose
+    use_for: container_ops
+  - name: curl
+    use_for: health_checks
+  - name: structured_logger
+    use_for: artifact_output
+
+# HITL gates — these tasks MUST request approval before execution
+hitl_gates:
+  - action: prod_deployment
+    trigger: target == production
+  - action: secret_rotation
+    trigger: always
+  - action: firewall_change
+    trigger: always
+  - action: resource_deletion
+    trigger: always
+  - action: schema_change
+    trigger: always
+  - action: force_push
+    trigger: always
+  - action: ci_pipeline_modification
+    trigger: always
+
+# Artifact storage
+artifacts:
+  base_path: /data/openclaw/artifacts/devsecops
+  retention_days: 30
+  format: markdown
+  push_summaries_to_repo: true
+  summary_path: ops/logs/devsecops
+
+# Escalation routing
+escalation:
+  out_of_scope: yani          # product/growth questions → Yani
+  p1_incident: yani_immediate # P1 incidents → immediate Yani alert
+  secret_exposure: yani_immediate
+
+# Alerting
+alerts:
+  channel: telegram           # options: telegram | discord | email | webhook
+  webhook_env_var: ALERT_WEBHOOK_URL
+  p1_alert_delay_seconds: 0
+  p2_alert_delay_seconds: 300
+  p3_alert_delay_seconds: 3600
