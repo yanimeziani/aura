@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 50" fill="none">
+  <g>
+    <rect x="2" y="10" width="30" height="30" rx="8" fill="currentColor" opacity="0.9"/>
+    <path d="M10 25 L17 18 L24 25 L17 32Z" fill="white" opacity="0.95"/>
+    <circle cx="17" cy="25" r="3" fill="white"/>
+  </g>
+  <text x="42" y="34" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="22" letter-spacing="-0.02em" fill="currentColor">
+    dragun
+  </text>
+  <text x="140" y="34" font-family="system-ui, -apple-system, sans-serif" font-weight="400" font-size="22" letter-spacing="-0.02em" fill="currentColor" opacity="0.5">
+    .app
+  </text>
+</svg>

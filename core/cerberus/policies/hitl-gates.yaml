@@ -1,0 +1,167 @@
+# HITL Gates Policy — Cerberus / Pegasus
+# Defines every action that requires human approval before execution.
+# Agents must halt and issue a HITL_REQUEST when any gate is triggered.
+
+version: "1.0"
+
+# Gate definitions
+gates:
+
+  # === Infrastructure / DevSecOps ===
+
+  - id: prod_deployment
+    agent: devsecops
+    trigger: "deployment target is production"
+    severity: high
+    description: "Any push to production environment"
+    required_info:
+      - branch_name
+      - commit_sha
+      - test_results
+      - trivy_scan_result
+      - gitleaks_result
+    approve_command: "cerberus approve <task_id>"
+    timeout_minutes: 60         # auto-cancel if no response
+
+  - id: secret_rotation
+    agent: devsecops
+    trigger: "any secret or credential rotation"
+    severity: critical
+    description: "Rotation of any API key, token, password, or cert"
+    required_info:
+      - secret_type
+      - affected_services
+      - rollback_plan
+    approve_command: "cerberus approve <task_id>"
+    timeout_minutes: 120
+
+  - id: firewall_change
+    agent: devsecops
+    trigger: "any change to firewall rules, security groups, or network ACLs"
+    severity: critical
+    required_info:
+      - rule_diff
+      - justification
+      - blast_radius
+    approve_command: "cerberus approve <task_id>"
+    timeout_minutes: 60
+
+  - id: resource_deletion
+    agent: devsecops
+    trigger: "deletion of any resource: volumes, containers, buckets, databases"
+    severity: critical
+    required_info:
+      - resource_id
+      - resource_type
+      - backup_confirmed
+      - justification
+    approve_command: "cerberus approve <task_id>"
+    timeout_minutes: 60
+
+  - id: schema_change
+    agent: devsecops
+    trigger: "any database schema migration (DROP, ALTER, truncate)"
+    severity: critical
+    required_info:
+      - migration_diff
+      - backup_confirmed
+      - rollback_migration
+    approve_command: "cerberus approve <task_id>"
+    timeout_minutes: 120
+
+  - id: force_push
+    agent: devsecops
+    trigger: "any git force-push to any branch"
+    severity: high
+    required_info:
+      - branch_name
+      - justification
+      - commits_affected
+    approve_command: "cerberus approve <task_id>"
+
+  - id: ci_pipeline_modification
+    agent: devsecops
+    trigger: "modification of CI/CD pipeline definition files"
+    severity: high
+    required_info:
+      - file_diff
+      - justification
+    approve_command: "cerberus approve <task_id>"
+
+  # === Growth Agent ===
+
+  - id: email_send
+    agent: growth
+    trigger: "any email send to real users (not test fixtures)"
+    severity: high
+    description: "Prevents accidental blasts to user list"
+    required_info:
+      - recipient_count
+      - subject_line
+      - email_preview
+      - sequence_name
+      - unsubscribe_confirmed
+    approve_command: "cerberus approve <task_id>"
+    timeout_minutes: 1440       # 24h window — emails can wait
+
+  - id: sms_push_send
+    agent: growth
+    trigger: "any SMS or push notification to real users"
+    severity: high
+    required_info:
+      - recipient_count
+      - message_preview
+      - compliance_check
+    approve_command: "cerberus approve <task_id>"
+
+  - id: paid_ads_activation
+    agent: growth
+    trigger: "any action that spends money on advertising"
+    severity: critical
+    required_info:
+      - platform
+      - budget_usd
+      - campaign_preview
+      - targeting_summary
+    approve_command: "cerberus approve <task_id>"
+
+  - id: pii_export
+    agent: growth
+    trigger: "any export or access of user personally identifiable information"
+    severity: critical
+    required_info:
+      - purpose
+      - fields_accessed
+      - recipient
+      - retention_plan
+    approve_command: "cerberus approve <task_id>"
+
+  - id: scraper_first_run
+    agent: growth
+    trigger: "first execution of any scraper rated REVIEW"
+    severity: medium
+    required_info:
+      - target_url
+      - risk_label
+      - tos_assessment
+      - rate_limit_config
+      - robots_txt_status
+    approve_command: "cerberus approve <task_id>"
+
+  - id: ab_test_high_traffic
+    agent: growth
+    trigger: "A/B test traffic split > 10% on live users"
+    severity: medium
+    required_info:
+      - experiment_id
+      - hypothesis
+      - traffic_split_pct
+      - primary_metric
+      - rollback_plan
+    approve_command: "cerberus approve <task_id>"
+
+# Default behavior when gate is triggered but agent doesn't handle it
+default_on_unhandled_gate:
+  action: block_and_alert
+  notify: yani
+  message: "Agent triggered HITL gate without proper HITL_REQUEST format. Blocking task."

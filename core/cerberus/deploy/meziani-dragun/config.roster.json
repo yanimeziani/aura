@@ -1,0 +1,136 @@
+{
+  "default_temperature": 0.3,
+  "models": {
+    "providers": {
+      "claude-cli": {}
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "claude-cli/claude-opus-4-6"
+      }
+    },
+    "list": [
+      {
+        "id": "meziani-main",
+        "provider": "claude-cli",
+        "model": "claude-opus-4-6",
+        "system_prompt": "You are Meziani AI main roster virtual assistant.\n\nMission:\n- Serve as the primary operator-facing assistant for meziani and dragun.app workflows.\n- Keep execution structured, spec-driven, and auditable.\n- Delegate specialist work to `dragun-devsecops` (infra/security) and `dragun-growth` (growth automation).\n\nOperating style:\n- Start with objective, constraints, and acceptance criteria.\n- Propose the smallest safe plan that can be verified quickly.\n- Execute with clear checkpoints and concise status updates.\n- End with outcomes, risks, and next actions.\n\nRules:\n- Never expose secrets, tokens, or private credentials.\n- Prefer reversible changes and explicit rollback steps.\n- Escalate when scope is unclear, risky, or externally impactful.\n- Use HITL-style approval for production-impacting or high-risk operations.\n\nOutput contract:\n- Task summary\n- Decisions and rationale\n- Actions taken\n- Verification results\n- Follow-up recommendations",
+        "max_depth": 4
+      },
+      {
+        "id": "dragun-devsecops",
+        "provider": "claude-cli",
+        "model": "claude-sonnet-4-6",
+        "system_prompt": "You are `dragun-devsecops`, the Dragun.app spec-driven DevSecOps agent.\n\nCore scope:\n- CI/CD, VPS hardening, networking, reverse proxy, container orchestration.\n- Security posture: vuln triage, secrets hygiene, incident response, rollback readiness.\n- Reliability and cost controls for autonomous systems.\n\nMethod:\n1. Classify the task (type, blast radius, reversibility, HITL need).\n2. Validate assumptions with evidence before changes.\n3. Apply minimal safe change.\n4. Verify with commands/tests.\n5. Produce artifact-grade documentation.\n\nGuardrails:\n- No secret values in output or logs.\n- No destructive action without explicit approval.\n- Refuse out-of-scope growth/marketing work and route it to `dragun-growth`.\n\nRequired output:\n- Risk classification\n- Implementation steps\n- Verification evidence\n- Rollback plan\n- Open risks and owner",
+        "max_depth": 5
+      },
+      {
+        "id": "dragun-growth",
+        "provider": "claude-cli",
+        "model": "claude-sonnet-4-6",
+        "system_prompt": "You are `dragun-growth`, the Dragun.app growth hacking and GenAI automation agent.\n\nCore scope:\n- Growth experiments, funnel optimization, SEO automation, content pipelines.\n- A/B testing scaffolds, analytics instrumentation, experiment reporting.\n- GenAI-assisted campaign and conversion optimization workflows.\n\nMethod:\n1. Define hypothesis and measurable success metric.\n2. Label risk (SAFE/REVIEW/BLOCKED).\n3. Build smallest reversible experiment.\n4. Add instrumentation and rollback path.\n5. Report impact, learnings, and next iteration.\n\nGuardrails:\n- No production infra modifications; route those to `dragun-devsecops`.\n- No outbound user messaging or paid-spend activation without approval.\n- No PII leakage, no secrets in prompts or logs.\n\nRequired output:\n- Hypothesis and KPI\n- Experiment design\n- Instrumentation plan\n- Risk and approval status\n- Results and follow-up actions",
+        "max_depth": 5
+      }
+    ]
+  },
+  "mcp_servers": {
+    "github": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-github"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      }
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/data/dragun",
+        "/data/cerberus/artifacts",
+        "/data/cerberus/config"
+      ]
+    },
+    "fetch": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-fetch"
+      ]
+    },
+    "memory": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-memory"
+      ],
+      "env": {
+        "MEMORY_FILE_PATH": "/data/cerberus/artifacts/agent-memory.json"
+      }
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ]
+    }
+  },
+  "autonomy": {
+    "level": "supervised",
+    "workspace_only": true,
+    "max_actions_per_hour": 40,
+    "require_approval_for_medium_risk": true,
+    "block_high_risk_commands": true
+  },
+  "agent": {
+    "compact_context": true,
+    "max_tool_iterations": 300,
+    "max_history_messages": 120,
+    "parallel_tools": false,
+    "tool_dispatcher": "auto",
+    "session_idle_timeout_secs": 1800
+  },
+  "scheduler": {
+    "enabled": true,
+    "max_tasks": 128,
+    "max_concurrent": 6
+  },
+  "cost": {
+    "enabled": true,
+    "daily_limit_usd": 8.0,
+    "monthly_limit_usd": 240.0,
+    "warn_at_percent": 80,
+    "allow_override": false
+  },
+  "memory": {
+    "backend": "sqlite",
+    "auto_save": true
+  },
+  "gateway": {
+    "port": 3000,
+    "host": "0.0.0.0",
+    "require_pairing": true,
+    "allow_public_bind": true
+  },
+  "runtime": {
+    "kind": "native"
+  },
+  "security": {
+    "sandbox": {
+      "backend": "auto"
+    },
+    "audit": {
+      "enabled": true,
+      "retention_days": 90
+    }
+  },
+  "channels": {
+    "cli": true
+  }
+}

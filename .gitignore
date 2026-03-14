@@ -1,7 +1,52 @@
-.*
-!.gitignore
+# --- Aura Monorepo Ignore List ---
+
+# Environment Secrets (CRITICAL)
+.env
+.env.*
+!.env.example
+*.env
+*.key
+*.pem
+*.p12
+
+# Node.js
 node_modules/
-android-sdk/
-Downloads/
+dist/
+build/
+.next/
+out/
+.vercel
+.npm
+.turbo
+
+# Zig (Cerberus)
+zig-cache/
+zig-out/
+/core/cerberus/zig-cache/
+/core/cerberus/zig-out/
+
+# Android/Kotlin (Pegasus)
+.gradle/
+/apps/mobile/build/
+/apps/mobile/.gradle/
+local.properties
+*.apk
+*.aar
+
+# System & IDE
+.DS_Store
+.vscode/
+.idea/
+*.swp
 *.log
+.gemini/
+.claude/
+.cerberus/memory/
+archive/
+
+# Temporary
+/root/.gemini/tmp/
+tmp/
+Downloads/
 *.tar.gz
+*.zip

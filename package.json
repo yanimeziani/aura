@@ -1,19 +1,26 @@
 {
+  "name": "aura",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm test --workspaces --if-present"
+  },
   "dependencies": {
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
     "@anthropic-ai/claude-code": "^2.1.74",
     "bash-language-server": "^5.6.0",
     "pyright": "^1.1.408",
-    "yaml-language-server": "^1.21.0",
-    "zod": "^4.3.6"
+    "yaml-language-server": "^1.21.0"
   },
-  "name": "root",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": ""
+  "license": "MIT",
+  "description": "Aura: The Holistic Pocket Business Monorepo"
 }

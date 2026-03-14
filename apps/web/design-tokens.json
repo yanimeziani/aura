@@ -1,0 +1,33 @@
+{
+  "color": {
+    "primary": { "$value": "#6419E6", "$type": "color" },
+    "secondary": { "$value": "#D926A9", "$type": "color" },
+    "accent": { "$value": "#1FB2A6", "$type": "color" },
+    "neutral": { "$value": "#2a323c", "$type": "color" },
+    "base": {
+      "100": { "$value": "#1d232a", "$type": "color" },
+      "200": { "$value": "#191e24", "$type": "color" },
+      "300": { "$value": "#15191e", "$type": "color" },
+      "content": { "$value": "#A6ADBB", "$type": "color" }
+    },
+    "success": { "$value": "#36D399", "$type": "color" },
+    "error": { "$value": "#F87272", "$type": "color" }
+  },
+  "typography": {
+    "fontFamily": {
+      "sans": { "$value": "Geist Sans, Inter, system-ui", "$type": "fontFamily" },
+      "mono": { "$value": "Geist Mono, monospace", "$type": "fontFamily" }
+    },
+    "fontSize": {
+      "xs": { "$value": "12px", "$type": "dimension" },
+      "sm": { "$value": "14px", "$type": "dimension" },
+      "base": { "$value": "16px", "$type": "dimension" },
+      "xl": { "$value": "20px", "$type": "dimension" }
+    }
+  },
+  "borderRadius": {
+    "lg": { "$value": "8px", "$type": "dimension" },
+    "xl": { "$value": "12px", "$type": "dimension" },
+    "full": { "$value": "9999px", "$type": "dimension" }
+  }
+}

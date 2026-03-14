@@ -1,8 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Aura Command Center
-Comment=Zig TUI for Aura daemons and mesh
-Exec=/home/yani/Aura/tui/zig-out/bin/aura-tui
-Icon=utilities-terminal
-Terminal=true
-Categories=System;Utility;

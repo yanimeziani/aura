@@ -1,0 +1,52 @@
+{
+  "default_temperature": 0.7,
+  "models": {
+    "providers": {
+      "openrouter": {
+        "api_key": "${OPENROUTER_API_KEY}"
+      }
+    }
+  },
+  "agents": {
+    "list": [
+      {
+        "id": "career-twin",
+        "name": "Career Digital Twin",
+        "provider": "openrouter",
+        "model": "anthropic/claude-sonnet-4",
+        "system_prompt_file": "/opt/configs/career_twin_prompt.txt",
+        "memory_path": "/root/.cerberus/memory/career_twin",
+        "tools": ["web_fetch", "calendar", "email_draft", "document_search"]
+      },
+      {
+        "id": "sdr-agent",
+        "name": "SDR Agent",
+        "provider": "openrouter",
+        "model": "anthropic/claude-sonnet-4",
+        "system_prompt_file": "/opt/configs/sdr_agent_prompt.txt",
+        "memory_path": "/root/.cerberus/memory/sdr",
+        "tools": ["web_fetch", "email_draft", "research"]
+      },
+      {
+        "id": "vocal-digestion",
+        "name": "Vocal Digestion Agent",
+        "provider": "openrouter",
+        "model": "anthropic/claude-sonnet-4",
+        "system_prompt_file": "/opt/configs/vocal_digestion_prompt.txt",
+        "memory_path": "/root/.cerberus/memory/digestion",
+        "tools": ["ffmpeg_extract", "whisper_transcribe", "openai_tts", "web_fetch"],
+        "autonomy": { "level": "autonomous" }
+      }
+    ]
+  },
+  "gateway": {
+    "port": 3000,
+    "host": "0.0.0.0",
+    "require_pairing": true,
+    "allow_public_bind": true
+  },
+  "security": {
+    "sandbox": { "backend": "auto" },
+    "audit": { "enabled": true }
+  }
+}
