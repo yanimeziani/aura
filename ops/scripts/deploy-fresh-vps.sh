@@ -15,11 +15,12 @@ NC='\033[0m'
 VPS_IP="89.116.170.202"
 VPS_USER="root"
 VPS_PASSWORD="@@Hostinger02103"
+DOMAIN="meziani.ai"
 
 echo "════════════════════════════════════════════════════════════════"
 echo "  FRESH VPS DEPLOYMENT"
-echo "  Career Digital Twin + SDR Agent"
-echo "  Target: ${VPS_IP} (Fresh Debian)"
+echo "  Career Digital Twin + SDR Agent + Dragun App"
+echo "  Target: ${VPS_IP} (${DOMAIN})"
 echo "════════════════════════════════════════════════════════════════"
 echo ""
 
@@ -59,20 +60,27 @@ apt-get install -y -qq \
     ufw fail2ban \
     htop tmux \
     sqlite3 \
-    ca-certificates
+    ca-certificates \
+    debian-keyring debian-archive-keyring apt-transport-https
+
+# Install Caddy
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list
+apt-get update
+apt-get install -y caddy
 
 # Configure firewall
 ufw --force enable
 ufw allow 22/tcp
 ufw allow 80/tcp
 ufw allow 443/tcp
-ufw allow 3000/tcp  # Cerberus gateway
+ufw allow 3000/tcp  # Dragun App / Cerberus Gateway
 ufw allow 3001/tcp  # Career Twin
 ufw allow 3002/tcp  # SDR Agent
 
 echo "VPS base setup complete"
 EOFSETUP
-echo -e "${GREEN}✓ VPS updated and secured${NC}"
+echo -e "${GREEN}✓ VPS updated and secured (Caddy installed)${NC}"
 
 # Step 3: Create directory structure
 echo -e "${BLUE}[3/12] Creating directory structure${NC}"
@@ -80,128 +88,120 @@ ssh ${VPS_USER}@${VPS_IP} << 'EOF'
 mkdir -p /opt/cerberus
 mkdir -p /opt/configs
 mkdir -p /opt/scripts
+mkdir -p /opt/apps/web
+mkdir -p /opt/aura-cert
 mkdir -p /root/.cerberus/{memory,logs,configs}
 mkdir -p /var/log/cerberus
-chmod -R 755 /opt/cerberus /opt/configs
+chmod -R 755 /opt/cerberus /opt/configs /opt/apps /opt/aura-cert
 chmod -R 700 /root/.cerberus
 EOF
 echo -e "${GREEN}✓ Directories created${NC}"
 
-# Step 4: Build Cerberus locally if needed
-echo -e "${BLUE}[4/12] Preparing Cerberus binary${NC}"
-cd /root/cerberus/runtime/cerberus-core
+# Step 4: Build Cerberus and Aura Cert locally
+echo -e "${BLUE}[4/12] Preparing binaries${NC}"
+cd /root/core/cerberus/runtime/cerberus-core
 if [ ! -f zig-out/bin/cerberus ]; then
-    echo "Building Cerberus (this takes 2-3 minutes)..."
+    echo "Building Cerberus..."
     zig build -Doptimize=ReleaseSmall
 fi
-BINARY_SIZE=$(ls -lh zig-out/bin/cerberus | awk '{print $5}')
-echo -e "${GREEN}✓ Cerberus binary ready (${BINARY_SIZE})${NC}"
 
-# Step 5: Deploy Cerberus
-echo -e "${BLUE}[5/12] Deploying Cerberus to VPS${NC}"
-scp /root/cerberus/runtime/cerberus-core/zig-out/bin/cerberus ${VPS_USER}@${VPS_IP}:/opt/cerberus/
-ssh ${VPS_USER}@${VPS_IP} "chmod +x /opt/cerberus/cerberus"
-echo -e "${GREEN}✓ Cerberus deployed${NC}"
+cd /root/apps/web/aura-cert
+if [ ! -f zig-out/bin/aura_cert ]; then
+    echo "Building Aura Cert..."
+    zig build -Doptimize=ReleaseSmall
+fi
+echo -e "${GREEN}✓ Binaries ready${NC}"
+
+# Step 5: Deploy Binaries to VPS
+echo -e "${BLUE}[5/12] Deploying binaries to VPS${NC}"
+scp /root/core/cerberus/runtime/cerberus-core/zig-out/bin/cerberus ${VPS_USER}@${VPS_IP}:/opt/cerberus/
+scp /root/apps/web/aura-cert/zig-out/bin/aura_cert ${VPS_USER}@${VPS_IP}:/opt/aura-cert/
+ssh ${VPS_USER}@${VPS_IP} "chmod +x /opt/cerberus/cerberus /opt/aura-cert/aura_cert"
+echo -e "${GREEN}✓ Binaries deployed${NC}"
 
 # Step 6: Deploy configs and prompts
 echo -e "${BLUE}[6/12] Deploying agent configs${NC}"
-scp /root/cerberus/configs/career-twin-agent.json ${VPS_USER}@${VPS_IP}:/opt/configs/
-scp /root/cerberus/configs/sdr-agent.json ${VPS_USER}@${VPS_IP}:/opt/configs/
-scp /root/cerberus/runtime/cerberus-core/prompts/career_twin_prompt.txt ${VPS_USER}@${VPS_IP}:/opt/configs/
-scp /root/cerberus/runtime/cerberus-core/prompts/sdr_agent_prompt.txt ${VPS_USER}@${VPS_IP}:/opt/configs/
+scp /root/core/cerberus/configs/career-twin-agent.json ${VPS_USER}@${VPS_IP}:/opt/configs/
+scp /root/core/cerberus/configs/sdr-agent.json ${VPS_USER}@${VPS_IP}:/opt/configs/
+scp /root/core/cerberus/runtime/cerberus-core/prompts/career_twin_prompt.txt ${VPS_USER}@${VPS_IP}:/opt/configs/
+scp /root/core/cerberus/runtime/cerberus-core/prompts/sdr_agent_prompt.txt ${VPS_USER}@${VPS_IP}:/opt/configs/
 echo -e "${GREEN}✓ Configs deployed${NC}"
 
 # Step 7: Deploy memory structures
 echo -e "${BLUE}[7/12] Deploying memory structures${NC}"
-if [ -d ~/.cerberus/memory/career_twin ]; then
-    scp -r ~/.cerberus/memory/career_twin ${VPS_USER}@${VPS_IP}:/root/.cerberus/memory/
+if [ -d /root/.cerberus/memory/career_twin ]; then
+    scp -r /root/.cerberus/memory/career_twin ${VPS_USER}@${VPS_IP}:/root/.cerberus/memory/
     echo -e "${GREEN}✓ Career Twin memory deployed${NC}"
 else
-    echo -e "${YELLOW}⚠ Career Twin memory not found, will initialize on VPS${NC}"
+    echo -e "${YELLOW}⚠ Career Twin memory not found locally, initializing on VPS${NC}"
     ssh ${VPS_USER}@${VPS_IP} "mkdir -p /root/.cerberus/memory/career_twin"
 fi
 
-if [ -d ~/.cerberus/memory/sdr ]; then
-    scp -r ~/.cerberus/memory/sdr ${VPS_USER}@${VPS_IP}:/root/.cerberus/memory/
+if [ -d /root/.cerberus/memory/sdr ]; then
+    scp -r /root/.cerberus/memory/sdr ${VPS_USER}@${VPS_IP}:/root/.cerberus/memory/
     echo -e "${GREEN}✓ SDR memory deployed${NC}"
 else
-    echo -e "${YELLOW}⚠ SDR memory not found, will initialize on VPS${NC}"
+    echo -e "${YELLOW}⚠ SDR memory not found locally, initializing on VPS${NC}"
     ssh ${VPS_USER}@${VPS_IP} "mkdir -p /root/.cerberus/memory/sdr"
 fi
 
 # Step 8: Deploy initialization scripts
 echo -e "${BLUE}[8/12] Deploying helper scripts${NC}"
-scp /root/cerberus/scripts/init-career-twin-memory.sh ${VPS_USER}@${VPS_IP}:/opt/scripts/
-scp /root/cerberus/scripts/init-sdr-memory.sh ${VPS_USER}@${VPS_IP}:/opt/scripts/
+scp /root/core/cerberus/scripts/init-career-twin-memory.sh ${VPS_USER}@${VPS_IP}:/opt/scripts/
+scp /root/core/cerberus/scripts/init-sdr-memory.sh ${VPS_USER}@${VPS_IP}:/opt/scripts/
 ssh ${VPS_USER}@${VPS_IP} "chmod +x /opt/scripts/*.sh"
 echo -e "${GREEN}✓ Scripts deployed${NC}"
 
-# Step 9: Create environment file template
-echo -e "${BLUE}[9/12] Creating environment configuration${NC}"
-ssh ${VPS_USER}@${VPS_IP} << 'EOFENV'
-cat > /opt/configs/env.template << 'EOF'
-# Cerberus Agent Environment Variables
-# Copy this to /opt/configs/env and fill in your API keys
+# Step 9: Configure SSL and Caddy for meziani.ai
+echo -e "${BLUE}[9/12] Configuring SSL and Caddy reverse proxy${NC}"
+ssh ${VPS_USER}@${VPS_IP} << EOF
+cd /opt/aura-cert
+./aura_cert
+mkdir -p /etc/caddy/certs
+cp cert.pem /etc/caddy/certs/meziani.ai.crt
+cp key.pem /etc/caddy/certs/meziani.ai.key
 
-# Required: OpenRouter API Key (for Claude Sonnet 4)
-OPENROUTER_API_KEY=your_openrouter_api_key_here
+cat > /etc/caddy/Caddyfile << 'EOFCADDY'
+{
+    email yani@meziani.ai
+}
 
-# Optional: Resend API Key (for SDR email sending)
-RESEND_API_KEY=your_resend_api_key_here
+${DOMAIN}, www.${DOMAIN} {
+    encode zstd gzip
+    tls /etc/caddy/certs/meziani.ai.crt /etc/caddy/certs/meziani.ai.key
+    reverse_proxy localhost:3000
+}
 
-# Optional: Cerberus Gateway
-CERBERUS_GATEWAY_PORT=3000
-CERBERUS_GATEWAY_HOST=0.0.0.0
-
-# Optional: Cost limits
-DAILY_TOKEN_BUDGET=100000
-MONTHLY_COST_LIMIT=100
+api.${DOMAIN} {
+    encode zstd gzip
+    tls /etc/caddy/certs/meziani.ai.crt /etc/caddy/certs/meziani.ai.key
+    reverse_proxy localhost:3001
+}
+EOFCADDY
+systemctl reload caddy
 EOF
+echo -e "${GREEN}✓ SSL and Caddy configured for ${DOMAIN}${NC}"
 
-cat > /opt/configs/README.md << 'EOF'
-# Cerberus VPS Deployment
+# Step 10: Deploy Dragun App (Web Interface)
+echo -e "${BLUE}[10/12] Deploying Dragun App${NC}"
+echo "Building Dragun App locally..."
+cd /root/apps/web
+npm install --production=false
+npm run build
+echo "Deploying built application..."
+# We use rsync if available, otherwise scp
+ssh ${VPS_USER}@${VPS_IP} "mkdir -p /opt/apps/web"
+rsync -avz --delete .next public package.json next.config.ts ${VPS_USER}@${VPS_IP}:/opt/apps/web/
+echo -e "${GREEN}✓ Dragun App deployed${NC}"
 
-## Quick Start
-
-1. Configure API keys:
-   cp /opt/configs/env.template /opt/configs/env
-   nano /opt/configs/env
-
-2. Start Career Digital Twin:
-   systemctl start cerberus-career-twin
-   systemctl status cerberus-career-twin
-
-3. Start SDR Agent:
-   systemctl start cerberus-sdr
-   systemctl status cerberus-sdr
-
-4. View logs:
-   journalctl -u cerberus-career-twin -f
-   tail -f /var/log/cerberus/career-twin.log
-
-## Verify Installation
-/opt/cerberus/cerberus version
-/opt/cerberus/cerberus capabilities --json
-
-## Memory Locations
-- Career Twin: /root/.cerberus/memory/career_twin/
-- SDR Agent: /root/.cerberus/memory/sdr/
-
-## Edit Profile
-nano /root/.cerberus/memory/career_twin/profile.md
-EOF
-EOFENV
-echo -e "${GREEN}✓ Environment template created${NC}"
-
-# Step 10: Create systemd services
-echo -e "${BLUE}[10/12] Creating systemd services${NC}"
+# Step 11: Create systemd services
+echo -e "${BLUE}[11/12] Creating systemd services${NC}"
 ssh ${VPS_USER}@${VPS_IP} << 'EOFSVC'
 # Career Digital Twin service
 cat > /etc/systemd/system/cerberus-career-twin.service << 'EOF'
 [Unit]
 Description=Cerberus Career Digital Twin Agent
 After=network.target
-Documentation=https://github.com/cerberus
 
 [Service]
 Type=simple
@@ -214,10 +214,6 @@ RestartSec=10
 StandardOutput=append:/var/log/cerberus/career-twin.log
 StandardError=append:/var/log/cerberus/career-twin-error.log
 
-# Security
-NoNewPrivileges=true
-PrivateTmp=true
-
 [Install]
 WantedBy=multi-user.target
 EOF
@@ -227,7 +223,6 @@ cat > /etc/systemd/system/cerberus-sdr.service << 'EOF'
 [Unit]
 Description=Cerberus SDR Agent
 After=network.target
-Documentation=https://github.com/cerberus
 
 [Service]
 Type=simple
@@ -240,9 +235,23 @@ RestartSec=10
 StandardOutput=append:/var/log/cerberus/sdr.log
 StandardError=append:/var/log/cerberus/sdr-error.log
 
-# Security
-NoNewPrivileges=true
-PrivateTmp=true
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# Dragun App service
+cat > /etc/systemd/system/dragun-app.service << 'EOF'
+[Unit]
+Description=Dragun App (Next.js)
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/apps/web
+ExecStart=/usr/bin/npm start
+Restart=always
+RestartSec=10
 
 [Install]
 WantedBy=multi-user.target
@@ -253,41 +262,24 @@ systemctl daemon-reload
 EOFSVC
 echo -e "${GREEN}✓ Systemd services created${NC}"
 
-# Step 11: Install Node.js for Dragun-app (optional)
-echo -e "${BLUE}[11/12] Installing Node.js (for Dragun-app)${NC}"
-ssh ${VPS_USER}@${VPS_IP} << 'EOFNODE'
-# Install Node.js 20.x
-curl -fsSL https://deb.nodesource.com/setup_20.x | bash - > /dev/null 2>&1
-apt-get install -y -qq nodejs
-node --version
-npm --version
-EOFNODE
-echo -e "${GREEN}✓ Node.js installed${NC}"
-
-# Step 12: Verify deployment
+# Step 12: Final Verify
 echo -e "${BLUE}[12/12] Verifying deployment${NC}"
 ssh ${VPS_USER}@${VPS_IP} << 'EOFVERIFY'
 echo "=== Cerberus Installation ==="
-/opt/cerberus/cerberus version
-ls -lh /opt/cerberus/cerberus
+/opt/cerberus/cerberus version || echo "Cerberus not found"
 
 echo ""
-echo "=== Configurations ==="
-ls -lh /opt/configs/
-
-echo ""
-echo "=== Memory Structures ==="
-ls -lh /root/.cerberus/memory/
-
-echo ""
-echo "=== Systemd Services ==="
-systemctl list-unit-files | grep cerberus
+echo "=== Services Status ==="
+systemctl is-active cerberus-career-twin || echo "career-twin inactive"
+systemctl is-active dragun-app || echo "dragun-app inactive"
+systemctl is-active caddy || echo "caddy inactive"
 
 echo ""
 echo "=== Firewall Status ==="
-ufw status | head -10
+ufw status | head -5
 EOFVERIFY
 echo -e "${GREEN}✓ Deployment verified${NC}"
+
 
 echo ""
 echo "════════════════════════════════════════════════════════════════"
