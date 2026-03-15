@@ -30,6 +30,25 @@ try:
 except Exception:  # pragma: no cover - optional dependency for legacy hashes
     pybcrypt = None
 
+try:
+    from webauthn import (
+        generate_authentication_options,
+        generate_registration_options,
+        options_to_json,
+        verify_authentication_response,
+        verify_registration_response,
+    )
+    from webauthn.helpers import base64url_to_bytes, bytes_to_base64url
+    from webauthn.helpers.structs import (
+        AuthenticatorSelectionCriteria,
+        PublicKeyCredentialDescriptor,
+        UserVerificationRequirement,
+    )
+
+    _HAS_WEBAUTHN = True
+except Exception:  # pragma: no cover - optional until passkeys deployed
+    _HAS_WEBAUTHN = False
+
 
 CERBERUS_BASE_DIR = Path(os.getenv("CERBERUS_BASE_DIR", "/data/cerberus"))
 CERBERUS_CONFIG_FILE = Path(
@@ -49,7 +68,10 @@ AGENT_STATE = ARTIFACTS / "agent_state.json"
 START_TIME = time.time()
 
 DEFAULT_ADMIN_USER = os.getenv("PEGASUS_ADMIN_USERNAME", "yani")
-DEFAULT_ADMIN_PASSWORD = os.getenv("PEGASUS_ADMIN_PASSWORD", "cerberus2026")
+_raw_admin_password = os.getenv("PEGASUS_ADMIN_PASSWORD")
+if not _raw_admin_password:
+    raise RuntimeError("PEGASUS_ADMIN_PASSWORD environment variable is required but not set")
+DEFAULT_ADMIN_PASSWORD = _raw_admin_password
 DEFAULT_ROLE = os.getenv("PEGASUS_ADMIN_ROLE", "admin")
 # Primary/main agent for hierarchy: shown first in Pegasus, default for "message agent".
 PRIMARY_AGENT_ID = os.getenv("PEGASUS_PRIMARY_AGENT_ID", "meziani-main")
@@ -67,6 +89,15 @@ EVENTS_REPLAY_LIMIT_DEFAULT = max(1, int(os.getenv("PEGASUS_EVENTS_REPLAY_DEFAUL
 EVENTS_REPLAY_LIMIT_MAX = max(100, int(os.getenv("PEGASUS_EVENTS_REPLAY_MAX_LIMIT", "1000")))
 EVENTS_WS_POLL_SECS = max(0.1, float(os.getenv("PEGASUS_EVENTS_WS_POLL_SECS", "0.5")))
 TRAIL_RETENTION_DAYS = max(1, int(os.getenv("PEGASUS_TRAIL_RETENTION_DAYS", "30")))
+
+# ── WebAuthn / Passkey configuration ────────────────────────────────────
+WEBAUTHN_RP_ID = os.getenv("WEBAUTHN_RP_ID", "pegasus.meziani.org")
+WEBAUTHN_RP_NAME = os.getenv("WEBAUTHN_RP_NAME", "Pegasus")
+WEBAUTHN_ORIGIN = os.getenv("WEBAUTHN_ORIGIN", "https://pegasus.meziani.org")
+WEBAUTHN_CREDS_FILE = AUTH_DIR / "webauthn_credentials.json"
+# In-memory challenge store {challenge_id: {challenge_b64, user, ts}}
+_webauthn_challenges: dict[str, dict[str, Any]] = {}
+WEBAUTHN_CHALLENGE_TTL = 300  # seconds
 
 
 for d in [
@@ -1037,4 +1068,277 @@ def root_info():
             "ingest": "/events/ingest",
             "ws": "/events/ws?token=<bearer>",
         },
+        "webauthn": _HAS_WEBAUTHN,
     }
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# WebAuthn / Passkey endpoints
+# ═══════════════════════════════════════════════════════════════════════
+
+def _load_webauthn_creds() -> dict[str, list[dict]]:
+    if not WEBAUTHN_CREDS_FILE.exists():
+        return {}
+    try:
+        return json.loads(WEBAUTHN_CREDS_FILE.read_text())
+    except Exception:
+        return {}
+
+
+def _save_webauthn_creds(creds: dict[str, list[dict]]) -> None:
+    WEBAUTHN_CREDS_FILE.write_text(json.dumps(creds, indent=2))
+
+
+def _prune_challenges() -> None:
+    """Remove expired challenges."""
+    now = time.time()
+    expired = [k for k, v in _webauthn_challenges.items() if now - v["ts"] > WEBAUTHN_CHALLENGE_TTL]
+    for k in expired:
+        _webauthn_challenges.pop(k, None)
+
+
+def _require_webauthn():
+    if not _HAS_WEBAUTHN:
+        raise HTTPException(501, "WebAuthn not available — install py_webauthn")
+
+
+class WebAuthnUsernameRequest(BaseModel):
+    username: str
+
+
+@app.post("/auth/webauthn/register/begin")
+def webauthn_register_begin(auth: dict = Depends(require_auth)):
+    """Start passkey registration. Must be logged in (password-authenticated)."""
+    _require_webauthn()
+    _prune_challenges()
+    user = auth["user"]
+    user_id = user.encode("utf-8")
+
+    existing = _load_webauthn_creds().get(user, [])
+    exclude = [
+        PublicKeyCredentialDescriptor(id=base64url_to_bytes(c["credential_id"]))
+        for c in existing
+    ]
+
+    options = generate_registration_options(
+        rp_id=WEBAUTHN_RP_ID,
+        rp_name=WEBAUTHN_RP_NAME,
+        user_id=user_id,
+        user_name=user,
+        user_display_name=user,
+        exclude_credentials=exclude,
+        authenticator_selection=AuthenticatorSelectionCriteria(
+            user_verification=UserVerificationRequirement.REQUIRED,
+        ),
+    )
+
+    challenge_id = secrets.token_urlsafe(16)
+    _webauthn_challenges[challenge_id] = {
+        "challenge": bytes_to_base64url(options.challenge),
+        "user": user,
+        "ts": time.time(),
+    }
+
+    _emit_event(
+        kind="auth.webauthn_register_begin",
+        summary=f"WebAuthn registration started for {user}",
+        data={"user": user},
+    )
+
+    return {"challenge_id": challenge_id, "options": json.loads(options_to_json(options))}
+
+
+@app.post("/auth/webauthn/register/complete")
+def webauthn_register_complete(body: dict, auth: dict = Depends(require_auth)):
+    """Complete passkey registration with the authenticator response."""
+    _require_webauthn()
+
+    challenge_id = body.get("challenge_id", "")
+    challenge_data = _webauthn_challenges.pop(challenge_id, None)
+    if not challenge_data or time.time() - challenge_data["ts"] > WEBAUTHN_CHALLENGE_TTL:
+        raise HTTPException(400, "Invalid or expired challenge")
+
+    if challenge_data["user"] != auth["user"]:
+        raise HTTPException(403, "Challenge user mismatch")
+
+    credential = body.get("credential", {})
+    expected_challenge = base64url_to_bytes(challenge_data["challenge"])
+
+    try:
+        verification = verify_registration_response(
+            credential=credential,
+            expected_challenge=expected_challenge,
+            expected_rp_id=WEBAUTHN_RP_ID,
+            expected_origin=WEBAUTHN_ORIGIN,
+        )
+    except Exception as e:
+        raise HTTPException(400, f"Registration verification failed: {e}")
+
+    creds = _load_webauthn_creds()
+    user = auth["user"]
+    if user not in creds:
+        creds[user] = []
+
+    cred_id_b64 = bytes_to_base64url(verification.credential_id)
+    creds[user].append({
+        "credential_id": cred_id_b64,
+        "public_key": bytes_to_base64url(verification.credential_public_key),
+        "sign_count": verification.sign_count,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    })
+    _save_webauthn_creds(creds)
+
+    _emit_event(
+        kind="auth.webauthn_registered",
+        summary=f"Passkey registered for {user}",
+        data={"user": user, "credential_id": cred_id_b64},
+    )
+
+    return {"status": "ok", "credential_id": cred_id_b64}
+
+
+@app.post("/auth/webauthn/authenticate/begin")
+def webauthn_authenticate_begin(req: WebAuthnUsernameRequest):
+    """Start passkey authentication (no bearer token required)."""
+    _require_webauthn()
+    _prune_challenges()
+
+    creds = _load_webauthn_creds()
+    user_creds = creds.get(req.username, [])
+    if not user_creds:
+        raise HTTPException(404, "No passkeys registered for this user")
+
+    allow_credentials = [
+        PublicKeyCredentialDescriptor(id=base64url_to_bytes(c["credential_id"]))
+        for c in user_creds
+    ]
+
+    options = generate_authentication_options(
+        rp_id=WEBAUTHN_RP_ID,
+        allow_credentials=allow_credentials,
+        user_verification=UserVerificationRequirement.REQUIRED,
+    )
+
+    challenge_id = secrets.token_urlsafe(16)
+    _webauthn_challenges[challenge_id] = {
+        "challenge": bytes_to_base64url(options.challenge),
+        "user": req.username,
+        "ts": time.time(),
+    }
+
+    return {"challenge_id": challenge_id, "options": json.loads(options_to_json(options))}
+
+
+@app.post("/auth/webauthn/authenticate/complete", response_model=TokenResponse)
+def webauthn_authenticate_complete(body: dict):
+    """Complete passkey authentication. Returns a bearer token on success."""
+    _require_webauthn()
+
+    challenge_id = body.get("challenge_id", "")
+    challenge_data = _webauthn_challenges.pop(challenge_id, None)
+    if not challenge_data or time.time() - challenge_data["ts"] > WEBAUTHN_CHALLENGE_TTL:
+        raise HTTPException(400, "Invalid or expired challenge")
+
+    username = challenge_data["user"]
+    creds = _load_webauthn_creds()
+    user_creds = creds.get(username, [])
+
+    credential = body.get("credential", {})
+    cred_id = credential.get("id", "")
+    expected_challenge = base64url_to_bytes(challenge_data["challenge"])
+
+    # Find the matching stored credential
+    matched = None
+    for c in user_creds:
+        if c["credential_id"] == cred_id:
+            matched = c
+            break
+
+    if not matched:
+        raise HTTPException(401, "Unknown credential")
+
+    try:
+        verification = verify_authentication_response(
+            credential=credential,
+            expected_challenge=expected_challenge,
+            expected_rp_id=WEBAUTHN_RP_ID,
+            expected_origin=WEBAUTHN_ORIGIN,
+            credential_public_key=base64url_to_bytes(matched["public_key"]),
+            credential_current_sign_count=matched.get("sign_count", 0),
+        )
+    except Exception as e:
+        _emit_event(
+            kind="auth.webauthn_failed",
+            severity="warning",
+            summary=f"WebAuthn authentication failed for {username}",
+            data={"username": username, "error": str(e)},
+        )
+        raise HTTPException(401, f"Authentication failed: {e}")
+
+    # Update sign count
+    matched["sign_count"] = verification.new_sign_count
+    _save_webauthn_creds(creds)
+
+    # Look up user role
+    users = _load_users()
+    user_entry = users.get(username, {})
+    role = user_entry.get("role", DEFAULT_ROLE)
+
+    # Issue bearer token (same as password login)
+    raw_token = f"crb_{secrets.token_urlsafe(48)}"
+    token_hash = _hash_token(raw_token)
+    tokens = _load_tokens()
+    tokens[token_hash] = {
+        "user": username,
+        "role": role,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "device": "webauthn",
+        "revoked": False,
+    }
+    _save_tokens(tokens)
+
+    _emit_event(
+        kind="auth.webauthn_login",
+        summary=f"{username} authenticated via passkey",
+        data={"user": username, "role": role, "credential_id": cred_id},
+    )
+
+    return TokenResponse(token=raw_token, user=username, role=role)
+
+
+@app.get("/auth/webauthn/credentials", dependencies=[Depends(require_auth)])
+def webauthn_list_credentials(auth: dict = Depends(require_auth)):
+    """List registered passkeys for the authenticated user."""
+    creds = _load_webauthn_creds()
+    user_creds = creds.get(auth["user"], [])
+    return {
+        "user": auth["user"],
+        "count": len(user_creds),
+        "credentials": [
+            {"credential_id": c["credential_id"], "created_at": c.get("created_at")}
+            for c in user_creds
+        ],
+    }
+
+
+@app.delete("/auth/webauthn/credentials/{credential_id}")
+def webauthn_delete_credential(
+    credential_id: str,
+    auth: dict = Depends(require_auth),
+):
+    """Remove a registered passkey."""
+    creds = _load_webauthn_creds()
+    user = auth["user"]
+    user_creds = creds.get(user, [])
+    before = len(user_creds)
+    creds[user] = [c for c in user_creds if c["credential_id"] != credential_id]
+    if len(creds[user]) == before:
+        raise HTTPException(404, "Credential not found")
+    _save_webauthn_creds(creds)
+
+    _emit_event(
+        kind="auth.webauthn_credential_deleted",
+        summary=f"Passkey removed for {user}",
+        data={"user": user, "credential_id": credential_id},
+    )
+    return {"status": "deleted", "credential_id": credential_id}

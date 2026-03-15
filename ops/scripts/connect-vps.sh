@@ -3,7 +3,7 @@
 
 VPS_IP="89.116.170.202"
 VPS_USER="root"
-VPS_PASSWORD="@@Hostinger02103"
+VPS_PASSWORD="${VPS_PASSWORD:?Set VPS_PASSWORD env var}"
 
 echo "Connecting to VPS: ${VPS_IP}"
 echo ""

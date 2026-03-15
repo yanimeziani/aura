@@ -5,7 +5,7 @@ import signal
 from urllib.parse import urlparse, parse_qs
 
 PORT = 9090
-TOKEN = "AuraSovereign2026"
+TOKEN = os.environ.get("AURA_EXPORT_TOKEN", "")
 FILE_TO_SERVE = "/tmp/Aura_Full_Documentation_Export.txt"
 
 class SecureFileHandler(http.server.SimpleHTTPRequestHandler):
@@ -13,7 +13,7 @@ class SecureFileHandler(http.server.SimpleHTTPRequestHandler):
         parsed_url = urlparse(self.path)
         query_params = parse_qs(parsed_url.query)
         
-        if query_params.get("token", [""])[0] != TOKEN:
+        if not TOKEN or query_params.get("token", [""])[0] != TOKEN:
             self.send_response(403)
             self.end_headers()
             self.wfile.write(b"Forbidden: Invalid or missing token.")

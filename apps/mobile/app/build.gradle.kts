@@ -161,6 +161,7 @@ dependencies {
 
     implementation(libs.sshj)
 
+    implementation(libs.biometric)
     implementation(libs.datastore)
     implementation(libs.coroutines)
 

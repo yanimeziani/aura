@@ -328,12 +328,12 @@ _KNOWN_LOGS: dict[str, str] = {
 
 _LOG_TOKEN = os.environ.get("AURA_LOG_TOKEN", "")  # optional; if set, required as ?token=
 _EXPORT_FILE = "/tmp/Aura_Full_Documentation_Export.txt"
-_EXPORT_TOKEN = "AuraSovereign2026"
+_EXPORT_TOKEN = os.environ.get("AURA_EXPORT_TOKEN", "")
 
 @app.get("/download/notebook-lm")
 def download_notebook_lm(token: Optional[str] = None):
     """Securely download the NotebookLM documentation export."""
-    if token != _EXPORT_TOKEN:
+    if not _EXPORT_TOKEN or token != _EXPORT_TOKEN:
         raise HTTPException(status_code=403, detail="Forbidden: Invalid or missing token")
     if not os.path.exists(_EXPORT_FILE):
         raise HTTPException(status_code=404, detail="Export file not found")

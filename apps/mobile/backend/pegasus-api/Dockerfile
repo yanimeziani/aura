@@ -8,7 +8,7 @@ COPY app.py .
 
 ENV CERBERUS_BASE_DIR=/data/cerberus
 ENV PEGASUS_ADMIN_USERNAME=yani
-ENV PEGASUS_ADMIN_PASSWORD=cerberus2026
+# PEGASUS_ADMIN_PASSWORD must be passed at runtime (docker run -e or .env)
 EXPOSE 8000
 
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -2,3 +2,4 @@ fastapi
 uvicorn[standard]
 bcrypt
 sse-starlette
+webauthn>=2.0,<3.0

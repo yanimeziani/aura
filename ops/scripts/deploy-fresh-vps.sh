@@ -14,7 +14,7 @@ NC='\033[0m'
 
 VPS_IP="89.116.170.202"
 VPS_USER="root"
-VPS_PASSWORD="@@Hostinger02103"
+VPS_PASSWORD="${VPS_PASSWORD:?Set VPS_PASSWORD env var}"
 DOMAIN="meziani.ai"
 
 echo "════════════════════════════════════════════════════════════════"
