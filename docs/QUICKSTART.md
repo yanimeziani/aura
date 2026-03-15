@@ -4,8 +4,8 @@ This guide will help you deploy both agents on your Pegasus/Cerberus stack.
 
 ## Prerequisites
 
-- Cerberus runtime installed (`/root/cerberus/runtime/cerberus-core`)
-- Dragun-app Next.js application (`/root/dragun-app`)
+- Cerberus runtime installed (`/root/core/cerberus/runtime/cerberus-core`)
+- Meziani AI Next.js application (`/root/apps/web`)
 - Supabase project configured
 - OpenRouter API key (for Claude Sonnet 4)
 - Debian VPS for deployment (optional, can run locally)
@@ -40,8 +40,8 @@ This guide will help you deploy both agents on your Pegasus/Cerberus stack.
 
 ### Career Digital Twin
 ```bash
-cd /root/cerberus
-bash scripts/init-career-twin-memory.sh
+cd /root/ops/scripts
+bash init-career-twin-memory.sh
 ```
 
 This creates:
@@ -54,8 +54,8 @@ This creates:
 
 ### SDR Agent
 ```bash
-cd /root/cerberus
-bash scripts/init-sdr-memory.sh
+cd /root/ops/scripts
+bash init-sdr-memory.sh
 ```
 
 This creates:
@@ -73,7 +73,7 @@ Create `~/.cerberus/career-twin.env`:
 ```bash
 OPENROUTER_API_KEY=your_openrouter_api_key
 CERBERUS_AGENT=career_twin
-CERBERUS_CONFIG=/root/cerberus/configs/career-twin-agent.json
+CERBERUS_CONFIG=/root/core/cerberus/configs/career-twin-agent.json
 ```
 
 Create `~/.cerberus/sdr.env`:
@@ -81,12 +81,12 @@ Create `~/.cerberus/sdr.env`:
 OPENROUTER_API_KEY=your_openrouter_api_key
 RESEND_API_KEY=your_resend_api_key
 CERBERUS_AGENT=sdr
-CERBERUS_CONFIG=/root/cerberus/configs/sdr-agent.json
+CERBERUS_CONFIG=/root/core/cerberus/configs/sdr-agent.json
 ```
 
-### Dragun-app Configuration
+### Meziani AI Configuration
 
-Add to `/root/dragun-app/.env.local`:
+Add to `/root/apps/web/.env.local`:
 ```bash
 # Cerberus API
 CERBERUS_API_URL=http://localhost:3000
@@ -101,11 +101,11 @@ RESEND_API_KEY=your_resend_api_key
 ## Step 3: Run Database Migrations
 
 ```bash
-cd /root/dragun-app
+cd /root/apps/web
 
 # Run migrations
 npm run db:check
-
+```
 # Or manually with Supabase CLI
 supabase db push
 ```

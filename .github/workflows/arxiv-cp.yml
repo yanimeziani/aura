@@ -1,0 +1,55 @@
+name: "arXiv Continuous Publication (CP)"
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'research/**'
+  workflow_dispatch:
+
+jobs:
+  prepare-arxiv:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install LaTeX (Minimal)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-base texlive-fonts-recommended texlive-fonts-extra texlive-latex-extra
+
+      - name: Verify LaTeX Compilation
+        run: |
+          cd research/aura-manifesto
+          pdflatex -interaction=nonstopmode main.tex
+          pdflatex -interaction=nonstopmode main.tex
+
+      - name: Install arxiv-latex-cleaner
+        run: pip install arxiv-latex-cleaner
+
+      - name: Prepare Aura Manifesto for arXiv
+        run: |
+          mkdir -p output
+          arxiv_latex_cleaner research/aura-manifesto --output_folder output/aura-manifesto-arxiv
+          cd output
+          zip -r ../aura-manifesto-arxiv.zip aura-manifesto-arxiv
+
+      - name: Create GitHub Release Asset
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: aura-manifesto-arxiv.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Notify Ready for Submission
+        run: |
+          echo "ArXiv submission package prepared: aura-manifesto-arxiv.zip"
+          echo "Please upload this file to https://arxiv.org/submit using ORCID ID: 0009-0007-4348-8711"

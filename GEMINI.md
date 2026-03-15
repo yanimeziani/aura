@@ -25,7 +25,8 @@
 - **Backend Runtime**: Zig (Cerberus engine).
 - **Mobile**: Kotlin, Android SDK (Pegasus).
 - **Database**: Supabase (PostgreSQL with Row-Level Security).
-- **AI/LLMs**: Claude (via OpenRouter), Llama 3.3 (fallback).
+- **AI/LLMs (Aura OSS)**: All In-House, All Tailored. Models are served exclusively via **litllm** and our **custom-tailored in-house Aura component** to perfectly fit the sovereign operational stack as the default. **Operator-Override (HITL)**: External premium providers (e.g., Claude 3.5 Sonnet) are permitted ONLY for fixing major flaws that local models cannot resolve, requiring explicit approval from the sole operator.
+- **AI/LLMs (Commercial)**: Claude (via OpenRouter), Llama 3.3 (fallback).
 - **Integrations**: Resend (Email), Stripe (Payments), Twilio (SMS).
 
 ---

@@ -14,13 +14,13 @@ Successfully architected and implemented **two production-ready agentic AI appli
 **Purpose**: An autonomous AI agent that represents a job-seeking founder to employers, handling inquiries, scheduling interviews, and tracking applications.
 
 **Key Deliverables**:
-- ✅ Cerberus agent configuration (`/root/cerberus/configs/career-twin-agent.json`)
-- ✅ System prompt with professional profile (`/root/cerberus/runtime/cerberus-core/prompts/career_twin_prompt.txt`)
-- ✅ Memory structure initialization script (`/root/cerberus/scripts/init-career-twin-memory.sh`)
-- ✅ Next.js web interface (`/root/dragun-app/app/[locale]/career-twin/`)
-- ✅ REST API endpoints (`/root/dragun-app/app/api/career-twin/`)
-- ✅ Supabase database schema (`/root/dragun-app/supabase/migrations/20260303000001_career_twin_tables.sql`)
-- ✅ Complete architecture spec (`/root/cerberus/specs/career-digital-twin.md`)
+- ✅ Cerberus agent configuration (`/root/core/cerberus/configs/career-twin-agent.json`)
+- ✅ System prompt with professional profile (`/root/core/cerberus/runtime/cerberus-core/prompts/career_twin_prompt.txt`)
+- ✅ Memory structure initialization script (`/root/ops/scripts/init-career-twin-memory.sh`)
+- ✅ Next.js web interface (`/root/apps/web/app/[locale]/career-twin/`)
+- ✅ REST API endpoints (`/root/apps/web/app/api/career-twin/`)
+- ✅ Supabase database schema (`/root/apps/web/supabase/migrations/20260303000001_career_twin_tables.sql`)
+- ✅ Complete architecture spec (`/root/core/cerberus/specs/career-digital-twin.md`)
 
 **Technical Stack**:
 - **Backend**: Cerberus (Zig) with Claude Sonnet 4
@@ -43,12 +43,12 @@ Successfully architected and implemented **two production-ready agentic AI appli
 **Purpose**: An autonomous Sales Development Representative that researches prospects, crafts personalized emails, manages follow-up sequences, and tracks engagement.
 
 **Key Deliverables**:
-- ✅ Cerberus agent configuration (`/root/cerberus/configs/sdr-agent.json`)
-- ✅ System prompt with email best practices (`/root/cerberus/runtime/cerberus-core/prompts/sdr_agent_prompt.txt`)
-- ✅ Memory structure with templates (`/root/cerberus/scripts/init-sdr-memory.sh`)
+- ✅ Cerberus agent configuration (`/root/core/cerberus/configs/sdr-agent.json`)
+- ✅ System prompt with email best practices (`/root/core/cerberus/runtime/cerberus-core/prompts/sdr_agent_prompt.txt`)
+- ✅ Memory structure with templates (`/root/ops/scripts/init-sdr-memory.sh`)
 - ✅ Email templates (initial, follow-up #1, follow-up #2, breakup)
-- ✅ Supabase database schema (`/root/dragun-app/supabase/migrations/20260303000002_sdr_tables.sql`)
-- ✅ Complete architecture spec (`/root/cerberus/specs/sdr-agent.md`)
+- ✅ Supabase database schema (`/root/apps/web/supabase/migrations/20260303000002_sdr_tables.sql`)
+- ✅ Complete architecture spec (`/root/core/cerberus/specs/sdr-agent.md`)
 
 **Technical Stack**:
 - **Backend**: Cerberus (Zig) with Claude Sonnet 4 + Llama 3.3 70B fallback
@@ -71,24 +71,25 @@ Successfully architected and implemented **two production-ready agentic AI appli
 
 ### Cerberus Agent Configs
 ```
-/root/cerberus/
+/root/core/cerberus/
 ├── configs/
 │   ├── career-twin-agent.json       # Career Twin agent config
 │   └── sdr-agent.json                # SDR agent config
 ├── runtime/cerberus-core/prompts/
 │   ├── career_twin_prompt.txt        # Career Twin system prompt (1,400 words)
 │   └── sdr_agent_prompt.txt          # SDR system prompt (1,800 words)
-├── scripts/
-│   ├── init-career-twin-memory.sh    # Initialize Career Twin memory
-│   └── init-sdr-memory.sh            # Initialize SDR memory
 └── specs/
     ├── career-digital-twin.md        # Full architecture spec
     └── sdr-agent.md                  # Full architecture spec
+
+/root/ops/scripts/
+├── init-career-twin-memory.sh        # Initialize Career Twin memory
+└── init-sdr-memory.sh                # Initialize SDR memory
 ```
 
-### Dragun-app Web Interface
+### Meziani AI Web Interface
 ```
-/root/dragun-app/
+/root/apps/web/
 ├── app/
 │   ├── [locale]/career-twin/
 │   │   └── page.tsx                  # Career Twin dashboard
@@ -144,9 +145,9 @@ Successfully architected and implemented **two production-ready agentic AI appli
 
 ### 1. Initialize Memory Structures
 ```bash
-cd /root/cerberus
-bash scripts/init-career-twin-memory.sh
-bash scripts/init-sdr-memory.sh
+cd /root/ops/scripts
+bash init-career-twin-memory.sh
+bash init-sdr-memory.sh
 
 # Edit your profile
 nano ~/.cerberus/memory/career_twin/profile.md
@@ -158,7 +159,7 @@ nano ~/.cerberus/memory/career_twin/profile.md
 cat > ~/.cerberus/career-twin.env <<EOF
 OPENROUTER_API_KEY=your_key_here
 CERBERUS_AGENT=career_twin
-CERBERUS_CONFIG=/root/cerberus/configs/career-twin-agent.json
+CERBERUS_CONFIG=/root/core/cerberus/configs/career-twin-agent.json
 EOF
 
 # SDR Agent
@@ -166,26 +167,26 @@ cat > ~/.cerberus/sdr.env <<EOF
 OPENROUTER_API_KEY=your_key_here
 RESEND_API_KEY=your_key_here
 CERBERUS_AGENT=sdr
-CERBERUS_CONFIG=/root/cerberus/configs/sdr-agent.json
+CERBERUS_CONFIG=/root/core/cerberus/configs/sdr-agent.json
 EOF
 ```
 
 ### 3. Run Database Migrations
 ```bash
-cd /root/dragun-app
+cd /root/apps/web
 npm run db:check
 ```
 
 ### 4. Start Cerberus Agent (CLI Mode)
 ```bash
-cd /root/cerberus/runtime/cerberus-core
+cd /root/core/cerberus/runtime/cerberus-core
 zig build
-./zig-out/bin/cerberus --config /root/cerberus/configs/career-twin-agent.json --cli
+./zig-out/bin/cerberus --config /root/core/cerberus/configs/career-twin-agent.json --cli
 ```
 
-### 5. Start Dragun-app Web Interface
+### 5. Start Meziani AI Web Interface
 ```bash
-cd /root/dragun-app
+cd /root/apps/web
 npm run dev
 
 # Access at http://localhost:3000/career-twin
@@ -201,7 +202,7 @@ npm run dev
 ```
 Employer: "What's your experience with TypeScript?"
 Twin: "Yani has extensive TypeScript experience with Next.js 16 and React 19. 
-He built Dragun.app entirely in TypeScript with strict typing, Server Components, 
+He built meziani.ai entirely in TypeScript with strict typing, Server Components, 
 and Server Actions. Happy to share code samples."
 ```
 
@@ -303,18 +304,18 @@ Agent: "Follow-up scheduled for Friday 10am. Will track open/reply status."
 
 ### Option 1: Local Development (Immediate)
 - Run Cerberus agents in CLI mode
-- Run Dragun-app on localhost
+- Run Meziani AI on localhost
 - Perfect for testing and iteration
 
 ### Option 2: VPS Deployment (Production)
 - Systemd services for Cerberus agents
-- PM2 or systemd for Dragun-app
+- PM2 or systemd for Meziani AI
 - Caddy reverse proxy for HTTPS
 - 24/7 availability
 
 ### Option 3: Hybrid (Recommended)
 - Cerberus agents on VPS (always-on)
-- Dragun-app on localhost (development)
+- Meziani AI on localhost (development)
 - Pegasus mobile app for HITL approvals on-the-go
 
 ---
@@ -396,13 +397,13 @@ Agent: "Follow-up scheduled for Friday 10am. Will track open/reply status."
 ## Support & Resources
 
 - **Quick Start**: `/root/QUICKSTART.md`
-- **Architecture Specs**: `/root/cerberus/specs/`
-- **Agent Prompts**: `/root/cerberus/runtime/cerberus-core/prompts/`
-- **Database Schemas**: `/root/dragun-app/supabase/migrations/`
+- **Architecture Specs**: `/root/core/cerberus/specs/`
+- **Agent Prompts**: `/root/core/cerberus/runtime/cerberus-core/prompts/`
+- **Database Schemas**: `/root/apps/web/supabase/migrations/`
 - **Logs**: `~/.cerberus/logs/` and `sudo journalctl -u cerberus-*`
 
 ---
 
 **Built with passion by a founder, for founders seeking remote opportunities.**
 
-Using our own stack (Cerberus, Pegasus, Dragun) to demonstrate real-world AI engineering skills.
+Using our own stack (Cerberus, Pegasus, Meziani AI) to demonstrate real-world AI engineering skills.

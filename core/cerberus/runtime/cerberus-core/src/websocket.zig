@@ -4,6 +4,7 @@
 
 const std = @import("std");
 
+const ca_store = @import("security/ca_store.zig");
 const log = std.log.scoped(.websocket);
 
 /// RFC 6455 handshake magic string.
@@ -94,17 +95,8 @@ pub const WsClient = struct {
         tls_state.tls_write_buf = tls_write_buf;
         tls_state.stream_reader = stream.reader(read_buf);
         tls_state.stream_writer = stream.writer(write_buf);
-
-        var ca_bundle = std.crypto.Certificate.Bundle{};
-        var has_ca_bundle = false;
-        if (ca_bundle.rescan(allocator)) |_| {
-            has_ca_bundle = true;
-        } else |err| {
-            // Preserve current behavior on platforms/environments where system CAs
-            // are unavailable, but prefer verified TLS whenever possible.
-            log.warn("WS TLS: system CA bundle unavailable, fallback to no verification: {}", .{err});
-        }
-        defer if (has_ca_bundle) ca_bundle.deinit(allocator);
+        const ca_bundle = ca_store.initBundle(allocator) catch std.crypto.Certificate.Bundle{};
+        const has_ca_bundle = ca_bundle.bytes.items.len > 0;
 
         const tls_options: std.crypto.tls.Client.Options = .{
             .host = .{ .explicit = host },

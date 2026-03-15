@@ -1,0 +1,62 @@
+{
+  "default_temperature": 0.5,
+
+  "models": {
+    "providers": {
+      "openrouter": {
+        "api_key": "YOUR_OPENROUTER_API_KEY"
+      }
+    }
+  },
+
+  "agents": {
+    "audit": {
+      "name": "Meziani AI Audit Agent",
+      "model": {
+        "primary": "openrouter/anthropic/claude-sonnet-4",
+        "fallback": "openrouter/meta-llama/llama-3.3-70b-instruct"
+      },
+      "system_prompt_file": "prompts/audit_agent_prompt.txt",
+      "max_tool_iterations": 25,
+      "max_history": 100,
+      "temperature": 0.5,
+      "tools": [
+        "web_fetch",
+        "web_research",
+        "shell_command",
+        "file_write"
+      ],
+      "memory": {
+        "profile": "audit_logs",
+        "auto_save": true,
+        "context_window": 8000
+      },
+      "autonomy": {
+        "level": "supervised",
+        "workspace_only": true,
+        "max_actions_per_hour": 15
+      }
+    }
+  },
+
+  "channels": {
+    "cli": true,
+    "web": {
+      "enabled": true,
+      "port": 3005
+    }
+  },
+
+  "memory": {
+    "profile": "brutalist_markdown",
+    "backend": "markdown",
+    "auto_save": true,
+    "citations": "always"
+  },
+
+  "gateway": {
+    "port": 3006,
+    "host": "127.0.0.1",
+    "require_pairing": true
+  }
+}

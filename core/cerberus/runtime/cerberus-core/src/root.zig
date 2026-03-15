@@ -8,6 +8,7 @@
 // Shared utilities
 pub const json_util = @import("json_util.zig");
 pub const http_util = @import("http_util.zig");
+pub const research = @import("research/pdf_gen.zig");
 pub const net_security = @import("net_security.zig");
 pub const websocket = @import("websocket.zig");
 

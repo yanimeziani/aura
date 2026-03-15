@@ -1,0 +1,67 @@
+{
+  "default_temperature": 0.3,
+
+  "models": {
+    "providers": {
+      "ollama": {
+        "endpoint": "http://localhost:11434",
+        "api_key": "NONE"
+      },
+      "litllm": {
+        "endpoint": "http://localhost:8000",
+        "api_key": "NONE"
+      }
+    }
+  },
+
+  "agents": {
+    "docs_maid": {
+      "name": "Docs Maid Agent",
+      "model": {
+        "primary": "ollama/llama-3.3-70b",
+        "fallback": "litllm/mistral-nemo"
+      },
+      "system_prompt_file": "prompts/docs_maid_prompt.txt",
+      "max_tool_iterations": 30,
+      "max_history": 50,
+      "temperature": 0.3,
+      "tools": [
+        "grep_search",
+        "read_file",
+        "write_file",
+        "glob",
+        "run_shell_command"
+      ],
+      "memory": {
+        "profile": "documentation_state",
+        "auto_save": true,
+        "context_window": 12000
+      },
+      "autonomy": {
+        "level": "supervised",
+        "workspace_only": true,
+        "max_actions_per_hour": 30
+      }
+    }
+  },
+
+  "channels": {
+    "cli": true,
+    "web": {
+      "enabled": true,
+      "port": 3007
+    }
+  },
+
+  "memory": {
+    "profile": "bmad_documentation",
+    "backend": "markdown",
+    "auto_save": true
+  },
+
+  "gateway": {
+    "port": 3008,
+    "host": "127.0.0.1",
+    "require_pairing": true
+  }
+}

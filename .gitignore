@@ -50,3 +50,14 @@ tmp/
 Downloads/
 *.tar.gz
 *.zip
+
+# Ignore root hidden files and folders
+/.*
+!/.gitignore
+!/.github/
+!/.env.example
+
+# specific folders to ignore
+/android-sdk/
+/exports/
+

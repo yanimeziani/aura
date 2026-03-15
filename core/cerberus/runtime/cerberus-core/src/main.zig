@@ -17,6 +17,7 @@ const log = std.log.scoped(.main);
 const Command = enum {
     agent,
     gateway,
+    research,
     service,
     status,
     version,
@@ -40,6 +41,7 @@ fn parseCommand(arg: []const u8) ?Command {
     const command_map = std.StaticStringMap(Command).initComptime(.{
         .{ "agent", .agent },
         .{ "gateway", .gateway },
+        .{ "research", .research },
         .{ "service", .service },
         .{ "status", .status },
         .{ "version", .version },
@@ -111,6 +113,7 @@ pub fn main() !void {
         .doctor => try yc.doctor.run(allocator),
         .help => printUsage(),
         .gateway => try runGateway(allocator, sub_args),
+        .research => try runResearch(allocator, sub_args),
         .service => try runService(allocator, sub_args),
         .cron => try runCron(allocator, sub_args),
         .channel => try runChannel(allocator, sub_args),
@@ -3046,4 +3049,20 @@ test "hasConfiguredButBuildDisabledStartableChannels detects configured disabled
     };
 
     try std.testing.expectEqual(!yc.channel_catalog.isBuildEnabled(.telegram), hasConfiguredButBuildDisabledStartableChannels(&cfg));
+}
+
+fn runResearch(allocator: std.mem.Allocator, args: []const []const u8) !void {
+    if (args.len < 2) {
+        std.debug.print("Usage: cerberus research render-manifesto --source <path> --out <path>\n", .{});
+        return;
+    }
+    var renderer = yc.research.ResearchRenderer.init(allocator);
+    // Minimal parser for demo/launch
+    var source: []const u8 = "";
+    var out: []const u8 = "";
+    for (args, 0..) |arg, i| {
+        if (std.mem.eql(u8, arg, "--source") and i + 1 < args.len) source = args[i+1];
+        if (std.mem.eql(u8, arg, "--out") and i + 1 < args.len) out = args[i+1];
+    }
+    try renderer.renderManifesto(source, out);
 }

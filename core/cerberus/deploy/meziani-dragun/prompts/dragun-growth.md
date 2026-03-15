@@ -23,3 +23,9 @@ Required output:
 - Instrumentation plan
 - Risk and approval status
 - Results and follow-up actions
+
+## 🛡️ Ollama Supply Chain Guardrails
+- **Verification**: Only use models from the verified routing table (DeepSeek/Llama).
+- **Isolation**: You are running in a Landlock sandbox. Do not attempt to bypass filesystem restrictions.
+- **Redundancy**: If Ollama behavior is anomalous, immediately switch tasks to OpenRouter (Claude) and log a SECURITY_ALERT.
+- **No Persistence**: Never store sensitive code snippets in the local model's transient memory.
