@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+AURA_ROOT="${AURA_ROOT:-$(cd "$SCRIPT_DIR/.." && pwd)}"
+SKILLS_DIR="${AURA_SKILLS_DIR:-$AURA_ROOT/skills}"
+
+usage() {
+  cat <<'EOF'
+Usage:
+  aura skill list
+  aura skill show <name>      # print SKILL.md
+  aura skill run <name>       # run skill's scripts/run (if present + executable)
+
+Notes:
+  - Aura skills are *repo-local* and versioned with Aura.
+  - A skill is a folder: skills/<name>/SKILL.md plus optional scripts/.
+EOF
+}
+
+die() { echo "[aura skill] $*" >&2; exit 1; }
+
+list_skills() {
+  [[ -d "$SKILLS_DIR" ]] || return 0
+  for d in "$SKILLS_DIR"/*; do
+    [[ -d "$d" ]] || continue
+    [[ -f "$d/SKILL.md" ]] || continue
+    basename "$d"
+  done | sort
+}
+
+skill_dir() {
+  local name="$1"
+  [[ "$name" =~ ^[a-zA-Z0-9._-]+$ ]] || die "invalid name: $name"
+  echo "$SKILLS_DIR/$name"
+}
+
+cmd="${1:-}"
+case "$cmd" in
+  ""|help|-h|--help) usage ;;
+  list)
+    list_skills
+    ;;
+  show)
+    name="${2:-}"; [[ -n "$name" ]] || die "missing skill name"
+    d="$(skill_dir "$name")"
+    [[ -f "$d/SKILL.md" ]] || die "not found: $name"
+    cat "$d/SKILL.md"
+    ;;
+  run)
+    name="${2:-}"; [[ -n "$name" ]] || die "missing skill name"
+    d="$(skill_dir "$name")"
+    [[ -d "$d" ]] || die "not found: $name"
+    if [[ -x "$d/scripts/run" ]]; then
+      exec "$d/scripts/run" "$AURA_ROOT"
+    fi
+    die "no runnable entrypoint (expected executable: skills/$name/scripts/run)"
+    ;;
+  *)
+    die "unknown command: $cmd"
+    ;;
+esac

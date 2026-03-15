@@ -1,0 +1,14 @@
+[Unit]
+Description=Aura Autopilot (Infinite Multi-Agent Loop) - always-on with stub duplication for catch kill
+After=network.target
+
+[Service]
+User=yani
+WorkingDirectory=/home/yani/Aura/ai_agency_wealth
+# Persistent stub duplication: outer stub respawns inner stub; inner respawns autopilot on exit/kill
+ExecStart=/home/yani/Aura/bin/aura-stub duplicate -- /bin/bash /home/yani/Aura/ai_agency_wealth/autopilot.sh
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

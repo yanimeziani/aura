@@ -1,0 +1,24 @@
+[Unit]
+Description=Aura Voice Ingress (24/7 Super Whisper loop)
+After=default.target pipewire.service wireplumber.service
+Wants=pipewire.service wireplumber.service
+
+[Service]
+Type=simple
+WorkingDirectory=/home/yani/Aura
+Environment=AURA_ROOT=/home/yani/Aura
+Environment=AURA_VOICE_MODEL=large-v3-turbo
+Environment=AURA_VOICE_DEVICE=cpu
+Environment=AURA_VOICE_COMPUTE_TYPE=int8
+Environment=AURA_VOICE_CHUNK_SECONDS=4
+Environment=AURA_VOICE_CLIPBOARD=1
+Environment=AURA_VOICE_RADIO=1
+Environment=AURA_VOICE_RADIO_AUDIO=1
+Environment=AURA_VOICE_RADIO_PROVIDER=auto
+Environment=AURA_VOICE_RADIO_MIN_INTERVAL_SEC=60
+ExecStart=/usr/bin/python3 /home/yani/Aura/vault/voice_ingress.py listen
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=default.target

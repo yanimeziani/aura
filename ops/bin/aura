@@ -1,0 +1,250 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Resolve Aura repo root dynamically (override with AURA_ROOT if needed).
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+AURA_ROOT="${AURA_ROOT:-$(cd "$SCRIPT_DIR/.." && pwd)}"
+
+function gateway_url() {
+    echo "${AURA_GATEWAY_URL:-http://127.0.0.1:${AURA_GATEWAY_PORT:-8765}}"
+}
+
+function gateway_is_running() {
+    local url="$1"
+    python3 - "$url" <<'PY'
+import json
+import sys
+import urllib.error
+import urllib.request
+
+url = sys.argv[1].rstrip("/") + "/health"
+try:
+    with urllib.request.urlopen(url, timeout=1.5) as response:
+        payload = json.loads(response.read().decode())
+    raise SystemExit(0 if payload.get("status") == "ok" else 1)
+except Exception:
+    raise SystemExit(1)
+PY
+}
+
+function gateway_is_local() {
+    local url="$1"
+    python3 - "$url" <<'PY'
+import sys
+from urllib.parse import urlparse
+
+host = (urlparse(sys.argv[1]).hostname or "").lower()
+raise SystemExit(0 if host in {"", "127.0.0.1", "localhost", "0.0.0.0"} else 1)
+PY
+}
+
+function start_gateway_background() {
+    local port="${AURA_GATEWAY_PORT:-8765}"
+    local log_dir="$AURA_ROOT/.aura/logs"
+    mkdir -p "$log_dir"
+    nohup env AURA_ROOT="$AURA_ROOT" AURA_VAULT_FILE="${AURA_VAULT_FILE:-$AURA_ROOT/vault/aura-vault.json}" \
+        python3 -m uvicorn gateway.app:app --host 0.0.0.0 --port "$port" \
+        >"$log_dir/gateway.log" 2>&1 < /dev/null &
+}
+
+function show_help() {
+    echo "🔮 Aura CLI - Autonomous Multi-Agent Command Center"
+    echo "Usage: aura <command> [options]"
+    echo ""
+    echo "Commands:"
+    echo "  status      Check system health and agent states"
+    echo "  start       Start all Aura daemons (Autopilot, Web, API)"
+    echo "  stop        Stop all Aura daemons"
+    echo "  vault       Manage API keys and secrets"
+    echo "  logs        Tail the live agent metrics log"
+    echo "  tui         Launch the Zig-based Terminal User Interface"
+    echo "  mesh        Sovereign mesh VPN (Tailscale-like, Zig); up / down / status"
+    echo "  lynx        Zig text browser (aura-lynx <url>)"
+    echo "  api         Run aura-api (VPS HTTP server; AURA_API_PORT=9000)"
+    echo "  gateway     Start syncing gateway (IDEs, TUIs, LLM clients through Aura)"
+    echo "  chat        Minimal TUI chat with Aura agent (requires gateway; agent starts gateway if needed)"
+    echo "  voice       Local 24/7 Fedora voice ingress (listen / start / stop / status / logs / transcribe)"
+    echo "  opensea     OpenSea ops (read-only): assets / collections / watch"
+    echo "  skill       Aura skills belt (list/show/run)"
+    echo "  docs-maid   Docs maid: persistent sweep of vault/docs_inbox → docs/, channel, vault"
+    echo "  gs [N]      G100 benchmark: full workspace build + test; N epochs (default 1)"
+    echo "  stub        Run a command under persistent stub (respawn on exit/kill)"
+    echo "  stub-duplicate  Run a command under stub duplication (inner + outer respawn)"
+    echo "  cd          Print Aura repo root (use shell integration to cd)"
+    echo "  help        Show this help message"
+}
+
+CMD="${1:-}"
+case "$CMD" in
+    ""|help|-h|--help)
+        show_help
+        ;;
+    status)
+        echo "📊 Aura System Status:"
+        sudo systemctl is-active aura_autopilot.service ai_pay.service ai_agency_web.service || true
+        echo ""
+        echo "Health Report:"
+        cat "$AURA_ROOT/ai_agency_wealth/watchdog_state.json" 2>/dev/null || echo "No health data yet."
+        ;;
+    start)
+        echo "🚀 Starting Aura Systems..."
+        sudo systemctl start aura_autopilot.service ai_pay.service ai_agency_web.service
+        echo "✅ Services started."
+        ;;
+    stop)
+        echo "🛑 Stopping Aura Systems..."
+        sudo systemctl stop aura_autopilot.service ai_pay.service ai_agency_web.service
+        echo "✅ Services stopped."
+        ;;
+    vault)
+        python3 "$AURA_ROOT/vault/vault_manager.py"
+        ;;
+    logs)
+        tail -f "$AURA_ROOT/ai_agency_wealth/agency_metrics.log"
+        ;;
+    tui)
+        if [ -x "$AURA_ROOT/tui/zig-out/bin/aura-tui" ]; then
+            "$AURA_ROOT/tui/zig-out/bin/aura-tui"
+        else
+            echo "⚙️ Building TUI for the first time..."
+            cd "$AURA_ROOT/tui" && zig build
+            "$AURA_ROOT/tui/zig-out/bin/aura-tui"
+        fi
+        ;;
+    mesh)
+        if [ -x "$AURA_ROOT/aura-tailscale/zig-out/bin/aura-mesh" ]; then
+            "$AURA_ROOT/aura-tailscale/zig-out/bin/aura-mesh" "${@:2}"
+        else
+            echo "⚙️ Building Aura mesh (aura-tailscale) for the first time..."
+            cd "$AURA_ROOT/aura-tailscale" && zig build
+            "$AURA_ROOT/aura-tailscale/zig-out/bin/aura-mesh" "${@:2}"
+        fi
+        ;;
+    lynx)
+        if [ -x "$AURA_ROOT/aura-lynx/zig-out/bin/aura-lynx" ]; then
+            "$AURA_ROOT/aura-lynx/zig-out/bin/aura-lynx" "${@:2}"
+        else
+            echo "⚙️ Building aura-lynx for the first time..."
+            cd "$AURA_ROOT/aura-lynx" && zig build
+            "$AURA_ROOT/aura-lynx/zig-out/bin/aura-lynx" "${@:2}"
+        fi
+        ;;
+    api)
+        if [ -x "$AURA_ROOT/aura-api/zig-out/bin/aura-api" ]; then
+            "$AURA_ROOT/aura-api/zig-out/bin/aura-api" "${@:2}"
+        else
+            echo "⚙️ Building aura-api for the first time..."
+            cd "$AURA_ROOT/aura-api" && zig build
+            "$AURA_ROOT/aura-api/zig-out/bin/aura-api" "${@:2}"
+        fi
+        ;;
+    gateway)
+        export AURA_ROOT="$AURA_ROOT" AURA_VAULT_FILE="${AURA_VAULT_FILE:-$AURA_ROOT/vault/aura-vault.json}"
+        cd "$AURA_ROOT" && python3 -m uvicorn gateway.app:app --host 0.0.0.0 --port "${AURA_GATEWAY_PORT:-8765}"
+        ;;
+    chat)
+        # Minimal TUI chat with agent; start local gateway if needed.
+        export AURA_ROOT="$AURA_ROOT" AURA_VAULT_FILE="${AURA_VAULT_FILE:-$AURA_ROOT/vault/aura-vault.json}"
+        CHAT_GATEWAY_URL="$(gateway_url)"
+        export AURA_GATEWAY_URL="$CHAT_GATEWAY_URL"
+        if ! gateway_is_running "$CHAT_GATEWAY_URL"; then
+            if gateway_is_local "$CHAT_GATEWAY_URL"; then
+                echo "⚙️ Starting Aura gateway in background..."
+                start_gateway_background
+                for _ in {1..20}; do
+                    if gateway_is_running "$CHAT_GATEWAY_URL"; then
+                        break
+                    fi
+                    sleep 0.5
+                done
+            fi
+        fi
+        exec python3 "$AURA_ROOT/gateway/aura_tui_chat.py"
+        ;;
+    voice)
+        shift
+        VOICE_CMD="${1:-help}"
+        USER_SYSTEMD_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user"
+        REPO_VOICE_SERVICE="$AURA_ROOT/config/aura_voice.service"
+        USER_VOICE_SERVICE="$USER_SYSTEMD_DIR/aura_voice.service"
+
+        ensure_voice_service() {
+            mkdir -p "$USER_SYSTEMD_DIR"
+            install -m 0644 "$REPO_VOICE_SERVICE" "$USER_VOICE_SERVICE"
+            systemctl --user daemon-reload
+        }
+
+        case "$VOICE_CMD" in
+            transcribe)
+                shift
+                exec python3 "$AURA_ROOT/vault/voice_ingress.py" transcribe "$@"
+                ;;
+            listen)
+                shift
+                exec python3 "$AURA_ROOT/vault/voice_ingress.py" listen "$@"
+                ;;
+            show)
+                shift
+                exec python3 "$AURA_ROOT/vault/voice_ingress.py" show "$@"
+                ;;
+            start)
+                ensure_voice_service
+                exec systemctl --user enable --now aura_voice.service
+                ;;
+            stop)
+                exec systemctl --user stop aura_voice.service
+                ;;
+            restart)
+                ensure_voice_service
+                exec systemctl --user restart aura_voice.service
+                ;;
+            status)
+                exec systemctl --user status aura_voice.service --no-pager
+                ;;
+            logs)
+                exec journalctl --user -u aura_voice.service -f
+                ;;
+            help|-h|--help|"")
+                echo "Aura voice commands:"
+                echo "  aura voice transcribe <audio-file> [--json]"
+                echo "  aura voice listen [--keep-audio]"
+                echo "  aura voice show"
+                echo "  aura voice start | stop | restart | status | logs"
+                ;;
+            *)
+                echo "Unknown aura voice subcommand: $VOICE_CMD" >&2
+                exit 1
+                ;;
+        esac
+        ;;
+    opensea)
+        shift
+        exec "$AURA_ROOT/bin/aura-opensea" "$@"
+        ;;
+    skill)
+        shift
+        exec "$AURA_ROOT/bin/aura-skill" "$@"
+        ;;
+    docs-maid)
+        shift
+        exec "$AURA_ROOT/bin/docs-maid" "${@:-run}"
+        ;;
+    gs)
+        exec "$AURA_ROOT/bin/aura-gs" "${@:2}"
+        ;;
+    stub)
+        shift
+        exec "$AURA_ROOT/bin/aura-stub" run -- "$@"
+        ;;
+    stub-duplicate)
+        shift
+        exec "$AURA_ROOT/bin/aura-stub" duplicate -- "$@"
+        ;;
+    cd)
+        echo "$AURA_ROOT"
+        echo "Tip: in zsh, source '$AURA_ROOT/bin/aura.zsh' to enable 'aura cd' to cd in-place."
+        ;;
+    *)
+        show_help
+        ;;
+esac

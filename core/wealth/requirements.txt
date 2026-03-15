@@ -1,0 +1,14 @@
+# ── Core quant trading ──
+python-dotenv==1.1.1
+ccxt>=4.3.0
+web3>=6.0.0
+requests>=2.31.0
+
+# ── Payment server ──
+fastapi>=0.100.0
+uvicorn>=0.20.0
+stripe>=5.0.0
+pydantic>=2.0.0
+
+# ── Dev / test ──
+pytest>=9.0.0

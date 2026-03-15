@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+# Docs maid: sweep vault/docs_inbox into docs/, vault/roster/CHANNEL.md, vault/.
+# Usage: docs-maid [run|sweep]
+#   run   — persistent: loop every MAID_INTERVAL_SEC, sweep each time.
+#   sweep — one-shot sweep and exit.
+
+set -e
+AURA_ROOT="${AURA_ROOT:-/home/yani/Aura}"
+INBOX="$AURA_ROOT/vault/docs_inbox"
+DOCS="$AURA_ROOT/docs"
+CHANNEL="$AURA_ROOT/vault/roster/CHANNEL.md"
+VAULT="$AURA_ROOT/vault"
+LOG="${MAID_LOG:-$AURA_ROOT/vault/maid.log}"
+INTERVAL="${MAID_INTERVAL_SEC:-60}"
+
+log() {
+    echo "[docs-maid] $(date -Iseconds) $*" | tee -a "$LOG"
+}
+
+sweep() {
+    local did=
+    # docs_inbox/docs/* → docs/
+    if [[ -d "$INBOX/docs" ]]; then
+        for f in "$INBOX"/docs/*; do
+            [[ -e "$f" ]] || continue
+            base=$(basename "$f")
+            mv -f "$f" "$DOCS/$base"
+            log "swept docs/$base"
+            did=1
+        done
+    fi
+
+    # docs_inbox/channel/* → append to CHANNEL.md, then remove
+    if [[ -d "$INBOX/channel" ]]; then
+        for f in "$INBOX"/channel/*; do
+            [[ -e "$f" ]] || continue
+            base=$(basename "$f")
+            echo "" >> "$CHANNEL"
+            echo "---" >> "$CHANNEL"
+            echo "<!-- appended from docs_inbox/channel/$base -->" >> "$CHANNEL"
+            cat "$f" >> "$CHANNEL"
+            echo "" >> "$CHANNEL"
+            rm -f "$f"
+            log "appended channel/$base to CHANNEL.md"
+            did=1
+        done
+    fi
+
+    # docs_inbox/vault/* → vault/
+    if [[ -d "$INBOX/vault" ]]; then
+        for f in "$INBOX"/vault/*; do
+            [[ -e "$f" ]] || continue
+            base=$(basename "$f")
+            mv -f "$f" "$VAULT/$base"
+            log "swept vault/$base"
+            did=1
+        done
+    fi
+
+    # root-level *.md in inbox → docs/
+    for f in "$INBOX"/*.md; do
+        [[ -e "$f" ]] || continue
+        [[ "$f" == "$INBOX/README.md" ]] && continue
+        base=$(basename "$f")
+        dest="$DOCS/$base"
+        if [[ -f "$dest" ]]; then
+            # avoid overwrite: add timestamp prefix
+            dest="$DOCS/$(date +%Y%m%d-%H%M%S)-$base"
+        fi
+        mv -f "$f" "$dest"
+        log "swept $base → docs/"
+        did=1
+    done
+
+    [[ -n "$did" ]] && log "sweep done" || true
+}
+
+case "${1:-run}" in
+    sweep)
+        sweep
+        ;;
+    run)
+        log "maid started (interval=${INTERVAL}s)"
+        while true; do
+            sweep
+            sleep "$INTERVAL"
+        done
+        ;;
+    *)
+        echo "Usage: docs-maid [run|sweep]"
+        echo "  run   — persistent loop, sweep every ${INTERVAL}s"
+        echo "  sweep — one-shot sweep"
+        exit 1
+        ;;
+esac
