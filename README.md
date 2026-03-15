@@ -1,46 +1,100 @@
 # Aura: Sovereign Agentic Monorepo
 
-> **Aura** is a unified, autonomous command center designed for safe AI research, deployment, and personal business management. It bridges mobile control, cloud execution, and agentic AI into a single, cohesive ecosystem.
+> **"Hardware is ephemeral. Sovereignty is persistent."**
 
-## 🏗️ The Stack: Sovereign Mission Control
+Aura is a holistic, decentralized framework for AI research, deployment, and autonomous agent orchestration. It provides a secure technical layer for hosting specialized personas with absolute sovereignty and human-in-the-loop (HITL) coordination.
 
-Aura is organized for maximum visibility and development efficiency:
+---
 
-- **[Sovereign Command Center](./apps/web)**: Next.js/React brutalist dashboard for high-intensity data visualization and agent control.
-- **[Pegasus Mobile](./apps/mobile)**: Android/Kotlin app for on-the-go mission control.
-- **[Cerberus Runtime](./core/cerberus)**: A lightweight Zig-based agent runtime for hosting autonomous personas.
+## 🏛 The Ephemeral Hardware Manifesto
 
-## 🚀 Core Capabilities
+In the Aura ecosystem, physical devices are treated as disposable. Whether a developer drops their phone in a river or it is confiscated at a border, the protocol dictates that a **brand new off-the-shelf device** must be capable of being **fully restored to a sovereign state within exactly ten minutes.**
 
-- **Autonomous Agents**: Native support for **Career Digital Twin** and **SDR Agent** (Growth Blitzkrieg).
-- **Sovereign Infrastructure**: Local, encrypted calendar (ICS) and decentralized agent memory.
-- **Mobile-to-Cloud**: Seamlessly transition from your phone (Pegasus) to the cloud (Cerberus on VPS).
-- **Safe-by-Design**: Human-in-the-Loop (HITL) gates for all sensitive agent actions.
+This is achieved through:
+- **Dotfile Sovereignty**: All environment configurations are version-controlled and portable.
+- **Agentic Recovery**: Automated scripts to rebuild the entire stack (Web, Mobile, Runtime) from source truth.
+- **Cloud-Edge Parity**: Seamless deployment between local hardware and remote VPS infrastructure.
 
-## 🛠️ Quick Start
+---
 
-1. **Setup Environment**: Copy `apps/web/.env.example` to `.env` and fill in your API keys.
-2. **Launch Sovereign OS**:
-   ```bash
-   cd apps/web
-   npm run dev
-   ```
-3. **Configure Agents**:
-   ```bash
-   cd core/cerberus
-   # Configure agents in configs/*.json
-   ```
+## 🚀 Quick Start: 0 to Sovereignty in 10 Min
 
-## 🛡️ OSS Safety & Privacy
+### 1. Initialize Memory (30s)
+```bash
+bash core/cerberus/scripts/init-career-twin-memory.sh
+bash core/cerberus/scripts/init-sdr-memory.sh
+```
 
-Aura is built for **Sovereign AI Research**. 
-- All agents operate with explicit security boundaries.
-- Local storage and end-to-end encryption for sensitive data (Calendar/Memory).
-- Every risky action requires an operator's manual approval.
+### 2. Build the Cerberus Runtime (1m)
+```bash
+cd core/cerberus/runtime/cerberus-core
+zig build -Doptimize=ReleaseSmall
+```
+
+### 3. Deploy the Aura Web Dashboard (3m)
+```bash
+cd apps/web
+npm install && npm run build
+```
+
+### 4. Provision Fresh VPS (5m)
+```bash
+bash ops/scripts/deploy-fresh-vps.sh
+```
+
+---
+
+## 🧩 Core System Components
+
+| Component | Tech Stack | Role |
+|-----------|------------|------|
+| **[Aura Web](./apps/web)** | Next.js 16, React 19, Tailwind 4 | High-throughput telemetry & control dashboard |
+| **[Pegasus](./apps/mobile)** | Android (Kotlin), Jetpack Compose | Mobile mission control & HITL approvals |
+| **[Cerberus Runtime](./core/cerberus)** | Zig (Native) | High-performance agent execution engine (<1MB binary) |
+| **[Ops](./ops)** | Bash, Ansible | Infrastructure automation & 10-minute recovery scripts |
+
+---
+
+## 🤖 Specialized Agent Personas
+
+1.  **Career-Twin Agent**: Autonomous professional profile management, inquiry handling, and interview scheduling.
+2.  **SDR Agent**: Automated B2B sales development, prospect research, and personalized outreach sequences.
+
+---
+
+## 🛠 System Conventions
+
+- **Vibe Coding**: High-velocity development through AI-orchestrated workflows.
+- **Three-Tap Rule**: Any operation on Pegasus requiring >3 taps is a failure of automation.
+- **Strict Zero-Trust**: Every network is assumed hostile. Sovereignty is maintained through local-first memory and encrypted transport.
+
+---
+
+## 📂 Repository Map
+
+```text
+/
+├── apps/
+│   ├── web/        # Aura Web Dashboard (Next.js)
+│   └── mobile/     # Pegasus Mobile (Android/Kotlin)
+├── core/
+│   └── cerberus/   # Cerberus Engine & Persona Logic (Zig)
+├── ops/            # 10-Minute Deployment & Recovery Scripts
+├── docs/           # Technical Specs & Architecture Truth
+└── research/       # Scientific Manifestos & LaTeX Sources
+```
+
+---
+
+## 📈 Project Status
+
+- **Supabase Schema**: ✅ Career-Twin & SDR tables initialized (2026-03-03).
+- **Core Runtime**: ✅ Zig engine functional with multi-channel support.
+- **Deployment**: ✅ `deploy-fresh-vps.sh` fully automated.
+- **Security**: 🛠 TOR/IPFS integration (Planned/In-Progress).
+
+---
 
 ## 📜 License
 
-Aura is licensed under the [MIT License](./LICENSE).
-
----
-*Built with passion for founders, by a founder.*
+MIT License. See [LICENSE](./LICENSE) for details.

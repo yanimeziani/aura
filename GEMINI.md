@@ -1,90 +1,72 @@
-# GEMINI.md
+# Aura: Sovereign Agentic Monorepo — System Specification
 
-## Project Overview
+Aura is a holistic, decentralized framework for AI research, deployment, and autonomous agent orchestration. It provides a secure, technical layer for hosting specialized personas with absolute sovereignty and human-in-the-loop (HITL) coordination.
 
-**Aura** is a holistic pocket business monorepo designed for safe AI research, deployment, and personal business management. It integrates mobile control (Pegasus), cloud execution (Cerberus), and specialized AI agents into a unified ecosystem.
+## Core System Components
 
-### Core Components
+- **[`/apps/web`](./apps/web) (Aura Web)**: A Next.js 16 / React 19 dashboard for high-throughput data visualization, telemetry, and agent control.
+- **[`/apps/mobile`](./apps/mobile) (Pegasus)**: An Android/Kotlin interface for secure, mobile-to-cloud mission control and HITL approvals.
+- **[`/core/cerberus`](./core/cerberus) (Cerberus Runtime)**: A high-performance, Zig-based agent execution engine (<1MB binary) hosting autonomous personas.
+- **[`/ops`](./ops)**: Infrastructure automation, deployment scripts, and environmental configuration.
+- **[`/docs`](./docs)**: Technical specifications, architectural diagrams, and system guides.
 
-- **[`/apps/web`](./apps/web) (dragun-app)**: A Next.js 16 / React 19 dashboard for data visualization, agent control, and professional management.
-- **[`/apps/mobile`](./apps/mobile) (Pegasus)**: An Android/Kotlin application for mobile-to-cloud mission control and Human-in-the-Loop (HITL) approvals.
-- **[`/core/cerberus`](./core/cerberus)**: A lean Zig-based agent runtime (<1MB binary) hosting autonomous personas like the Career Digital Twin and SDR Agent.
-- **[`/ops`](./ops)**: Infrastructure automation, deployment scripts, and environment configuration.
-- **[`/docs`](./docs)**: Centralized knowledge base containing architecture specs, PRDs, and guides.
+## Specialized Agent Personas
 
-### Key AI Agents
-
-1.  **Career Digital Twin**: Represents the founder to employers, handling job inquiries, interview scheduling, and application tracking.
-2.  **SDR Agent**: Automated B2B sales development representative for prospect research and personalized email outreach sequences.
+1.  **Career-Twin Agent**: An autonomous persona representing a professional profile to external entities, handling inquiries, scheduling, and transaction tracking.
+2.  **SDR-Agent**: An automated business development persona for prospect research, communication drafting, and engagement tracking.
 
 ---
 
 ## Technical Stack
 
 - **Frontend**: Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, DaisyUI 5.
-- **Backend Runtime**: Zig (Cerberus engine).
-- **Mobile**: Kotlin, Android SDK (Pegasus).
-- **Database**: Supabase (PostgreSQL with Row-Level Security).
-- **AI/LLMs (Aura OSS)**: All In-House, All Tailored. Models are served exclusively via **litllm** and our **custom-tailored in-house Aura component** to perfectly fit the sovereign operational stack as the default. **Operator-Override (HITL)**: External premium providers (e.g., Claude 3.5 Sonnet) are permitted ONLY for fixing major flaws that local models cannot resolve, requiring explicit approval from the sole operator.
-- **AI/LLMs (Commercial)**: Claude (via OpenRouter), Llama 3.3 (fallback).
-- **Integrations**: Resend (Email), Stripe (Payments), Twilio (SMS).
+- **Backend Runtime**: Zig (Cerberus Engine).
+- **Mobile Client**: Android SDK / Kotlin (Pegasus).
+- **Data Persistence**: Supabase (PostgreSQL with Row-Level Security).
+- **AI Orchestration**: Multi-provider support via Model Context Protocol (MCP). Default models are served via local or in-house Aura components. External providers are used only for high-complexity tasks with explicit HITL approval.
 
 ---
 
-## Building and Running
+## Operational Procedures
 
-### Root Commands (Monorepo)
-
+### System-Wide Build
 ```bash
-# Run development mode for all workspaces
-npm run dev
-
-# Build all workspaces
 npm run build
-
-# Run tests across the monorepo
-npm test
 ```
 
-### App-Specific Commands
-
-**Web Dashboard (`apps/web`):**
+### Aura Web (Dashboard)
 ```bash
 cd apps/web
-npm run dev        # Start development server
-npm run db:check   # Run database migration checks
+npm run dev        # Development environment
+npm run db:check   # Database migration validation
 ```
 
-**Cerberus Runtime (`core/cerberus`):**
+### Cerberus Runtime (Execution Engine)
 ```bash
 cd core/cerberus/runtime/cerberus-core
-zig build          # Build the Zig engine
-./zig-out/bin/cerberus --config ../../configs/career-twin-agent.json --cli
-```
-
-**Mobile App (`apps/mobile`):**
-```bash
-cd apps/mobile
-./gradlew assembleDebug  # Build debug APK
+zig build -Doptimize=ReleaseSmall
+./zig-out/bin/cerberus --config ../../configs/agent-persona.json --cli
 ```
 
 ---
 
-## Development Conventions
+## System Conventions & Standards
 
-1.  **Security First**: Strictly adhere to Supabase Row-Level Security (RLS) policies. Never commit secrets; use `.env` files (see `.env.example`).
-2.  **Human-in-the-Loop (HITL)**: All sensitive agent actions (sending emails, accepting interviews) MUST go through an approval gate (usually via Pegasus or the Web Dashboard).
-3.  **Modular Architecture**: Logic is shared through (currently planned) packages and strictly typed interfaces.
-4.  **Lean Systems**: Preference for low-overhead implementations (e.g., Zig for the core engine) to ensure high performance and low resource usage.
-5.  **Documentation**: Keep architecture specs in `docs/` and agent-specific documentation in `core/cerberus/specs/` updated with every major change.
+1.  **Strict Zero-Trust Networking**: Every network is assumed hostile. All inner-device communication is anonymized via **TOR** (global signal bouncing) or decentralized via **local IPFS nodes**. 
+2.  **Vibe Coding (Operational Methodology)**: Maintaining technical velocity through continuous AI orchestration. Systems are architected to be controlled via high-level intent rather than manual character-by-character composition.
+3.  **Three-Tap Rule (UI/UX Constraint)**: For the Pegasus mobile interface, any operation requiring more than three user interactions (taps) to initiate is considered a workflow failure.
+4.  **Security Model**: Strict adherence to Supabase Row-Level Security (RLS). No secrets in version control; utilize environment variables and encrypted vaults.
+5.  **HITL Gatekeeping**: Every high-impact agent action (e.g., outbound communication, state changes) must pass through a human-in-the-loop approval gate (via Pegasus or Aura Web).
+6.  **Resource Optimization**: Preference for low-overhead implementations (e.g., Zig, minimal dependencies) to ensure performance on edge infrastructure.
+7.  **Documentation Standards**: Architecture specifications are maintained in `docs/` and agent-specific logic in `core/cerberus/specs/`.
 
 ---
 
-## Key Files & Directories
+## Core Infrastructure & Data Flow
 
-- `README.md`: High-level entry point and project vision.
-- `docs/PROJECT_SUMMARY.md`: Detailed overview of what has been built.
-- `docs/QUICKSTART.md`: Step-by-step setup instructions.
-- `core/cerberus/configs/`: JSON configurations for different agent personas.
-- `core/cerberus/runtime/cerberus-core/prompts/`: System prompts for autonomous agents.
-- `apps/web/supabase/migrations/`: Database schema and RLS policies.
+- `README.md`: System high-level entry point.
+- `docs/SYSTEM_CAPABILITIES.md`: Detailed functional overview.
+- `docs/DEPLOYMENT_GUIDE.md`: Procedural deployment instructions.
+- `core/cerberus/configs/`: JSON-based persona configurations.
+- `core/cerberus/runtime/cerberus-core/prompts/`: System-level prompts and logic.
+- `apps/web/supabase/migrations/`: Database schema and RLS security policies.
