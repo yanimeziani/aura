@@ -19,7 +19,7 @@ echo "[$(date)] arXiv CP: Aura Manifesto compiled." | tee -a /var/log/cerberus/l
 # 4. Media Outreach Campaign
 # HITL: requires approval before external comms
 # Targets: Radio-Canada, career channels, Algeria, Australia, UN clusters
-nohup /root/core/cerberus/runtime/cerberus-core/zig-out/bin/cerberus agent -m "Launch media outreach to Radio-Canada, career channels, Algeria, Australia, and United Nations (Worldwide) clusters (centrist focus). High velocity." --config /root/core/cerberus/configs/media-agent.json > /var/log/cerberus/media-outreach.log 2>&1 &
+nohup /root/core/cerberus/runtime/cerberus-core/zig-out/bin/cerberus agent -m "Launch media outreach to Radio-Canada, career channels, Algeria, Australia, and United Nations (Worldwide) clusters (centrist focus). High velocity." > /var/log/cerberus/media-outreach.log 2>&1 &
 echo "[$(date)] Media Outreach Campaign initiated." | tee -a /var/log/cerberus/launch.log
 
 echo "[$(date)] Launch Sequence Complete." | tee -a /var/log/cerberus/launch.log

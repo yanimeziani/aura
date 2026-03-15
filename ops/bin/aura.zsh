@@ -8,8 +8,8 @@ setopt no_aliases 2>/dev/null || true
 
 unalias aura 2>/dev/null || true
 
-_AURA_ZSH_ROOT="${AURA_ROOT:-${0:A:h:h}}"
-_AURA_ZSH_BIN="$_AURA_ZSH_ROOT/bin/aura"
+_AURA_ZSH_ROOT="${AURA_ROOT:-${0:A:h:h:h}}"
+_AURA_ZSH_BIN="$_AURA_ZSH_ROOT/ops/bin/aura"
 
 aura() {
   if [[ "${1:-}" == "cd" ]]; then

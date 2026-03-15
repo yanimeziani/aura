@@ -1,20 +1,9 @@
 import type { Metadata, Viewport } from 'next';
-import { Geist, Geist_Mono, Inter, Space_Grotesk } from 'next/font/google';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
-import { Analytics } from '@vercel/analytics/next';
 import '../globals.css';
-
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-});
-const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] });
-const inter = Inter({ variable: '--font-inter', subsets: ['latin'] });
-const spaceGrotesk = Space_Grotesk({ variable: '--font-space-grotesk', subsets: ['latin'] });
 
 const baseUrl = process.env.NEXT_PUBLIC_URL ?? 'https://www.dragun.app';
 
@@ -29,36 +18,13 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
-  title: 'Dragun.app | Intelligent Debt Recovery',
-  description: 'Automated, empathetic, and firm debt recovery powered by AI negotiation workflows.',
+  title: 'SOVEREIGN OS // DRAGUN',
+  description: 'RAW_COMMAND_INTERFACE',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'default',
-    title: 'Dragun',
-  },
-  formatDetection: {
-    telephone: false,
-  },
-  openGraph: {
-    title: 'Dragun.app | Intelligent Debt Recovery',
-    description: 'Automated, empathetic, and firm debt recovery powered by AI negotiation workflows.',
-    url: '/',
-    siteName: 'Dragun.app',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Dragun.app | Intelligent Debt Recovery',
-    description: 'Automated, empathetic, and firm debt recovery powered by AI negotiation workflows.',
-  },
-  alternates: {
-    canonical: `${baseUrl}/en`,
-    languages: {
-      en: `${baseUrl}/en`,
-      fr: `${baseUrl}/fr`,
-      'x-default': `${baseUrl}/en`,
-    },
+    statusBarStyle: 'black-translucent',
+    title: 'Sovereign',
   },
 };
 
@@ -75,36 +41,27 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} data-theme="dragun" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <head>
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <link rel="apple-touch-icon" href="/dragun-logo.svg" />
         <script
           dangerouslySetInnerHTML={{
             __html: [
-              `(function(){try{`,
-              `var t=localStorage.getItem('theme')||'system';`,
-              `var dark=t==='dark'||(t==='system'&&window.matchMedia('(prefers-color-scheme:dark)').matches);`,
-              `document.documentElement.setAttribute('data-theme',dark?'dragun-dark':'dragun');`,
-              `}catch(e){}})();`,
               `if ('serviceWorker' in navigator) {`,
               `  window.addEventListener('load', function() {`,
-              `    navigator.serviceWorker.register('/sw.js').then(function(registration) {`,
-              `      console.log('ServiceWorker registration successful with scope: ', registration.scope);`,
-              `    }, function(err) {`,
-              `      console.log('ServiceWorker registration failed: ', err);`,
-              `    });`,
+              `    navigator.serviceWorker.register('/sw.js');`,
               `  });`,
               `}`,
             ].join(''),
           }}
         />
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} ${spaceGrotesk.variable} min-h-screen font-sans antialiased`}
-      >
+      <body className="min-h-screen bg-black text-white selection:bg-white selection:text-black antialiased">
         <NextIntlClientProvider messages={messages}>
           {children}
         </NextIntlClientProvider>
-        <Analytics />
       </body>
     </html>
   );

@@ -75,6 +75,11 @@ export async function POST(request: Request) {
 
     // Handle different event types
     switch (event.type) {
+      case 'email.received':
+        if (isDev) console.log('[webhook] Email received:', event.data.id);
+        await routeInboundEmail(event.data);
+        break;
+
       case 'email.sent':
         if (isDev) console.log('[webhook] Email sent:', event.data.id);
         break;
@@ -117,6 +122,44 @@ export async function POST(request: Request) {
       { error: 'Failed to process webhook' },
       { status: 500 }
     );
+  }
+}
+
+async function routeInboundEmail(data: ResendWebhookEvent['data']) {
+  const PERSONAL_EMAIL = 'mezianiyani0@gmail.com';
+  
+  try {
+    const { Resend } = await import('resend');
+    const resend = new Resend(process.env.RESEND_API_KEY);
+
+    await resend.emails.send({
+      from: process.env.RESEND_FROM || 'inbound@aura.meziani.org',
+      to: PERSONAL_EMAIL,
+      subject: `[Aura Inbound] ${data.subject || 'No Subject'}`,
+      html: `
+        <p><strong>From:</strong> ${data.from}</p>
+        <p><strong>Subject:</strong> ${data.subject || '(No Subject)'}</p>
+        <hr />
+        ${data.html || data.text || '<p>(Empty content)</p>'}
+        <hr />
+        <p><small>Forwarded by Aura Media Outreach Agent</small></p>
+      `,
+      text: `
+        From: ${data.from}
+        Subject: ${data.subject || '(No Subject)'}
+        ---
+        ${data.text || '(Empty content)'}
+        ---
+        Forwarded by Aura Media Outreach Agent
+      `,
+    });
+    
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`[webhook] Routed inbound email from ${data.from} to ${PERSONAL_EMAIL}`);
+    }
+  } catch (err) {
+    console.error('[webhook] Failed to route inbound email:', err);
+    Sentry.captureException(err);
   }
 }
 

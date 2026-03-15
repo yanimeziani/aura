@@ -20,6 +20,7 @@
     "@ai-sdk/openai": "^3.0.29",
     "@ai-sdk/react": "^0.0.70",
     "@arcjet/next": "^1.1.0",
+    "@next/swc-linux-arm64-gnu": "^16.1.6",
     "@sentry/nextjs": "^10.40.0",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.96.0",

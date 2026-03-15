@@ -2,8 +2,9 @@
 set -euo pipefail
 
 # Resolve Aura repo root dynamically (override with AURA_ROOT if needed).
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-AURA_ROOT="${AURA_ROOT:-$(cd "$SCRIPT_DIR/.." && pwd)}"
+REAL_SCRIPT="$(readlink -f "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(cd "$(dirname "$REAL_SCRIPT")" && pwd)"
+AURA_ROOT="${AURA_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 
 function gateway_url() {
     echo "${AURA_GATEWAY_URL:-http://127.0.0.1:${AURA_GATEWAY_PORT:-8765}}"
@@ -42,9 +43,9 @@ function start_gateway_background() {
     local port="${AURA_GATEWAY_PORT:-8765}"
     local log_dir="$AURA_ROOT/.aura/logs"
     mkdir -p "$log_dir"
-    nohup env AURA_ROOT="$AURA_ROOT" AURA_VAULT_FILE="${AURA_VAULT_FILE:-$AURA_ROOT/vault/aura-vault.json}" \
+    (cd "$AURA_ROOT/ops" && nohup env AURA_ROOT="$AURA_ROOT" AURA_VAULT_FILE="${AURA_VAULT_FILE:-$AURA_ROOT/vault/aura-vault.json}" \
         python3 -m uvicorn gateway.app:app --host 0.0.0.0 --port "$port" \
-        >"$log_dir/gateway.log" 2>&1 < /dev/null &
+        >"$log_dir/gateway.log" 2>&1 < /dev/null &)
 }
 
 function show_help() {
@@ -81,66 +82,95 @@ case "$CMD" in
         ;;
     status)
         echo "📊 Aura System Status:"
-        sudo systemctl is-active aura_autopilot.service ai_pay.service ai_agency_web.service || true
+        if command -v systemctl >/dev/null 2>&1 && systemctl is-system-running >/dev/null 2>&1; then
+            sudo systemctl is-active aura_autopilot.service ai_pay.service ai_agency_web.service || true
+        else
+            echo "Systemd not detected or inactive. Checking processes via ps:"
+            ps aux | grep -E "aura-stub|autopilot.sh|run_server.sh|next dev" | grep -v grep || echo "No active Aura processes found."
+        fi
         echo ""
         echo "Health Report:"
-        cat "$AURA_ROOT/ai_agency_wealth/watchdog_state.json" 2>/dev/null || echo "No health data yet."
+        if [ -f "$AURA_ROOT/core/wealth/watchdog_state.json" ]; then
+            cat "$AURA_ROOT/core/wealth/watchdog_state.json"
+        elif [ -f "$AURA_ROOT/ai_agency_wealth/watchdog_state.json" ]; then
+             cat "$AURA_ROOT/ai_agency_wealth/watchdog_state.json"
+        else
+            echo "No health data yet."
+        fi
         ;;
     start)
         echo "🚀 Starting Aura Systems..."
-        sudo systemctl start aura_autopilot.service ai_pay.service ai_agency_web.service
-        echo "✅ Services started."
+        if command -v systemctl >/dev/null 2>&1 && systemctl is-system-running >/dev/null 2>&1; then
+            sudo systemctl start aura_autopilot.service ai_pay.service ai_agency_web.service
+            echo "✅ Services started via systemctl."
+        else
+             echo "Systemd is not available to start services as daemons."
+             echo "Run the services manually if needed:"
+             echo " - Autopilot: cd $AURA_ROOT/core/wealth && ./autopilot.sh"
+             echo " - AI Pay: cd $AURA_ROOT/core/wealth && ./run_server.sh"
+             echo " - AI Web: cd $AURA_ROOT/apps/web && npm run dev"
+        fi
         ;;
     stop)
         echo "🛑 Stopping Aura Systems..."
-        sudo systemctl stop aura_autopilot.service ai_pay.service ai_agency_web.service
-        echo "✅ Services stopped."
+        if command -v systemctl >/dev/null 2>&1 && systemctl is-system-running >/dev/null 2>&1; then
+            sudo systemctl stop aura_autopilot.service ai_pay.service ai_agency_web.service
+            echo "✅ Services stopped via systemctl."
+        else
+             echo "Systemd is not available. Please stop manual processes via kill/Ctrl-C."
+        fi
         ;;
     vault)
-        python3 "$AURA_ROOT/vault/vault_manager.py"
+        python3 "$AURA_ROOT/core/vault/vault_manager.py"
         ;;
     logs)
-        tail -f "$AURA_ROOT/ai_agency_wealth/agency_metrics.log"
+        if [ -f "$AURA_ROOT/core/wealth/agency_metrics.log" ]; then
+            tail -f "$AURA_ROOT/core/wealth/agency_metrics.log"
+        elif [ -f "$AURA_ROOT/ai_agency_wealth/agency_metrics.log" ]; then
+            tail -f "$AURA_ROOT/ai_agency_wealth/agency_metrics.log"
+        else
+            echo "No agent metrics log found yet."
+        fi
         ;;
     tui)
-        if [ -x "$AURA_ROOT/tui/zig-out/bin/aura-tui" ]; then
-            "$AURA_ROOT/tui/zig-out/bin/aura-tui"
+        if [ -x "$AURA_ROOT/core/tui/zig-out/bin/aura-tui" ]; then
+            "$AURA_ROOT/core/tui/zig-out/bin/aura-tui"
         else
             echo "⚙️ Building TUI for the first time..."
-            cd "$AURA_ROOT/tui" && zig build
-            "$AURA_ROOT/tui/zig-out/bin/aura-tui"
+            cd "$AURA_ROOT/core/tui" && zig build
+            "$AURA_ROOT/core/tui/zig-out/bin/aura-tui"
         fi
         ;;
     mesh)
-        if [ -x "$AURA_ROOT/aura-tailscale/zig-out/bin/aura-mesh" ]; then
-            "$AURA_ROOT/aura-tailscale/zig-out/bin/aura-mesh" "${@:2}"
+        if [ -x "$AURA_ROOT/core/aura-tailscale/zig-out/bin/aura-mesh" ]; then
+            "$AURA_ROOT/core/aura-tailscale/zig-out/bin/aura-mesh" "${@:2}"
         else
             echo "⚙️ Building Aura mesh (aura-tailscale) for the first time..."
-            cd "$AURA_ROOT/aura-tailscale" && zig build
-            "$AURA_ROOT/aura-tailscale/zig-out/bin/aura-mesh" "${@:2}"
+            cd "$AURA_ROOT/core/aura-tailscale" && zig build
+            "$AURA_ROOT/core/aura-tailscale/zig-out/bin/aura-mesh" "${@:2}"
         fi
         ;;
     lynx)
-        if [ -x "$AURA_ROOT/aura-lynx/zig-out/bin/aura-lynx" ]; then
-            "$AURA_ROOT/aura-lynx/zig-out/bin/aura-lynx" "${@:2}"
+        if [ -x "$AURA_ROOT/core/aura-lynx/zig-out/bin/aura-lynx" ]; then
+            "$AURA_ROOT/core/aura-lynx/zig-out/bin/aura-lynx" "${@:2}"
         else
             echo "⚙️ Building aura-lynx for the first time..."
-            cd "$AURA_ROOT/aura-lynx" && zig build
-            "$AURA_ROOT/aura-lynx/zig-out/bin/aura-lynx" "${@:2}"
+            cd "$AURA_ROOT/core/aura-lynx" && zig build
+            "$AURA_ROOT/core/aura-lynx/zig-out/bin/aura-lynx" "${@:2}"
         fi
         ;;
     api)
-        if [ -x "$AURA_ROOT/aura-api/zig-out/bin/aura-api" ]; then
-            "$AURA_ROOT/aura-api/zig-out/bin/aura-api" "${@:2}"
+        if [ -x "$AURA_ROOT/core/aura-api/zig-out/bin/aura-api" ]; then
+            "$AURA_ROOT/core/aura-api/zig-out/bin/aura-api" "${@:2}"
         else
             echo "⚙️ Building aura-api for the first time..."
-            cd "$AURA_ROOT/aura-api" && zig build
-            "$AURA_ROOT/aura-api/zig-out/bin/aura-api" "${@:2}"
+            cd "$AURA_ROOT/core/aura-api" && zig build
+            "$AURA_ROOT/core/aura-api/zig-out/bin/aura-api" "${@:2}"
         fi
         ;;
     gateway)
         export AURA_ROOT="$AURA_ROOT" AURA_VAULT_FILE="${AURA_VAULT_FILE:-$AURA_ROOT/vault/aura-vault.json}"
-        cd "$AURA_ROOT" && python3 -m uvicorn gateway.app:app --host 0.0.0.0 --port "${AURA_GATEWAY_PORT:-8765}"
+        cd "$AURA_ROOT/ops" && python3 -m uvicorn gateway.app:app --host 0.0.0.0 --port "${AURA_GATEWAY_PORT:-8765}"
         ;;
     chat)
         # Minimal TUI chat with agent; start local gateway if needed.
@@ -159,13 +189,13 @@ case "$CMD" in
                 done
             fi
         fi
-        exec python3 "$AURA_ROOT/gateway/aura_tui_chat.py"
+        exec python3 "$AURA_ROOT/ops/gateway/aura_tui_chat.py"
         ;;
     voice)
         shift
         VOICE_CMD="${1:-help}"
         USER_SYSTEMD_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user"
-        REPO_VOICE_SERVICE="$AURA_ROOT/config/aura_voice.service"
+        REPO_VOICE_SERVICE="$AURA_ROOT/ops/config/aura_voice.service"
         USER_VOICE_SERVICE="$USER_SYSTEMD_DIR/aura_voice.service"
 
         ensure_voice_service() {
@@ -177,32 +207,58 @@ case "$CMD" in
         case "$VOICE_CMD" in
             transcribe)
                 shift
-                exec python3 "$AURA_ROOT/vault/voice_ingress.py" transcribe "$@"
+                exec python3 "$AURA_ROOT/core/vault/voice_ingress.py" transcribe "$@"
                 ;;
             listen)
                 shift
-                exec python3 "$AURA_ROOT/vault/voice_ingress.py" listen "$@"
+                exec python3 "$AURA_ROOT/core/vault/voice_ingress.py" listen "$@"
                 ;;
             show)
                 shift
-                exec python3 "$AURA_ROOT/vault/voice_ingress.py" show "$@"
+                exec python3 "$AURA_ROOT/core/vault/voice_ingress.py" show "$@"
                 ;;
             start)
-                ensure_voice_service
-                exec systemctl --user enable --now aura_voice.service
+                if command -v systemctl >/dev/null 2>&1 && systemctl --user is-system-running >/dev/null 2>&1; then
+                    ensure_voice_service
+                    exec systemctl --user enable --now aura_voice.service
+                else
+                    echo "User-level Systemd not available. Starting voice ingress manually in background..."
+                    mkdir -p "$AURA_ROOT/.aura/logs"
+                    nohup python3 "$AURA_ROOT/core/vault/voice_ingress.py" listen > "$AURA_ROOT/.aura/logs/voice.log" 2>&1 &
+                    echo "✅ Voice ingress started in background (PID $!)."
+                fi
                 ;;
             stop)
-                exec systemctl --user stop aura_voice.service
+                if command -v systemctl >/dev/null 2>&1 && systemctl --user is-system-running >/dev/null 2>&1; then
+                    exec systemctl --user stop aura_voice.service
+                else
+                    echo "Stopping voice ingress process..."
+                    pkill -f "voice_ingress.py" || echo "No voice ingress process found."
+                fi
                 ;;
             restart)
-                ensure_voice_service
-                exec systemctl --user restart aura_voice.service
+                if command -v systemctl >/dev/null 2>&1 && systemctl --user is-system-running >/dev/null 2>&1; then
+                    ensure_voice_service
+                    exec systemctl --user restart aura_voice.service
+                else
+                    $0 voice stop
+                    $0 voice start
+                fi
                 ;;
             status)
-                exec systemctl --user status aura_voice.service --no-pager
+                if command -v systemctl >/dev/null 2>&1 && systemctl --user is-system-running >/dev/null 2>&1; then
+                    exec systemctl --user status aura_voice.service --no-pager
+                else
+                    echo "User-level Systemd not available. Checking for voice ingress process:"
+                    ps aux | grep "voice_ingress.py" | grep -v grep || echo "Aura voice service is not running."
+                fi
                 ;;
             logs)
-                exec journalctl --user -u aura_voice.service -f
+                if command -v journalctl >/dev/null 2>&1 && systemctl --user is-system-running >/dev/null 2>&1; then
+                    exec journalctl --user -u aura_voice.service -f
+                else
+                    tail -f "$AURA_ROOT/.aura/logs/voice.log"
+                fi
                 ;;
             help|-h|--help|"")
                 echo "Aura voice commands:"
@@ -219,30 +275,30 @@ case "$CMD" in
         ;;
     opensea)
         shift
-        exec "$AURA_ROOT/bin/aura-opensea" "$@"
+        exec "$AURA_ROOT/ops/bin/aura-opensea" "$@"
         ;;
     skill)
         shift
-        exec "$AURA_ROOT/bin/aura-skill" "$@"
+        exec "$AURA_ROOT/ops/bin/aura-skill" "$@"
         ;;
     docs-maid)
         shift
-        exec "$AURA_ROOT/bin/docs-maid" "${@:-run}"
+        exec "$AURA_ROOT/ops/bin/docs-maid" "${@:-run}"
         ;;
     gs)
-        exec "$AURA_ROOT/bin/aura-gs" "${@:2}"
+        exec "$AURA_ROOT/ops/bin/aura-gs" "${@:2}"
         ;;
     stub)
         shift
-        exec "$AURA_ROOT/bin/aura-stub" run -- "$@"
+        exec "$AURA_ROOT/ops/bin/aura-stub" run -- "$@"
         ;;
     stub-duplicate)
         shift
-        exec "$AURA_ROOT/bin/aura-stub" duplicate -- "$@"
+        exec "$AURA_ROOT/ops/bin/aura-stub" duplicate -- "$@"
         ;;
     cd)
         echo "$AURA_ROOT"
-        echo "Tip: in zsh, source '$AURA_ROOT/bin/aura.zsh' to enable 'aura cd' to cd in-place."
+        echo "Tip: in zsh, source '$AURA_ROOT/ops/bin/aura.zsh' to enable 'aura cd' to cd in-place."
         ;;
     *)
         show_help
