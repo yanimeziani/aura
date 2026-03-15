@@ -2,7 +2,7 @@
 
 import { useRef, useMemo, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Text } from "@react-three/drei";
+import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 import { getCountryPosition, generateArc, COUNTRY_COORDS } from "@/lib/geo";
 
@@ -168,7 +168,6 @@ function ArcConnection({
   to: GlobeNode;
   connection: GlobeConnection;
 }) {
-  const lineRef = useRef<THREE.Line>(null);
   const startPos = useMemo(
     () => getCountryPosition(from.country, GLOBE_RADIUS + 0.01),
     [from.country]
@@ -178,32 +177,34 @@ function ArcConnection({
     [to.country]
   );
 
-  const arcPoints = useMemo(
-    () => generateArc(startPos, endPos, 64, 0.2 + connection.strength * 0.3),
-    [startPos, endPos, connection.strength]
-  );
-
-  const geometry = useMemo(() => {
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute("position", new THREE.BufferAttribute(arcPoints, 3));
-    return geo;
-  }, [arcPoints]);
+  const arcPoints = useMemo(() => {
+    const raw = generateArc(startPos, endPos, 64, 0.2 + connection.strength * 0.3);
+    const pts: THREE.Vector3[] = [];
+    for (let i = 0; i < raw.length; i += 3) {
+      pts.push(new THREE.Vector3(raw[i], raw[i + 1], raw[i + 2]));
+    }
+    return pts;
+  }, [startPos, endPos, connection.strength]);
 
   const color = connection.type === "mesh" ? "#00ff41" : "#ff6600";
   const opacity = 0.15 + connection.strength * 0.4;
 
-  useFrame((state) => {
-    if (lineRef.current) {
-      const mat = lineRef.current.material as THREE.LineBasicMaterial;
-      mat.opacity = opacity + Math.sin(state.clock.elapsedTime * 1.5) * 0.1;
-    }
-  });
+  const geometry = useMemo(() => {
+    const geo = new THREE.BufferGeometry().setFromPoints(arcPoints);
+    return geo;
+  }, [arcPoints]);
 
-  return (
-    <line ref={lineRef} geometry={geometry}>
-      <lineBasicMaterial color={color} transparent opacity={opacity} />
-    </line>
+  const material = useMemo(
+    () => new THREE.LineBasicMaterial({ color, transparent: true, opacity }),
+    [color, opacity]
   );
+
+  const lineObj = useMemo(
+    () => new THREE.Line(geometry, material),
+    [geometry, material]
+  );
+
+  return <primitive object={lineObj} />;
 }
 
 // --- Pulse ring at sovereign location ---
