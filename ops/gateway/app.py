@@ -85,28 +85,37 @@ def health():
 
 @app.get("/health/services")
 async def health_services():
-    """Probe actual service availability."""
-    async def _probe(url: str, timeout: float = 1.5) -> str:
+    """Probe service availability via raw TCP socket connect."""
+    import asyncio, socket
+
+    async def _tcp_probe(host: str, port: int, timeout: float = 1.0) -> str:
         try:
-            async with httpx.AsyncClient(timeout=timeout) as c:
-                r = await c.get(url)
-                return "online" if r.status_code < 500 else "offline"
+            _, writer = await asyncio.wait_for(
+                asyncio.open_connection(host, port), timeout=timeout
+            )
+            writer.close()
+            await writer.wait_closed()
+            return "online"
         except Exception:
             return "offline"
 
-    import asyncio
-    gw, api, flow, ollama = await asyncio.gather(
-        _probe(f"http://127.0.0.1:8765/health"),
-        _probe(f"http://127.0.0.1:3001/health"),
-        _probe(f"http://127.0.0.1:3002/health"),
-        _probe(f"{OLLAMA_BASE}/api/tags"),
+    _SERVICES = [
+        ("Gateway",       "127.0.0.1", 8765),
+        ("Cerberus",      "127.0.0.1", 3000),
+        ("Aura API",      "127.0.0.1", 3001),
+        ("Aura Flow",     "127.0.0.1", 3002),
+        ("Ollama",        "127.0.0.1", 11434),
+        ("Pegasus API",   "127.0.0.1", 8080),
+        ("Dashboard",     "127.0.0.1", 3003),
+    ]
+
+    results = await asyncio.gather(
+        *[_tcp_probe(h, p) for _, h, p in _SERVICES]
     )
     return {
         "services": [
-            {"name": "Gateway",   "port": 8765,  "status": gw},
-            {"name": "Aura API",  "port": 3001,  "status": api},
-            {"name": "Aura Flow", "port": 3002,  "status": flow},
-            {"name": "Ollama",    "port": 11434, "status": ollama},
+            {"name": name, "port": port, "status": status}
+            for (name, _, port), status in zip(_SERVICES, results)
         ]
     }
 
