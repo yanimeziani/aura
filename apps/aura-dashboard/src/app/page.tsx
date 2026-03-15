@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Activity, LogOut } from "lucide-react";
 import { getStoredToken, clearToken } from "@/lib/auth";
-import { fetchHealth } from "@/lib/gateway";
 import SystemHealth from "@/components/SystemHealth";
 import MeshStatus from "@/components/MeshStatus";
 import AgentTerminal from "@/components/AgentTerminal";
@@ -19,15 +18,11 @@ export default function DashboardPage() {
   useEffect(() => {
     const stored = getStoredToken();
     if (!stored) {
-      router.push("/login");
+      router.replace("/login");
       return;
     }
     setToken(stored);
-
-    // Quick validation: hit gateway health to confirm connectivity
-    fetchHealth()
-      .then(() => setAuthed(true))
-      .catch(() => setAuthed(true)); // Still show dashboard even if gateway is down
+    setAuthed(true);
   }, [router]);
 
   useEffect(() => {

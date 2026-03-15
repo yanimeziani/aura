@@ -21,7 +21,7 @@ export default function LoginPage() {
       const result = await validateToken(token.trim());
       if (result.valid) {
         storeToken(token.trim());
-        router.push("/");
+        router.replace("/");
       } else {
         setError("INVALID_TOKEN: Access denied");
       }
