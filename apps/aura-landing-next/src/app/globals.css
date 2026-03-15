@@ -1,0 +1,50 @@
+:root {
+  --bg: #071017;
+  --panel: rgba(11, 19, 24, 0.82);
+  --line: rgba(255, 255, 255, 0.1);
+  --line-strong: rgba(255, 255, 255, 0.16);
+  --text-main: #f7f3e8;
+  --text-soft: #d5d1c6;
+  --text-dim: #9aa6ad;
+  --accent-gold: #f4c46e;
+  --accent-teal: #78e9d4;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text-main);
+  font-family: var(--font-body), sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a,
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  font-family: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+::selection {
+  background: rgba(120, 233, 212, 0.22);
+  color: var(--text-main);
+}

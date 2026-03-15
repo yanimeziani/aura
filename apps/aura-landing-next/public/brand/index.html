@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meziani — Brand Kit</title>
+  <meta name="description" content="Official brand assets, colors, typography, and guidelines for Meziani — Sovereign AI Infrastructure.">
+
+  <!-- HeyGen + Pomelio brand import signals -->
+  <meta name="theme-color" content="#0D1117">
+  <meta name="brand-primary-color" content="#3B82F6">
+  <meta name="brand-accent-color" content="#D4A017">
+  <meta name="brand-font" content="Inter">
+
+  <!-- Open Graph (HeyGen reads og:image as logo source) -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://brand.meziani.ai">
+  <meta property="og:title" content="Meziani Brand Kit">
+  <meta property="og:description" content="Sovereign AI Infrastructure. Brand assets, colors, and guidelines.">
+  <meta property="og:image" content="https://brand.meziani.ai/brand/logo.svg">
+  <meta property="og:image:type" content="image/svg+xml">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="240">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://brand.meziani.ai/brand/logo.svg">
+
+  <!-- Pomelio / Google brand manifest link -->
+  <link rel="brand" type="application/json" href="https://brand.meziani.ai/brand/brand.json">
+
+  <!-- JSON-LD Organization schema (Pomelio + Google indexing) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Meziani",
+    "legalName": "Meziani AI Inc.",
+    "url": "https://meziani.ai",
+    "logo": "https://brand.meziani.ai/brand/logo.svg",
+    "description": "Sovereign AI Infrastructure — autonomous systems, no cloud lock-in.",
+    "foundingDate": "2025",
+    "slogan": "Sovereign AI Infrastructure",
+    "brand": {
+      "@type": "Brand",
+      "name": "Meziani",
+      "logo": "https://brand.meziani.ai/brand/logo.svg",
+      "slogan": "Your data. Your stack. Your rules."
+    },
+    "sameAs": [
+      "https://meziani.ai",
+      "https://meziani.org"
+    ]
+  }
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* ── Brand tokens (HeyGen reads CSS custom properties) ── */
+    :root {
+      --color-primary:   #0D1117;
+      --color-brand:     #3B82F6;
+      --color-accent:    #D4A017;
+      --color-surface:   #161B27;
+      --color-muted:     #6B7280;
+      --color-white:     #F9FAFB;
+      --font-heading:    'Inter', system-ui, sans-serif;
+      --font-body:       'Inter', system-ui, sans-serif;
+      --font-mono:       'JetBrains Mono', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--color-primary);
+      color: var(--color-white);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    a { color: var(--color-brand); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+
+    /* ── Header ── */
+    header {
+      border-bottom: 1px solid #1E2535;
+      padding: 24px 0;
+    }
+    header .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .badge {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      background: #1E2535;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    /* ── Sections ── */
+    section { padding: 56px 0; border-bottom: 1px solid #1E2535; }
+    section:last-child { border-bottom: none; }
+
+    h2 {
+      font-family: var(--font-heading);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: 32px;
+    }
+
+    /* ── Logo grid ── */
+    .logo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .logo-card {
+      border-radius: 12px;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 20px;
+    }
+    .logo-card.dark  { background: #161B27; border: 1px solid #1E2535; }
+    .logo-card.light { background: #F9FAFB; }
+    .logo-card.blue  { background: #1E3A5F; border: 1px solid #2D5A9E; }
+
+    .logo-card img { height: 40px; width: auto; }
+
+    .dl-btn {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--color-brand);
+      background: rgba(59,130,246,0.1);
+      border: 1px solid rgba(59,130,246,0.2);
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s;
+    }
+    .dl-btn:hover { background: rgba(59,130,246,0.18); text-decoration: none; }
+
+    /* ── Color palette ── */
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px;
+    }
+    .swatch {
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid #1E2535;
+    }
+    .swatch-color { height: 72px; }
+    .swatch-info {
+      background: #161B27;
+      padding: 10px 12px;
+    }
+    .swatch-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--color-white);
+      display: block;
+    }
+    .swatch-hex {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--color-muted);
+      display: block;
+      margin-top: 2px;
+      cursor: pointer;
+    }
+    .swatch-hex:hover { color: var(--color-white); }
+
+    /* ── Typography ── */
+    .type-grid { display: flex; flex-direction: column; gap: 24px; }
+    .type-sample {
+      background: #161B27;
+      border: 1px solid #1E2535;
+      border-radius: 10px;
+      padding: 28px;
+    }
+    .type-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: 10px;
+    }
+    .type-display {
+      font-family: var(--font-heading);
+      font-size: 36px;
+      font-weight: 700;
+      line-height: 1.15;
+      color: var(--color-white);
+    }
+    .type-body-sample {
+      font-family: var(--font-body);
+      font-size: 16px;
+      font-weight: 400;
+      color: #CBD5E1;
+      line-height: 1.7;
+      margin-top: 8px;
+    }
+    .type-mono-sample {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      color: var(--color-brand);
+      background: #0D1117;
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin-top: 8px;
+    }
+
+    /* ── Voice & Tone ── */
+    .voice-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 600px) { .voice-grid { grid-template-columns: 1fr; } }
+    .voice-card {
+      background: #161B27;
+      border: 1px solid #1E2535;
+      border-radius: 10px;
+      padding: 20px;
+    }
+    .voice-card h3 {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .voice-card.do h3   { color: #22C55E; }
+    .voice-card.dont h3 { color: #EF4444; }
+    .voice-card ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .voice-card ul li { font-size: 14px; color: #CBD5E1; padding-left: 16px; position: relative; }
+    .voice-card.do ul li::before   { content: '✓'; position: absolute; left: 0; color: #22C55E; font-size: 12px; }
+    .voice-card.dont ul li::before { content: '✗'; position: absolute; left: 0; color: #EF4444; font-size: 12px; }
+
+    /* ── API import section ── */
+    .import-block {
+      background: #161B27;
+      border: 1px solid #1E2535;
+      border-radius: 10px;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+    .import-block code {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--color-brand);
+      flex: 1;
+    }
+    .copy-btn {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--color-muted);
+      background: #0D1117;
+      border: 1px solid #1E2535;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .copy-btn:hover { color: var(--color-white); }
+
+    .import-note {
+      font-size: 13px;
+      color: var(--color-muted);
+      line-height: 1.6;
+    }
+    .import-note strong { color: #CBD5E1; }
+
+    /* ── Footer ── */
+    footer {
+      padding: 32px 0;
+      text-align: center;
+      font-size: 13px;
+      color: var(--color-muted);
+    }
+    footer a { color: var(--color-muted); }
+    footer a:hover { color: var(--color-white); }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="container">
+    <img src="logo.svg" alt="Meziani" height="32">
+    <span class="badge">Brand Kit</span>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- ── Logo ── -->
+  <section id="logo">
+    <h2>Logo</h2>
+    <div class="logo-grid">
+      <div class="logo-card dark">
+        <img src="logo.svg" alt="Meziani logo on dark">
+        <a href="logo.svg" download class="dl-btn">↓ SVG (dark bg)</a>
+      </div>
+      <div class="logo-card light">
+        <img src="logo-dark.svg" alt="Meziani logo on light">
+        <a href="logo-dark.svg" download class="dl-btn">↓ SVG (light bg)</a>
+      </div>
+      <div class="logo-card blue">
+        <img src="icon.svg" alt="Meziani icon" style="height:48px">
+        <a href="icon.svg" download class="dl-btn">↓ Icon SVG</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Colors ── -->
+  <section id="colors">
+    <h2>Color Palette</h2>
+    <div class="color-grid">
+      <div class="swatch">
+        <div class="swatch-color" style="background:#0D1117"></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Aura Black</span>
+          <span class="swatch-hex" onclick="copy(this)" title="Click to copy">#0D1117</span>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#3B82F6"></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Aura Blue</span>
+          <span class="swatch-hex" onclick="copy(this)" title="Click to copy">#3B82F6</span>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#D4A017"></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Aura Gold</span>
+          <span class="swatch-hex" onclick="copy(this)" title="Click to copy">#D4A017</span>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#161B27"></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Aura Surface</span>
+          <span class="swatch-hex" onclick="copy(this)" title="Click to copy">#161B27</span>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#6B7280"></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Aura Muted</span>
+          <span class="swatch-hex" onclick="copy(this)" title="Click to copy">#6B7280</span>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#F9FAFB; border-bottom:1px solid #eee"></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Aura White</span>
+          <span class="swatch-hex" onclick="copy(this)" title="Click to copy">#F9FAFB</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Typography ── -->
+  <section id="typography">
+    <h2>Typography</h2>
+    <div class="type-grid">
+      <div class="type-sample">
+        <div class="type-label">Display — Inter 700</div>
+        <div class="type-display">Sovereign AI Infrastructure</div>
+        <div class="type-body-sample">We deploy autonomous, self-hosted AI systems that execute your operations — invoicing, lead generation, compliance — without cloud lock-in or data exposure.</div>
+      </div>
+      <div class="type-sample">
+        <div class="type-label">Monospace — JetBrains Mono 400</div>
+        <div class="type-mono-sample">$ zig build && ./zig-out/bin/aura-api<br>» listening on 0.0.0.0:9000<br>» mesh: 3 peers active</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Voice & Tone ── -->
+  <section id="voice">
+    <h2>Voice &amp; Tone</h2>
+    <div class="voice-grid">
+      <div class="voice-card do">
+        <h3>Do</h3>
+        <ul>
+          <li>Be technical and precise</li>
+          <li>Use sovereignty as a value</li>
+          <li>Speak to the infrastructure layer</li>
+          <li>Lead with outcomes, not features</li>
+          <li>Use "autonomous" not "automated"</li>
+        </ul>
+      </div>
+      <div class="voice-card dont">
+        <h3>Don't</h3>
+        <ul>
+          <li>Use hype ("revolutionary", "game-changing")</li>
+          <li>Mention specific competitors by name</li>
+          <li>Overpromise trading returns</li>
+          <li>Use passive voice</li>
+          <li>Shorten "infrastructure" to "infra" in copy</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Import URLs ── -->
+  <section id="import">
+    <h2>Import into HeyGen / Pomelio</h2>
+
+    <div class="import-block">
+      <code>https://brand.meziani.ai</code>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText('https://brand.meziani.ai')">Copy</button>
+    </div>
+    <p class="import-note" style="margin-bottom:24px">
+      Paste this URL directly into <strong>HeyGen → Brand Kit → Import from URL</strong> or
+      <strong>Pomelio → Connect Brand → Enter URL</strong>.
+    </p>
+
+    <div class="import-block">
+      <code>https://brand.meziani.ai/brand/brand.json</code>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText('https://brand.meziani.ai/brand/brand.json')">Copy</button>
+    </div>
+    <p class="import-note">
+      Direct JSON manifest for tools that support <strong>brand.json</strong> imports
+      (Pomelio, Gamma, Notion AI, custom integrations).
+    </p>
+  </section>
+
+</main>
+
+<footer>
+  <a href="https://meziani.ai">meziani.ai</a> &nbsp;·&nbsp; Brand assets licensed for Meziani partners only &nbsp;·&nbsp; 2026
+</footer>
+
+<script>
+  function copy(el) {
+    navigator.clipboard.writeText(el.textContent.trim()).then(() => {
+      const orig = el.textContent;
+      el.textContent = 'Copied!';
+      setTimeout(() => el.textContent = orig, 1200);
+    });
+  }
+</script>
+
+</body>
+</html>

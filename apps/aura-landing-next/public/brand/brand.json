@@ -1,0 +1,39 @@
+{
+  "name": "Meziani",
+  "legalName": "Meziani AI Inc.",
+  "tagline": "Sovereign AI Infrastructure",
+  "url": "https://meziani.ai",
+  "brandUrl": "https://brand.meziani.ai",
+  "logo": {
+    "primary": "https://brand.meziani.ai/brand/logo.svg",
+    "dark": "https://brand.meziani.ai/brand/logo-dark.svg",
+    "icon": "https://brand.meziani.ai/brand/icon.svg"
+  },
+  "colors": {
+    "primary":    { "name": "Aura Black",   "hex": "#0D1117", "rgb": "13,17,23"    },
+    "brand":      { "name": "Aura Blue",    "hex": "#3B82F6", "rgb": "59,130,246"  },
+    "accent":     { "name": "Aura Gold",    "hex": "#D4A017", "rgb": "212,160,23"  },
+    "surface":    { "name": "Aura Surface", "hex": "#161B27", "rgb": "22,27,39"    },
+    "muted":      { "name": "Aura Muted",   "hex": "#6B7280", "rgb": "107,114,128" },
+    "white":      { "name": "Aura White",   "hex": "#F9FAFB", "rgb": "249,250,251" }
+  },
+  "typography": {
+    "heading": { "family": "Inter", "weight": "700", "google": "Inter:wght@700" },
+    "body":    { "family": "Inter", "weight": "400", "google": "Inter:wght@400;500" },
+    "mono":    { "family": "JetBrains Mono", "weight": "400", "google": "JetBrains+Mono:wght@400" }
+  },
+  "voice": {
+    "tone": ["technical", "sovereign", "precise", "trustworthy"],
+    "avoid": ["buzzwords", "hype", "vague claims"],
+    "taglines": [
+      "Sovereign AI Infrastructure",
+      "Autonomous systems. No lock-in.",
+      "Built in Zig. Runs forever.",
+      "Your data. Your stack. Your rules."
+    ]
+  },
+  "social": {
+    "twitter": "https://twitter.com/meziani_ai",
+    "github": "https://github.com/meziani-ai"
+  }
+}
