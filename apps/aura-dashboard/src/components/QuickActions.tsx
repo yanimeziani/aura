@@ -8,7 +8,8 @@ import {
   Shield,
   Globe,
 } from "lucide-react";
-import { fetchLeads } from "@/lib/gateway";
+import Link from "next/link";
+import { fetchLeads, getGatewayUrl } from "@/lib/gateway";
 
 interface Lead {
   email: string;
@@ -41,13 +42,13 @@ export default function QuickActions({ token }: { token: string | null }) {
         <Shield className="w-3.5 h-3.5" /> Quick Actions
       </div>
       <div className="p-6 space-y-3">
-        <a
+        <Link
           href="/globe"
           className="w-full border-2 border-terminal text-terminal p-3 font-bold uppercase text-sm flex items-center justify-between hover:bg-terminal hover:text-black transition-all block"
         >
           Planetary Outreach
           <Globe className="w-4 h-4" />
-        </a>
+        </Link>
 
         <a
           href="https://aura.meziani.org"
@@ -88,7 +89,7 @@ export default function QuickActions({ token }: { token: string | null }) {
           className="w-full border-2 border-white p-3 font-bold uppercase text-sm flex items-center justify-between hover:bg-white hover:text-black transition-all"
           onClick={() =>
             window.open(
-              `http://localhost:8765/logs/tail?n=200${token ? `&token=${encodeURIComponent(token)}` : ""}`,
+              `${getGatewayUrl()}/logs/tail?n=200${token ? `&token=${encodeURIComponent(token)}` : ""}`,
               "_blank"
             )
           }
