@@ -314,7 +314,7 @@ def capture_lead(req: LeadRequest):
 # --- Log streaming (tail -f over SSE, tail -n over JSON) ---
 
 import asyncio
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, FileResponse
 
 _KNOWN_LOGS: dict[str, str] = {
     "agency":   "/home/yani/Aura/ai_agency_wealth/agency_metrics.log",
@@ -327,6 +327,21 @@ _KNOWN_LOGS: dict[str, str] = {
 }
 
 _LOG_TOKEN = os.environ.get("AURA_LOG_TOKEN", "")  # optional; if set, required as ?token=
+_EXPORT_FILE = "/tmp/Aura_Full_Documentation_Export.txt"
+_EXPORT_TOKEN = "AuraSovereign2026"
+
+@app.get("/download/notebook-lm")
+def download_notebook_lm(token: Optional[str] = None):
+    """Securely download the NotebookLM documentation export."""
+    if token != _EXPORT_TOKEN:
+        raise HTTPException(status_code=403, detail="Forbidden: Invalid or missing token")
+    if not os.path.exists(_EXPORT_FILE):
+        raise HTTPException(status_code=404, detail="Export file not found")
+    return FileResponse(
+        path=_EXPORT_FILE, 
+        filename="Aura_Full_Documentation_Export.txt",
+        media_type="text/plain"
+    )
 
 
 def _check_log_token(token: Optional[str]) -> bool:

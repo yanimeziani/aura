@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # export_aura_monolith.sh
-# Comprehensive Aura Stack Monolith Export for NotebookLM Ingestion.
+# Comprehensive Aura Monolith Export for NotebookLM Ingestion.
 
 set -euo pipefail
 
