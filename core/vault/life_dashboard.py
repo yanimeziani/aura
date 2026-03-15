@@ -80,6 +80,8 @@ def _file_status(path: Path) -> str:
 
 
 def _service_status(name: str) -> str:
+    if not os.path.exists("/run/systemd/system"):
+        return "unsupported (no systemd)"
     try:
         result = subprocess.run(
             ["systemctl", "is-active", name],

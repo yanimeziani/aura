@@ -24,7 +24,9 @@ export async function GET() {
     const aiConfigured =
       provider === 'local' ||
       (typeof process.env.GROQ_API_KEY === 'string' &&
-        process.env.GROQ_API_KEY.length > 0);
+        process.env.GROQ_API_KEY.length > 0) ||
+      (typeof process.env.OPENROUTER_API_KEY === 'string' &&
+        process.env.OPENROUTER_API_KEY.length > 0);
 
     return NextResponse.json({
       status: 'operational',

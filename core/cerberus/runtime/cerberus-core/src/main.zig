@@ -2170,21 +2170,21 @@ fn runAuth(allocator: std.mem.Allocator, sub_args: []const []const u8) !void {
 
     if (std.mem.eql(u8, subcmd, "login")) {
         var import_codex = false;
-        var import_crush = false;
+        var import_pi = false;
         for (rest) |arg| {
             if (std.mem.eql(u8, arg, "--import-codex")) import_codex = true;
-            if (std.mem.eql(u8, arg, "--import-crush")) import_crush = true;
+            if (std.mem.eql(u8, arg, "--import-pi")) import_pi = true;
         }
 
-        if (import_codex and import_crush) {
-            std.debug.print("Use only one import source: --import-codex OR --import-crush\n", .{});
+        if (import_codex and import_pi) {
+            std.debug.print("Use only one import source: --import-codex OR --import-pi\n", .{});
             std.process.exit(1);
         }
 
         if (import_codex) {
             runAuthImportCodex(allocator, codex, auth_mod);
-        } else if (import_crush) {
-            runAuthImportCrush(allocator, codex, auth_mod);
+        } else if (import_pi) {
+            runAuthImportPi(allocator, codex, auth_mod);
         } else {
             runAuthDeviceCodeLogin(allocator, codex, auth_mod);
         }
@@ -2259,7 +2259,7 @@ fn printAuthUsage() void {
         \\Commands:
         \\  login <provider>                    Authenticate via device code flow
         \\  login <provider> --import-codex     Import from Codex CLI (~/.codex/auth.json)
-        \\  login <provider> --import-crush     Import from Crush auth JSON (common paths)
+        \\  login <provider> --import-pi     Import from Pi auth JSON (common paths)
         \\  status <provider>                   Show authentication status
         \\  logout <provider>                   Remove stored credentials
         \\  set-key <provider> [--stdin]        Store provider API key in config (enc2 encrypted)
@@ -2273,7 +2273,7 @@ fn printAuthUsage() void {
         \\Examples:
         \\  cerberus auth login openai-codex
         \\  cerberus auth login openai-codex --import-codex
-        \\  cerberus auth login openai-codex --import-crush
+        \\  cerberus auth login openai-codex --import-pi
         \\  cerberus auth set-key openai
         \\  printf 'sk-...' | cerberus auth set-key openrouter --stdin
         \\  cerberus auth status openai-codex
@@ -2650,7 +2650,7 @@ fn runAuthImportCodex(
     std.debug.print("\nTo use: set \"agents.defaults.model.primary\": \"openai-codex/gpt-5.3-codex\" in ~/.cerberus/config.json\n", .{});
 }
 
-fn runAuthImportCrush(
+fn runAuthImportPi(
     allocator: std.mem.Allocator,
     codex: type,
     auth_mod: type,
@@ -2662,10 +2662,10 @@ fn runAuthImportCrush(
     defer allocator.free(home);
 
     const candidate_paths = [_][]const []const u8{
-        &.{ home, ".crush", "auth.json" },
-        &.{ home, ".config", "crush", "auth.json" },
-        &.{ home, ".crush", "credentials.json" },
-        &.{ home, ".config", "crush", "credentials.json" },
+        &.{ home, ".pi", "auth.json" },
+        &.{ home, ".config", "pi", "auth.json" },
+        &.{ home, ".pi", "credentials.json" },
+        &.{ home, ".config", "pi", "credentials.json" },
     };
 
     var loaded_path: ?[]u8 = null;
@@ -2696,7 +2696,7 @@ fn runAuthImportCrush(
     }
 
     if (json_bytes == null or loaded_path == null) {
-        std.debug.print("Could not find Crush auth JSON in common locations.\n", .{});
+        std.debug.print("Could not find Pi auth JSON in common locations.\n", .{});
         std.debug.print("Looked for:\n", .{});
         for (candidate_paths) |parts| {
             const path = std.fs.path.join(allocator, parts) catch continue;
@@ -2707,7 +2707,7 @@ fn runAuthImportCrush(
     }
 
     const parsed = std.json.parseFromSlice(std.json.Value, allocator, json_bytes.?, .{}) catch {
-        std.debug.print("Failed to parse Crush auth JSON: {s}\n", .{loaded_path.?});
+        std.debug.print("Failed to parse Pi auth JSON: {s}\n", .{loaded_path.?});
         std.process.exit(1);
     };
     defer parsed.deinit();
@@ -2715,7 +2715,7 @@ fn runAuthImportCrush(
     const root_obj = switch (parsed.value) {
         .object => |o| o,
         else => {
-            std.debug.print("Invalid Crush auth JSON format: {s}\n", .{loaded_path.?});
+            std.debug.print("Invalid Pi auth JSON format: {s}\n", .{loaded_path.?});
             std.process.exit(1);
         },
     };
@@ -2734,18 +2734,18 @@ fn runAuthImportCrush(
     }
 
     const access_token_str = switch (token_obj.get("access_token") orelse {
-        std.debug.print("No access_token found in Crush auth JSON: {s}\n", .{loaded_path.?});
+        std.debug.print("No access_token found in Pi auth JSON: {s}\n", .{loaded_path.?});
         std.process.exit(1);
     }) {
         .string => |s| s,
         else => {
-            std.debug.print("Invalid access_token in Crush auth JSON: {s}\n", .{loaded_path.?});
+            std.debug.print("Invalid access_token in Pi auth JSON: {s}\n", .{loaded_path.?});
             std.process.exit(1);
         },
     };
 
     if (access_token_str.len == 0) {
-        std.debug.print("Empty access_token in Crush auth JSON: {s}\n", .{loaded_path.?});
+        std.debug.print("Empty access_token in Pi auth JSON: {s}\n", .{loaded_path.?});
         std.process.exit(1);
     }
 
@@ -2767,7 +2767,7 @@ fn runAuthImportCrush(
         std.process.exit(1);
     };
 
-    std.debug.print("Imported openai-codex token from Crush auth file ({s})\n", .{loaded_path.?});
+    std.debug.print("Imported openai-codex token from Pi auth file ({s})\n", .{loaded_path.?});
     std.debug.print("  Access token: {d} bytes\n", .{access_token_str.len});
     if (refresh_token_str != null) {
         std.debug.print("  Refresh token: present\n", .{});

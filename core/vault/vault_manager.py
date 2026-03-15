@@ -23,10 +23,11 @@ VAULT_REGISTRY = {
 }
 
 _VAULT_DIR = Path(__file__).resolve().parent
-AURA_ROOT = Path(os.environ.get("AURA_HOME", _VAULT_DIR.parent))
+AURA_ROOT = Path(os.environ.get("AURA_HOME", _VAULT_DIR.parent.parent))
 VAULT_FILE = _VAULT_DIR / "aura-vault.json"
 ENV_TARGETS = [
-    AURA_ROOT / "ai_agency_wealth" / ".env",
+    AURA_ROOT / "core" / "wealth" / ".env",
+    AURA_ROOT / "core" / "ai_agency_wealth" / ".env",
     Path.home() / ".n8n" / ".env",
 ]
 
@@ -102,7 +103,8 @@ def sync_envs(vault):
         env_content += f"{key}={value}\n"
     
     # Additional required but non-vault keys
-    env_content += "PYTHONPATH=/home/yani/Aura/ai_agency_wealth\n"
+    wealth_path = AURA_ROOT / "core" / "wealth"
+    env_content += f"PYTHONPATH={wealth_path}\n"
 
     for target in ENV_TARGETS:
         try:
@@ -114,7 +116,17 @@ def sync_envs(vault):
             print(f"  - ❌ Failed to update {target}: {e}")
 
     print("\n🚀 Restarting continuous services to apply changes...")
-    subprocess.run(["sudo", "systemctl", "restart", "ai_pay", "aura_autopilot"], check=False)
+    
+    # Detect systemd before attempting to use it
+    is_systemd = os.path.exists("/run/systemd/system")
+
+    if is_systemd:
+        subprocess.run(["sudo", "systemctl", "restart", "ai_pay", "aura_autopilot"], check=False)
+    else:
+        print("⚠️  Systemd not detected. Please restart services manually:")
+        print(f"  - Autopilot: cd {wealth_path} && ./autopilot.sh")
+        print(f"  - AI Pay: cd {wealth_path} && ./run_server.sh")
+        print("  - AI Web: cd apps/web && npm run dev")
 
 
 def configure_webhooks():
