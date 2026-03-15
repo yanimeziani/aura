@@ -5,11 +5,17 @@
       "claude-cli": {}
     }
   },
+  "org": {
+    "org_id": "meziani-labs",
+    "trust_tier": "sovereign",
+    "registry": "/home/yani/Aura/vault/org-registry.json"
+  },
   "agents": {
     "defaults": {
       "model": {
         "primary": "claude-cli/claude-opus-4-6"
-      }
+      },
+      "org_id": "meziani-labs"
     },
     "list": [
       {

@@ -1,0 +1,17 @@
+{
+  "version": "1.0",
+  "sovereign_org": {
+    "org_id": "meziani-labs",
+    "legal_name": "Meziani Labs",
+    "country_code": "CA",
+    "jurisdiction": "QC",
+    "org_type": "sole_trader",
+    "domain": "meziani.org",
+    "contact_email": "yani@meziani.ai",
+    "trust_tier": "sovereign",
+    "verified_at": "2026-03-15T02:00:00Z",
+    "verified_by": "operator_attestation",
+    "agents": ["meziani-main", "dragun-devsecops", "dragun-growth"]
+  },
+  "organisations": []
+}

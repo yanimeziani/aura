@@ -19,11 +19,19 @@ out/
 .npm
 .turbo
 
-# Zig (Cerberus)
+# Zig (Cerberus + Aura)
 zig-cache/
 zig-out/
+.zig-cache/
 /core/cerberus/zig-cache/
 /core/cerberus/zig-out/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Vault secrets (NEVER commit)
+core/vault/aura-vault.json
 
 # Android/Kotlin (Pegasus)
 .gradle/

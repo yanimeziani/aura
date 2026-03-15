@@ -1,0 +1,191 @@
+# Organization Validation Policy — Cerberus Mesh
+# Defines how worldwide human organisations are validated before
+# they can register agents, access mesh resources, or be trusted
+# by Cerberus agents during outreach/verification workflows.
+
+version: "1.0"
+
+# --- Trust Tiers ---
+# Every organisation on the mesh sits at one of these levels.
+# Higher tiers unlock more autonomy for their agents.
+
+trust_tiers:
+
+  unverified:
+    level: 0
+    color: gray
+    description: >
+      Organisation has been submitted but not yet validated.
+      Agents owned by this org operate in read-only mode.
+    agent_autonomy: read_only
+    can_send_outbound: false
+    can_access_pii: false
+    max_agents: 1
+
+  domain_verified:
+    level: 1
+    color: yellow
+    description: >
+      Organisation has proven ownership of their claimed domain
+      via DNS TXT record or well-known file.
+    agent_autonomy: supervised
+    can_send_outbound: false
+    can_access_pii: false
+    max_agents: 3
+
+  registry_verified:
+    level: 2
+    color: blue
+    description: >
+      Organisation has been confirmed in at least one official
+      company/business registry (OpenCorporates, LEI, national registry).
+    agent_autonomy: supervised
+    can_send_outbound: true
+    can_access_pii: false
+    max_agents: 10
+
+  fully_verified:
+    level: 3
+    color: green
+    description: >
+      Organisation has passed all verification methods:
+      domain + registry + operator attestation.
+      Full mesh privileges.
+    agent_autonomy: full
+    can_send_outbound: true
+    can_access_pii: true
+    max_agents: 50
+
+  sovereign:
+    level: 4
+    color: white
+    description: >
+      Owner-operated organisation. The mesh operator themselves.
+      Unlimited privileges. Only one sovereign org per mesh.
+    agent_autonomy: full
+    can_send_outbound: true
+    can_access_pii: true
+    max_agents: -1  # unlimited
+
+# --- Verification Methods ---
+# Each method independently contributes to trust level.
+# Methods can be combined: domain + registry = fully_verified.
+
+verification_methods:
+
+  domain_ownership:
+    description: "Prove control of the claimed domain"
+    methods:
+      dns_txt:
+        description: "Add TXT record: _cerberus-verify=<challenge>"
+        ttl_seconds: 300
+        max_attempts: 5
+      well_known:
+        description: "Serve /.well-known/cerberus-verify.json with challenge"
+        timeout_seconds: 10
+    grants_tier: domain_verified
+    expires_days: 365
+
+  company_registry:
+    description: "Confirm entity exists in official business registries"
+    sources:
+      - id: opencorporates
+        name: "OpenCorporates"
+        url_template: "https://api.opencorporates.com/v0.4/companies/search?q={name}&jurisdiction_code={jurisdiction}"
+        free_tier: true
+        fields: [company_number, jurisdiction_code, status, incorporation_date]
+      - id: lei
+        name: "Global LEI Foundation (GLEIF)"
+        url_template: "https://api.gleif.org/api/v1/lei-records?filter[entity.legalName]={name}"
+        free_tier: true
+        fields: [lei, entity_legal_name, entity_status, registration_authority]
+      - id: eu_vat
+        name: "EU VIES VAT Validation"
+        url_template: "https://ec.europa.eu/taxation_customs/vies/rest-api/check-vat-number"
+        free_tier: true
+        fields: [country_code, vat_number, valid, name, address]
+    match_threshold: 0.8  # fuzzy name match score required
+    grants_tier: registry_verified
+    expires_days: 180
+
+  operator_attestation:
+    description: "Mesh operator manually vouches for the organisation"
+    requires: vault_token_auth
+    grants_tier: fully_verified
+    expires_days: 365
+
+# --- Validation Rules ---
+
+rules:
+  # Minimum data required to submit an org for validation
+  required_fields:
+    - legal_name
+    - country_code        # ISO 3166-1 alpha-2
+    - org_type             # company | nonprofit | government | sole_trader | cooperative
+
+  optional_fields:
+    - domain               # claimed web domain
+    - registration_number  # national company number
+    - lei                  # Legal Entity Identifier (20-char)
+    - vat_id               # EU VAT number
+    - tax_id               # national tax ID
+    - contact_email
+    - website
+
+  # Auto-reject conditions
+  auto_reject:
+    - country_code_invalid: "ISO 3166-1 alpha-2 not recognized"
+    - legal_name_too_short: "< 2 characters"
+    - domain_unreachable: "DNS resolution fails after 3 retries"
+    - sanctioned_jurisdiction: "OFAC/EU sanctions list match"
+
+  # Re-validation
+  revalidation:
+    registry_check_interval_days: 90
+    domain_check_interval_days: 180
+    on_failure: demote_to_unverified
+
+# --- Agent Constraints by Org Trust ---
+
+agent_constraints:
+  # When an agent's org is unverified:
+  unverified:
+    blocked_tools: [shell, http_request, email_send, sms_send]
+    blocked_channels: [telegram, discord, slack, email]
+    cost_multiplier: 0.5  # halved cost cap
+
+  # Domain verified:
+  domain_verified:
+    blocked_tools: [email_send, sms_send]
+    cost_multiplier: 0.75
+
+  # Registry verified:
+  registry_verified:
+    blocked_tools: []
+    cost_multiplier: 1.0
+
+  # Fully verified:
+  fully_verified:
+    blocked_tools: []
+    cost_multiplier: 1.0
+
+# --- HITL Gates for Org Operations ---
+
+org_hitl_gates:
+  - id: org_register
+    trigger: "new organisation registration"
+    severity: medium
+    description: "A new org wants to join the mesh"
+    approve_command: "cerberus org approve <org_id>"
+
+  - id: org_promote
+    trigger: "org trust tier promotion"
+    severity: high
+    description: "Promoting an org to a higher trust level"
+    approve_command: "cerberus org promote <org_id> <tier>"
+
+  - id: org_revoke
+    trigger: "org trust revocation"
+    severity: critical
+    description: "Revoking an org's verification status"
+    approve_command: "cerberus org revoke <org_id>"

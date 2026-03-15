@@ -8,10 +8,13 @@ import { groq } from '@ai-sdk/groq';
 import { createOpenAI } from '@ai-sdk/openai';
 import { embed } from 'ai';
 
-const PROVIDER = (process.env.AI_PROVIDER ?? 'groq').toLowerCase();
+const PROVIDER = (process.env.AI_PROVIDER ?? 'local').toLowerCase();
 
 /** Default chat model for Groq (free tier). */
 const GROQ_DEFAULT_MODEL = 'llama-3.3-70b-versatile';
+
+/** Default chat model for OpenRouter (free models). */
+const OPENROUTER_DEFAULT_MODEL = 'google/gemini-2.0-flash-exp:free';
 
 /** Fallback chat model ids when primary hits quota/rate limit (Groq). */
 export const CHAT_FALLBACK_MODELS = [
@@ -28,8 +31,8 @@ export function getChatFallbackModelIds(): string[] {
   return [...CHAT_FALLBACK_MODELS];
 }
 
-/** Default base URL for local provider (Ollama). */
-const LOCAL_DEFAULT_BASE = 'http://127.0.0.1:11434/v1';
+/** Default base URL for local provider (Aura gateway → Ollama mesh). */
+const LOCAL_DEFAULT_BASE = process.env.LOCAL_API_BASE_URL?.trim() || 'http://localhost:8765/v1';
 
 /** Default chat model for local (Ollama-style name). */
 const LOCAL_DEFAULT_MODEL = 'llama3.2';
@@ -40,6 +43,19 @@ function getGroqModel(modelId?: string) {
     throw new Error('GROQ_API_KEY is required. Get one free at console.groq.com');
   }
   return groq(id);
+}
+
+function getOpenRouterModel(modelId?: string) {
+  const id = modelId ?? process.env.OPENROUTER_MODEL?.trim() ?? OPENROUTER_DEFAULT_MODEL;
+  const apiKey = process.env.OPENROUTER_API_KEY?.trim();
+  if (!apiKey) {
+    throw new Error('OPENROUTER_API_KEY is required for OpenRouter provider.');
+  }
+  const openrouter = createOpenAI({
+    apiKey,
+    baseURL: 'https://openrouter.ai/api/v1',
+  });
+  return openrouter(id);
 }
 
 function getLocalModel(modelId?: string) {
@@ -60,6 +76,8 @@ export function getChatModel(modelOverride?: string) {
       return getLocalModel(modelOverride);
     case 'groq':
       return getGroqModel(modelOverride);
+    case 'openrouter':
+      return getOpenRouterModel(modelOverride);
     default:
       return getGroqModel(modelOverride);
   }

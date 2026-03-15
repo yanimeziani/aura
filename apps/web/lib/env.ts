@@ -38,14 +38,17 @@ export function validateEnv() {
     throw new Error('NEXT_PUBLIC_SUPABASE_URL must start with https://');
   }
 
-  const provider = (process.env.AI_PROVIDER ?? 'groq').toLowerCase();
+  const provider = (process.env.AI_PROVIDER ?? 'local').toLowerCase();
   const hasGroq = !!process.env.GROQ_API_KEY;
-  const hasAI = hasGroq || provider === 'local';
+  const hasOpenRouter = !!process.env.OPENROUTER_API_KEY;
+  const hasAI = hasGroq || hasOpenRouter || provider === 'local';
   if (!hasAI) {
     const msg =
       provider === 'local'
         ? 'AI_PROVIDER=local requires a local server (e.g. Ollama). Set LOCAL_API_BASE_URL if not http://127.0.0.1:11434/v1.'
-        : 'No AI provider configured. Set GROQ_API_KEY or use AI_PROVIDER=local with a local server.';
+        : provider === 'openrouter'
+          ? 'AI_PROVIDER=openrouter requires OPENROUTER_API_KEY.'
+          : 'No AI provider configured. Set GROQ_API_KEY, OPENROUTER_API_KEY, or use AI_PROVIDER=local with a local server.';
     if (isProduction) throw new Error(msg);
     console.warn(`[env] ${msg}`);
   }
