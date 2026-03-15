@@ -93,6 +93,14 @@ export async function fetchOutreachGlobe(token: string | null): Promise<{
   return res.json();
 }
 
+export async function fetchServiceHealth(): Promise<{
+  services: Array<{ name: string; port: number; status: string }>;
+}> {
+  const res = await fetch(`${GATEWAY_URL}/health/services`);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
 export function getGatewayUrl(): string {
   return GATEWAY_URL;
 }

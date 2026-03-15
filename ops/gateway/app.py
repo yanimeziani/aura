@@ -83,6 +83,34 @@ def health():
     return {"status": "ok", "service": "aura-gateway"}
 
 
+@app.get("/health/services")
+async def health_services():
+    """Probe actual service availability."""
+    async def _probe(url: str, timeout: float = 1.5) -> str:
+        try:
+            async with httpx.AsyncClient(timeout=timeout) as c:
+                r = await c.get(url)
+                return "online" if r.status_code < 500 else "offline"
+        except Exception:
+            return "offline"
+
+    import asyncio
+    gw, api, flow, ollama = await asyncio.gather(
+        _probe(f"http://127.0.0.1:8765/health"),
+        _probe(f"http://127.0.0.1:3001/health"),
+        _probe(f"http://127.0.0.1:3002/health"),
+        _probe(f"{OLLAMA_BASE}/api/tags"),
+    )
+    return {
+        "services": [
+            {"name": "Gateway",   "port": 8765,  "status": gw},
+            {"name": "Aura API",  "port": 3001,  "status": api},
+            {"name": "Aura Flow", "port": 3002,  "status": flow},
+            {"name": "Ollama",    "port": 11434, "status": ollama},
+        ]
+    }
+
+
 @app.get("/providers")
 def providers():
     v = load_vault()
@@ -443,14 +471,15 @@ def list_leads(authorization: Optional[str] = Header(None)):
 import asyncio
 from fastapi.responses import StreamingResponse, FileResponse
 
+_LOG_DIR = os.environ.get("AURA_LOG_DIR", "/opt/aura/logs")
 _KNOWN_LOGS: dict[str, str] = {
-    "agency":   "/home/yani/Aura/ai_agency_wealth/agency_metrics.log",
-    "server":   "/home/yani/Aura/ai_agency_wealth/server.log",
-    "fulfiller":"/home/yani/Aura/ai_agency_wealth/fulfiller.log",
-    "watchdog": "/home/yani/Aura/ai_agency_wealth/watchdog_status.log",
-    "flow":     "/home/yani/Aura/var/aura-flow/spool/worker_runs.log",
-    "maid":     "/home/yani/Aura/vault/maid.log",
-    "n8n":      "/home/yani/Aura/ai_agency_wealth/n8n.log",
+    "agency":   os.path.join(_LOG_DIR, "agency.log"),
+    "server":   os.path.join(_LOG_DIR, "server.log"),
+    "fulfiller":os.path.join(_LOG_DIR, "fulfiller.log"),
+    "watchdog": os.path.join(_LOG_DIR, "watchdog.log"),
+    "flow":     os.path.join(_LOG_DIR, "flow.log"),
+    "maid":     os.path.join(_LOG_DIR, "maid.log"),
+    "n8n":      os.path.join(_LOG_DIR, "n8n.log"),
 }
 
 _LOG_TOKEN = os.environ.get("AURA_LOG_TOKEN", "")  # optional; if set, required as ?token=
@@ -530,14 +559,25 @@ async def logs_stream(name: str, token: Optional[str] = None):
         # Send last 20 lines as catch-up, then follow.
         for line in _tail_lines(path, 20):
             yield f"data: {line}\n\n"
+        # Ensure the file exists
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        if not os.path.exists(path):
+            open(path, "a").close()
         try:
             with open(path, "r", encoding="utf-8", errors="replace") as f:
                 f.seek(0, 2)  # jump to end
+                heartbeat = 0
                 while True:
                     line = f.readline()
                     if line:
                         yield f"data: {line.rstrip()}\n\n"
+                        heartbeat = 0
                     else:
+                        heartbeat += 1
+                        # Send SSE comment as keepalive every ~15s
+                        if heartbeat >= 37:
+                            yield ": heartbeat\n\n"
+                            heartbeat = 0
                         await asyncio.sleep(0.4)
         except (OSError, asyncio.CancelledError):
             return

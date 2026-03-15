@@ -1,24 +1,40 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Activity, Server, Wifi, WifiOff } from "lucide-react";
-import { fetchHealth } from "@/lib/gateway";
+import { Activity } from "lucide-react";
+import { fetchServiceHealth } from "@/lib/gateway";
 
-interface HealthState {
-  gateway: "online" | "offline" | "checking";
+interface ServiceState {
+  name: string;
+  port: number;
+  status: "online" | "offline" | "checking";
 }
 
 export default function SystemHealth() {
-  const [health, setHealth] = useState<HealthState>({ gateway: "checking" });
-  const [lastCheck, setLastCheck] = useState<string>("");
+  const [services, setServices] = useState<ServiceState[]>([
+    { name: "Gateway", port: 8765, status: "checking" },
+    { name: "Aura API", port: 3001, status: "checking" },
+    { name: "Aura Flow", port: 3002, status: "checking" },
+    { name: "Ollama", port: 11434, status: "checking" },
+  ]);
+  const [lastCheck, setLastCheck] = useState("");
 
   useEffect(() => {
     async function check() {
       try {
-        const data = await fetchHealth();
-        setHealth({ gateway: data.status === "ok" ? "online" : "offline" });
+        const data = await fetchServiceHealth();
+        setServices(
+          data.services.map((s) => ({
+            name: s.name,
+            port: s.port,
+            status: s.status as "online" | "offline",
+          }))
+        );
       } catch {
-        setHealth({ gateway: "offline" });
+        // Gateway itself is down — mark everything offline except show gateway as offline
+        setServices((prev) =>
+          prev.map((s) => ({ ...s, status: "offline" as const }))
+        );
       }
       setLastCheck(new Date().toLocaleTimeString("en-US", { hour12: false }));
     }
@@ -28,22 +44,13 @@ export default function SystemHealth() {
     return () => clearInterval(id);
   }, []);
 
-  const services = [
-    { name: "Gateway", status: health.gateway, port: ":8765" },
-    { name: "Aura API", status: "standby" as const, port: ":3001" },
-    { name: "Aura Flow", status: "standby" as const, port: ":3002" },
-    { name: "Ollama", status: "standby" as const, port: ":11434" },
-  ];
-
   function StatusDot({ status }: { status: string }) {
     const color =
       status === "online"
         ? "bg-terminal"
         : status === "checking"
           ? "bg-yellow-400 animate-pulse"
-          : status === "standby"
-            ? "bg-yellow-600"
-            : "bg-danger";
+          : "bg-danger";
     return <span className={`w-2.5 h-2.5 rounded-full ${color}`} />;
   }
 
@@ -62,18 +69,16 @@ export default function SystemHealth() {
               <StatusDot status={svc.status} />
               <div>
                 <span className="text-sm font-bold uppercase">{svc.name}</span>
-                <span className="text-xs opacity-40 ml-2">{svc.port}</span>
+                <span className="text-xs opacity-40 ml-2">:{svc.port}</span>
               </div>
             </div>
             <span
               className={`text-xs font-bold uppercase ${
                 svc.status === "online"
                   ? "text-terminal"
-                  : svc.status === "standby"
-                    ? "text-yellow-600"
-                    : svc.status === "checking"
-                      ? "text-yellow-400"
-                      : "text-danger"
+                  : svc.status === "checking"
+                    ? "text-yellow-400"
+                    : "text-danger"
               }`}
             >
               {svc.status}
