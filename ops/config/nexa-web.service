@@ -9,8 +9,8 @@ Group=root
 Environment=NODE_ENV=production
 Environment=HOSTNAME=127.0.0.1
 Environment=PORT=3003
-EnvironmentFile=-/opt/aura/apps/web/shared/.env.production
-WorkingDirectory=/opt/aura/apps/web/current
+EnvironmentFile=-/opt/nexa/runtime/apps/web/shared/.env.production
+WorkingDirectory=/opt/nexa/repo/apps/web
 ExecStart=/usr/bin/env node .next/standalone/server.js
 Restart=always
 RestartSec=2

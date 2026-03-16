@@ -1,0 +1,14 @@
+[Unit]
+Description=Nexa Gateway
+After=network.target
+
+[Service]
+Type=simple
+User=root
+EnvironmentFile=-/etc/nexa/runtime.env
+ExecStart=/usr/bin/bash -lc 'export NEXA_ROOT="${NEXA_ROOT:-/opt/nexa/runtime}"; export NEXA_REPO_DIR="${NEXA_REPO_DIR:-/opt/nexa/repo}"; export AURA_ROOT="${AURA_ROOT:-$NEXA_ROOT}"; export AURA_VAULT_FILE="${AURA_VAULT_FILE:-$NEXA_ROOT/vault/aura-vault.json}"; export AURA_ORG_REGISTRY="${AURA_ORG_REGISTRY:-$NEXA_ROOT/vault/org-registry.json}"; export AURA_LEADS_FILE="${AURA_LEADS_FILE:-$NEXA_ROOT/vault/leads.json}"; export AURA_GATEWAY_PORT="${AURA_GATEWAY_PORT:-${NEXA_GATEWAY_PORT:-8765}}"; cd "$NEXA_REPO_DIR/ops/gateway"; exec /usr/bin/python3 -m uvicorn app:app --host 127.0.0.1 --port "$AURA_GATEWAY_PORT"'
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

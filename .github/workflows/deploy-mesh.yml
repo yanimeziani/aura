@@ -49,6 +49,8 @@ jobs:
         run: |
           export VPS_IP="${MESH_SSH_HOST:-89.116.170.202}"
           export VPS_USER="${MESH_SSH_USER:-root}"
+          export NEXA_REPO_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git"
+          export NEXA_REPO_REF="${GITHUB_REF_NAME}"
           export NEXA_DEPLOY_WEB_APP=0
           chmod +x ops/scripts/deploy-mesh.sh
           REPO_ROOT="$PWD" ./ops/scripts/deploy-mesh.sh
