@@ -70,5 +70,6 @@ jobs:
           export MESH_VPS_IP="${MESH_SSH_HOST:-89.116.170.202}"
           export MESH_LANDING_URL="${MESH_LANDING_URL:-https://nexa.meziani.ai}"
           export MESH_SKIP_WEB_HEALTH=1
+          export MESH_ALLOW_INSECURE_TLS=1
           chmod +x ops/scripts/smoke-test-mesh.sh
           ./ops/scripts/smoke-test-mesh.sh

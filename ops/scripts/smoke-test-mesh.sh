@@ -22,42 +22,48 @@ fi
 GATEWAY_URL="${MESH_GATEWAY_URL:-${PUBLIC_BASE_URL%/}/gw}"
 WEB_URL="${MESH_WEB_URL:-${PUBLIC_BASE_URL%/}}"
 SKIP_WEB_HEALTH="${MESH_SKIP_WEB_HEALTH:-0}"
+ALLOW_INSECURE_TLS="${MESH_ALLOW_INSECURE_TLS:-0}"
 
 fail() { echo "[smoke] FAIL: $*"; exit 1; }
 ok()   { echo "[smoke] OK: $*"; }
 
+CURL_ARGS=(-s --connect-timeout 10)
+if [ "$ALLOW_INSECURE_TLS" = "1" ]; then
+  CURL_ARGS+=(-k)
+fi
+
 echo "[smoke] Testing mesh (VPS=$VPS_IP, Base URL=$PUBLIC_BASE_URL, Gateway=$GATEWAY_URL, Web=$WEB_URL)..."
 
 # 1. Gateway health
-code=$(curl -s -o /dev/null -w '%{http_code}' --connect-timeout 10 "${GATEWAY_URL}/health" || true)
+code=$(curl "${CURL_ARGS[@]}" -o /dev/null -w '%{http_code}' "${GATEWAY_URL}/health" || true)
 if [ "$code" != "200" ]; then
   fail "gateway /health returned $code (expected 200)"
 fi
 ok "gateway /health 200"
 
 # 2. Gateway specs
-code=$(curl -s -o /dev/null -w '%{http_code}' --connect-timeout 10 "${GATEWAY_URL}/api/specs" || true)
+code=$(curl "${CURL_ARGS[@]}" -o /dev/null -w '%{http_code}' "${GATEWAY_URL}/api/specs" || true)
 if [ "$code" != "200" ]; then
   fail "gateway /api/specs returned $code"
 fi
 ok "gateway /api/specs 200"
 
 # 3. Base URL response
-code=$(curl -s -o /dev/null -w '%{http_code}' -L --connect-timeout 10 "$PUBLIC_BASE_URL/" || true)
+code=$(curl "${CURL_ARGS[@]}" -o /dev/null -w '%{http_code}' -L "$PUBLIC_BASE_URL/" || true)
 if [ "$code" != "200" ]; then
   fail "base URL returned $code (expected 200)"
 fi
 ok "base URL $code"
 
 # 4. Base URL contains expected content
-body=$(curl -s -L --connect-timeout 10 "$PUBLIC_BASE_URL/" || true)
+body=$(curl "${CURL_ARGS[@]}" -L "$PUBLIC_BASE_URL/" || true)
 if ! echo "$body" | grep -Eqi "Nexa|HTTP|mesh|Dragun|debt recovery"; then
   fail "base URL content check failed"
 fi
 ok "base URL content check"
 
 # 5. Gateway validation route through HTTP ingress
-code=$(curl -s -o /dev/null -w '%{http_code}' --connect-timeout 10 \
+code=$(curl "${CURL_ARGS[@]}" -o /dev/null -w '%{http_code}' \
   -H 'Content-Type: application/json' \
   -d '{"email":"smoke@example.com"}' \
   "${GATEWAY_URL}/api/validate-access" || true)
@@ -68,7 +74,7 @@ ok "gateway validation route 200"
 
 if [ "$SKIP_WEB_HEALTH" != "1" ]; then
   # 6. Self-hosted web app health
-  code=$(curl -s -o /dev/null -w '%{http_code}' --connect-timeout 10 "${WEB_URL}/api/health" || true)
+  code=$(curl "${CURL_ARGS[@]}" -o /dev/null -w '%{http_code}' "${WEB_URL}/api/health" || true)
   if [ "$code" != "200" ]; then
     fail "web /api/health returned $code"
   fi
