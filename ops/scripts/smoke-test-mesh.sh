@@ -21,6 +21,7 @@ fi
 
 GATEWAY_URL="${MESH_GATEWAY_URL:-${PUBLIC_BASE_URL%/}/gw}"
 WEB_URL="${MESH_WEB_URL:-${PUBLIC_BASE_URL%/}}"
+SKIP_WEB_HEALTH="${MESH_SKIP_WEB_HEALTH:-0}"
 
 fail() { echo "[smoke] FAIL: $*"; exit 1; }
 ok()   { echo "[smoke] OK: $*"; }
@@ -65,11 +66,13 @@ if [ "$code" != "200" ]; then
 fi
 ok "gateway validation route 200"
 
-# 6. Self-hosted web app health
-code=$(curl -s -o /dev/null -w '%{http_code}' --connect-timeout 10 "${WEB_URL}/api/health" || true)
-if [ "$code" != "200" ]; then
-  fail "web /api/health returned $code"
+if [ "$SKIP_WEB_HEALTH" != "1" ]; then
+  # 6. Self-hosted web app health
+  code=$(curl -s -o /dev/null -w '%{http_code}' --connect-timeout 10 "${WEB_URL}/api/health" || true)
+  if [ "$code" != "200" ]; then
+    fail "web /api/health returned $code"
+  fi
+  ok "web /api/health 200"
 fi
-ok "web /api/health 200"
 
 echo "[smoke] All checks passed."
