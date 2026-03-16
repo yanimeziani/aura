@@ -16,6 +16,18 @@
     linear-gradient(180deg, #091114 0%, #071219 38%, #05090d 100%);
 }
 
+.backgroundGrid {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(rgb(255 255 255 / 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.035) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: linear-gradient(180deg, rgb(0 0 0 / 0.7), transparent 88%);
+  pointer-events: none;
+}
+
 .topbar,
 .heroSection,
 .bandSection,
@@ -32,6 +44,10 @@
   justify-content: space-between;
   gap: 20px;
   padding: 18px 0 30px;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  backdrop-filter: blur(18px);
 }
 
 .wordmarkBlock {
@@ -54,9 +70,9 @@
 .wordmark {
   font-size: 0.74rem;
   font-weight: 700;
-  letter-spacing: 0.28em;
+  letter-spacing: 0.34em;
   text-transform: uppercase;
-  color: var(--accent-teal);
+  color: var(--text-main);
 }
 
 .wordsub {
@@ -72,8 +88,10 @@
 
 .nav a {
   color: var(--text-dim);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .nav a:hover {
@@ -128,6 +146,13 @@
 
 .heroCopy {
   padding: 32px 0 12px;
+}
+
+.heroDeck {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+  gap: 18px;
+  margin-top: 34px;
 }
 
 .eyebrowRow {
@@ -247,7 +272,9 @@
 .infoCard,
 .stepCard,
 .railCard,
-.finalCard {
+.finalCard,
+.signalPanel,
+.journeyCard {
   border: 1px solid var(--line);
   background: linear-gradient(180deg, rgb(255 255 255 / 0.06), rgb(255 255 255 / 0.02));
   box-shadow: 0 24px 80px rgb(0 0 0 / 0.28);
@@ -255,7 +282,12 @@
 }
 
 .proofPanel {
-  margin-top: 34px;
+  padding: 26px;
+  border-radius: 28px;
+}
+
+.signalPanel,
+.journeyCard {
   padding: 26px;
   border-radius: 28px;
 }
@@ -272,7 +304,9 @@
 .proofPanel h2,
 .formCard h2,
 .sectionHeading h2,
-.finalCard h2 {
+.finalCard h2,
+.signalPanel h2,
+.journeyCard h3 {
   margin: 12px 0 0;
   font-family: var(--font-display);
   font-size: clamp(1.8rem, 4vw, 3rem);
@@ -285,9 +319,41 @@
 .infoCard p,
 .stepCard p,
 .railCard p,
-.finalCard p {
+.finalCard p,
+.signalPanel p,
+.journeyCard p {
   color: var(--text-soft);
   line-height: 1.7;
+}
+
+.signalList {
+  display: grid;
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.signalItem {
+  display: grid;
+  gap: 6px;
+  padding: 16px 18px;
+  border: 1px solid var(--line-strong);
+  border-radius: 20px;
+  background: rgb(4 10 12 / 0.34);
+}
+
+.signalTitle {
+  color: var(--accent-gold);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.signalBody {
+  color: var(--text-soft);
+  font-size: 0.95rem;
+  line-height: 1.6;
 }
 
 .metricGrid {
@@ -462,6 +528,13 @@
   max-width: 560px;
 }
 
+.journeyLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+  gap: 22px;
+  align-items: start;
+}
+
 .journeyStep {
   display: flex;
   align-items: flex-start;
@@ -488,6 +561,14 @@
   color: var(--text-soft);
   font-size: 1.02rem;
   line-height: 1.6;
+}
+
+.journeyCard h3 {
+  font-size: 1.75rem;
+}
+
+.journeyActions {
+  margin-top: 1.5rem;
 }
 
 .infoCard {
@@ -587,6 +668,11 @@
     grid-template-columns: 1fr;
   }
 
+  .heroDeck,
+  .journeyLayout {
+    grid-template-columns: 1fr;
+  }
+
   .formCard {
     position: relative;
     top: auto;
@@ -614,6 +700,7 @@
 
   .nav {
     justify-content: space-between;
+    flex-wrap: wrap;
   }
 
   .heroTitle {

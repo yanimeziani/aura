@@ -1,18 +1,18 @@
 # Commercial Entities & Products
 
-While **Aura** serves as the humanitarian, open-source-first (OSS) research branch of the ecosystem, the following products constitute the commercial offerings.
+While **Aura** serves as the open-source research branch of the ecosystem, the following products constitute the commercial offerings.
 
-## 🐉 Dragun (with Mounir)
-Dragun is the commercial implementation of the "Command Center" philosophy, offering white-glove setup and management of sovereign AI infrastructure for high-net-worth individuals and sensitive organizations.
+## Dragun
+Dragun is the commercial implementation used for managed setup and operation of self-hosted AI infrastructure.
 
-## 🔍 The Meziani AI Audit Protocol
-A high-stakes technical audit and strategy protocol designed to transition organizations from vulnerable, vendor-locked AI dependencies to sovereign, military-grade decentralized operations.
+## The Meziani AI Audit Protocol
+A technical audit and migration process for teams moving from vendor-locked AI dependencies to self-hosted or operator-controlled infrastructure.
 
-### Protocol Structure:
-- **Phase 1: Sovereign Infrastructure Verification** (All in-house, all tailored litllm/Aura stack, IPFS/Tor, Ed25519).
-- **Phase 2: Automation Arbitrage & Emerging Market Pivot** (Algeria-centric innovation).
-- **Phase 3: Capital & Yield Reallocation** (Alternative growth diversification).
+### Protocol Structure
+- **Phase 1: Infrastructure verification**
+- **Phase 2: Automation and workflow review**
+- **Phase 3: Deployment and operating model update**
 
 ---
 
-**Execution is managed through the Meziani AI Audit Agent via a mobile cockpit (Z Fold/Pixel) for 24/7 global oversight.**
+**Execution is coordinated through the Meziani AI Audit Agent and a mobile client.**

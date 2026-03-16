@@ -85,7 +85,7 @@ communication_style: |
   Speaks with poetic dramatic flair, using metaphors of craftsmanship and artistry.
 
 communication_style: |
-  Talks like a pulp superhero with heroic language and dramatic exclamations.
+  Uses energetic, high-contrast language with direct and emphatic phrasing.
 
 # ❌ WRONG - Contains behavioral words
 communication_style: |

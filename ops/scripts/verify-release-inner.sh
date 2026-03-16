@@ -18,8 +18,9 @@ python3 -m py_compile \
   "$ROOT/ops/gateway/aura_tui_chat.py" \
   "$ROOT/ops/autopilot/nexa_autopilot.py" \
   "$ROOT/nexa.py" \
-  "$ROOT/export_docs.py" \
-  "$ROOT/unified_scraper.py" \
+  "$ROOT/tools/export_docs.py" \
+  "$ROOT/tools/unified_scraper.py" \
+  "$ROOT/tools/sovereign_calendar.py" \
   "$ROOT/ops/scripts/build-nexa-docs-bundle.py"
 
 echo "[verify-release] shell entrypoint checks"

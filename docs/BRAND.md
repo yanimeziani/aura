@@ -3,9 +3,9 @@
 ## Core
 
 - Name: `Nexa`
-- Category: sovereign agentic infrastructure
-- Primary line: `Nexa is sovereign agentic infrastructure.`
-- Extended line: `Nexa is the sovereign operating layer for agents, systems, and recovery.`
+- Category: infrastructure software
+- Primary line: `Nexa is infrastructure software for deployment, routing, and operator control.`
+- Extended line: `Nexa provides tooling for deployment, recovery, transport-aware routing, and operator-supervised automation.`
 
 ## Brand architecture
 
@@ -16,7 +16,7 @@
 - `Nexa Vault`
 - `Nexa Flow`
 - `Nexa Edge`
-- `Nexa Mission Control`
+- `Nexa Operator UI`
 
 ## Positioning
 
@@ -50,7 +50,7 @@ Use `Nexa` for public-facing branding.
 Use title case for product names:
 
 - `Nexa Gateway`
-- `Nexa Mission Control`
+- `Nexa Operator UI`
 - `Nexa Mesh`
 
 Use technical names in code and deployment only when needed, but public labels and metadata should map back to the brand architecture above.

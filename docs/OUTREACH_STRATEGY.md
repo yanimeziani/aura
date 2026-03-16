@@ -1,7 +1,7 @@
 # Strategic Outreach Plan: Nexa OSS Launch
 
 ## 🎯 Goal
-Secure coverage in relevant technical, infrastructure, privacy, and open-source channels for the launch of Nexa as sovereign collaboration protocol infrastructure.
+Secure coverage in relevant technical, infrastructure, privacy, and open-source channels for the public release of Nexa.
 
 ## 📍 Target Outlets
 - **Technical blogs**: Focus on architecture, transport, recovery, and trust boundaries.
@@ -14,7 +14,7 @@ Secure coverage in relevant technical, infrastructure, privacy, and open-source 
 ## 🛠 Media Kit Contents
 - **Logo**: `/assets/aura-logo.png`
 - **Screenshots**: `/assets/screenshots/pegasus-mobile.png`, `/assets/screenshots/web-dashboard.png`
-- **Manifesto**: `research/aura-manifesto/main.pdf` (prepared via CP pipeline)
+- **Architecture PDF**: `research/aura-manifesto/main.pdf` (prepared via CP pipeline)
 - **Architecture docs**: `docs/ARCHITECTURE.md`, `docs/PROTOCOL.md`, `docs/TRUST_MODEL.md`, `docs/THREAT_MODEL.md`
 
 ## 🚀 Outreach Workflow

@@ -78,4 +78,6 @@ Downloads/
 /exports/notebook-lm/Aura_*
 /apps/web/public/Aura_Full_Documentation_Export.txt
 /nexa-docs-notebooklm.txt
+/deployment.log
+/your
 *.tsbuildinfo

@@ -1,6 +1,6 @@
 {
   "name": "nexa",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "workspaces": [
     "apps/*",
@@ -33,5 +33,5 @@
     "yaml-language-server": "^1.21.0"
   },
   "license": "MIT",
-  "description": "Nexa: Sovereign Agentic Monorepo"
+  "description": "Nexa Monorepo"
 }

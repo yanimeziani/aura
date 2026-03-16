@@ -1,14 +1,14 @@
-# Nexa: Sovereign Agentic Monorepo
-
-> **"Hardware is ephemeral. Sovereignty is persistent."**
+# Nexa Monorepo
 
 **⚠️ [Disclaimer and responsible use](./DISCLAIMER.md)** — This software is provided "as is." You may not use it for illegal, harmful, or dangerous purposes. See [DISCLAIMER.md](./DISCLAIMER.md) before use.
 
-Nexa is a holistic, decentralized framework for AI research, deployment, and autonomous agent orchestration. It provides a secure technical layer for hosting specialized personas with sovereignty and human-in-the-loop (HITL) coordination.
+Nexa is a monorepo for mesh-oriented deployment, operator tooling, agent runtime components, and supporting infrastructure. It includes HTTP services, web interfaces, deployment scripts, and protocol documentation.
+
+The repository root is intentionally kept thin: primary entrypoints live here, while implementation utilities are grouped under `tools/` and longer-form references or reports live under `docs/`.
 
 ## Protocol Direction
 
-Nexa should be read first as protocol infrastructure for human and AI collaboration under hostile conditions, not as a single app stack.
+Nexa should be read first as protocol and infrastructure documentation, not as a single application.
 
 Canonical architecture docs:
 
@@ -38,22 +38,21 @@ Model defaults:
 
 ---
 
-## 🏛 The Ephemeral Hardware Manifesto
+## Recovery Model
 
-In the Nexa ecosystem, physical devices are treated as disposable. Whether a developer drops their phone in a river or it is confiscated at a border, the protocol dictates that a **brand new off-the-shelf device** must be capable of being **fully restored to a sovereign state within exactly ten minutes.**
-
-This is achieved through:
-- **Dotfile Sovereignty**: All environment configurations are version-controlled and portable.
-- **Agentic Recovery**: Automated scripts to rebuild the entire stack (Web, Mobile, Runtime) from source truth.
-- **Cloud-Edge Parity**: Seamless deployment between local hardware and remote VPS infrastructure.
+The repository is organized around reproducible setup and recovery:
+- versioned environment and deployment configuration
+- scripted service provisioning
+- consistent local and VPS deployment paths
 
 ---
 
 ## 🚀 Quick Start
 
-**99% of tasks are automated** — safe, efficient, standardized. See **[docs/QUICKSTART.md](docs/QUICKSTART.md)** for the full path: **instant demo** (`nexa demo`) then **onboarding** (vault → deploy). One entry point: `nexa` CLI or `make` (e.g. `make deploy-mesh`, `make demo`, `make verify-release`). For **offline / local-mesh coding** (e.g. Z Fold with no WiFi or WiFi without internet, using org-wide distributed OSS inference), see **[docs/DISTRIBUTED_INFERENCE_VISION.md](docs/DISTRIBUTED_INFERENCE_VISION.md)**.
+See **[docs/QUICKSTART.md](docs/QUICKSTART.md)** for the standard local and VPS setup path. Primary entry points are the `nexa` CLI and `make` targets such as `make deploy-mesh`, `make demo`, and `make verify-release`. For offline or local-mesh development, see **[docs/DISTRIBUTED_INFERENCE_VISION.md](docs/DISTRIBUTED_INFERENCE_VISION.md)**.
+For the fully manual VPS + phone persistence path, see **[docs/MANUAL_DEPLOY_TO_VPS_AND_PHONE_MESH.md](docs/MANUAL_DEPLOY_TO_VPS_AND_PHONE_MESH.md)**.
 
-### 0 to Sovereignty (10 min)
+### Basic Setup
 
 ### 1. Initialize Memory (30s)
 ```bash
@@ -67,10 +66,10 @@ cd core/cerberus/runtime/cerberus-core
 zig build -Doptimize=ReleaseSmall
 ```
 
-### 3. Deploy the Nexa Mission Control Dashboard (3m)
+### 3. Build the Nexa Web Interface (3m)
 ```bash
 cd apps/web
-npm install && npm run build
+npm ci --workspace apps/web && npm run build --workspace apps/web
 ```
 
 ### 4. Provision Fresh VPS (5m)
@@ -86,15 +85,15 @@ export VPS_DOMAIN=your-domain.example
 
 | Component | Tech Stack | Role |
 |-----------|------------|------|
-| **[Nexa Dashboard](./apps/aura-dashboard)** | Next.js, React, TypeScript | Operator mission control and mesh telemetry |
-| **[Nexa Landing](./apps/aura-landing-next)** | Next.js, next-intl | Public ingress, lead capture, telemetry intake |
+| **[Nexa Operator UI](./apps/aura-dashboard)** | Next.js, React, TypeScript | Operator interface and mesh telemetry |
+| **[Nexa Static Site](./apps/aura-landing-next)** | Next.js, next-intl | Static HTTP entrypoint and data intake |
 | **[Nexa Gateway](./ops/gateway)** | FastAPI, Python | Vault-backed routing, session sync, HITL, Tor/IPFS transport |
 | **[Core Runtime](./core)** | Zig, Python | Native services, mesh utilities, recovery primitives |
 | **[Ops](./ops)** | Bash, systemd, nginx | Deployment, backup, restore, thin-stack automation |
 
 ---
 
-## 🤖 Specialized Agent Personas
+## Agent Workloads
 
 1.  **Career-Twin Agent**: Autonomous professional profile management, inquiry handling, and interview scheduling.
 2.  **SDR Agent**: Automated B2B sales development, prospect research, and personalized outreach sequences.
@@ -107,11 +106,11 @@ export VPS_DOMAIN=your-domain.example
 
 ---
 
-## 🛠 System Conventions
+## Operating Assumptions
 
-- **Vibe Coding**: High-velocity development through AI-orchestrated workflows.
-- **Three-Tap Rule**: Any operation on Pegasus requiring >3 taps is a failure of automation.
-- **Strict Zero-Trust**: Every network is assumed hostile. Sovereignty is maintained through local-first memory and encrypted transport.
+- deployment and recovery should be scriptable
+- mobile and remote clients should reconnect without becoming the source of truth
+- network boundaries should be treated as untrusted by default
 
 ---
 
@@ -120,16 +119,17 @@ export VPS_DOMAIN=your-domain.example
 ```text
 /
 ├── apps/
-│   ├── aura-dashboard/    # Mission Control dashboard
-│   ├── aura-landing-next/ # Public landing and intake
-│   └── web/               # Legacy web workspace / adjacent apps
+│   ├── aura-dashboard/    # Operator UI
+│   ├── aura-landing-next/ # Static site
+│   └── web/               # Next.js web workspace
 ├── core/
 │   ├── cerberus/          # Agent/runtime engine
 │   ├── aura-api/          # Native API service
 │   └── vault/             # Portable operator state and recovery data
 ├── ops/            # 10-Minute Deployment & Recovery Scripts
 ├── docs/           # Technical Specs & Architecture Truth
-└── research/       # Scientific Manifestos & LaTeX Sources
+├── tools/          # Secondary CLIs, local utilities, and export helpers
+└── research/       # Research notes and source files
 ```
 
 ---

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Nexa is a sovereign collaboration protocol stack for humans and AI systems operating across hostile, unstable, or vendor-controlled environments. The architecture is designed around five constraints:
+Nexa is a collaboration and deployment stack for humans and AI systems operating across hostile, unstable, or vendor-controlled environments. The architecture is designed around five constraints:
 
 - device loss is normal
 - networks are hostile
@@ -131,7 +131,7 @@ Requirements:
 - `Nexa Gateway`: routing, sync, provider mediation, HITL, transport controls
 - `Nexa Vault`: portable operator state and key material
 - `Nexa Mesh`: node-to-node coordination and continuity path
-- `Nexa Mission Control`: operator interface for status, approvals, and continuity
+- `Nexa operator UI`: operator interface for status, approvals, and continuity
 - `Nexa Docs`: technical source corpus for operators, models, and downstream synthesis
 
 ## Architectural Invariants

@@ -31,4 +31,4 @@ All **medium-to-critical** actions that are **destructive** or **interface with 
 5. Client resends the same request **with** header `X-HITL-Confirm: <action_id>`.
 6. Gateway executes and returns 200.
 
-Agents and automation must **never** send the confirm header without explicit operator approval (e.g. via Mission Control or Pegasus).
+Agents and automation must **never** send the confirm header without explicit operator approval (e.g. via operator UI or Pegasus).

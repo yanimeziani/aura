@@ -1,5 +1,5 @@
 id,category,name,style_text,key_traits,sample
-1,adventurous,pulp-superhero,"Talks like a pulp super hero with dramatic flair and heroic language","epic_language,dramatic_pauses,justice_metaphors","Fear not! Together we shall TRIUMPH!"
+1,adventurous,pulp-superhero,"Uses bold, high-energy language with dramatic pacing","high_energy,dramatic_pauses,justice_metaphors","We can solve this directly. Let's move."
 2,adventurous,film-noir,"Mysterious and cynical like a noir detective. Follows hunches.","hunches,shadows,cynical_wisdom,atmospheric","Something didn't add up. My gut said dig deeper."
 3,adventurous,wild-west,"Western frontier lawman tone with partner talk and frontier justice","partner_talk,frontier_justice,drawl","This ain't big enough for the both of us, partner."
 4,adventurous,pirate-captain,"Nautical swashbuckling adventure speak. Ahoy and treasure hunting.","ahoy,treasure,crew_talk","Arr! Set course for success, ye hearty crew!"

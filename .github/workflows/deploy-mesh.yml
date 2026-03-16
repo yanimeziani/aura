@@ -16,7 +16,7 @@ on:
 env:
   VPS_IP: ${{ secrets.MESH_SSH_HOST || '89.116.170.202' }}
   VPS_USER: ${{ secrets.MESH_SSH_USER || 'root' }}
-  LANDING_URL: ${{ secrets.MESH_LANDING_URL || 'https://nexa.global' }}
+  LANDING_URL: ${{ secrets.MESH_LANDING_URL || 'https://nexa.meziani.ai' }}
 
 jobs:
   deploy:
@@ -24,6 +24,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build Nexa landing export
+        run: |
+          npm install --workspace apps/aura-landing-next
+          npm run build --workspace apps/aura-landing-next
 
       - name: Setup SSH key
         uses: webfactory/ssh-agent@v0.9.0

@@ -22,7 +22,7 @@ The Meziani AI Audit Protocol is a response to the systemic vulnerability of mod
 - **The Pivot**: Aggressive reallocation into high-growth alternative investments: **Emerging Market Bonds** and **Automation-Focused Equities**.
 
 ## 5. Execution: The Mobile Cockpit
-- **Mobility**: Entirely executable and reviewable from a mobile cockpit (Samsung Z Fold or Google Pixel).
+- **Mobility**: Entirely executable and reviewable from a mobile client (Samsung Z Fold or Google Pixel).
 - **Tooling**: Utilizing **Termux** for mobile CLI operations.
 - **Reporting**: Brutalist, data-dense markdown output appended asynchronously to the decentralized vault (`vault/roster/CHANNEL.md`).
 

@@ -428,7 +428,7 @@ def telemetry_visit(payload: VisitPayload):
 
 @app.get("/telemetry/regions")
 def telemetry_regions():
-    """Aggregated visit counts by country/locale for Mission Control cluster view."""
+    """Aggregated visit counts by country/locale for operator UI cluster view."""
     data = _load_telemetry()
     counts = data.get("visits", {})
     clusters = []
@@ -1287,7 +1287,7 @@ def _node_avail_kb(host: str, storage_path: str) -> Optional[int]:
 def backup_nodes(authorization: Optional[str] = Header(None)):
     """
     List org nodes that receive log backups, with available storage (KB).
-    Largest-first so Mission Control can show where backups are routed.
+    Largest-first so operator UI can show where backups are routed.
     Requires vault token.
     """
     _require_vault_auth(authorization)

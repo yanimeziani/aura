@@ -76,17 +76,17 @@ function start_gateway_background() {
 }
 
 function show_help() {
-    echo "Nexa CLI - Sovereign operator command center"
+    echo "Nexa CLI"
     echo "Usage: nexa <command> [options]"
     echo ""
-    echo "Automation (99% of tasks — safe, standardized, anyone can run):"
-    echo "  deploy-mesh   Deploy gateway + dashboard + landing to VPS (backup first, then sync)"
+    echo "Primary automation:"
+    echo "  deploy-mesh   Deploy gateway + web services to VPS (backup first, then sync)"
     echo "  backup        Backup dynamic logs/json/md locally (or on VPS if AURA_REMOTE=1)"
     echo "  docs-bundle   Build NotebookLM-safe doc bundle (core docs + docs/updates/)"
     echo "  publish-notebooklm  Build + manifest + publish NotebookLM source bundle"
     echo "  notebooklm-upload   Optional Playwright upload into NotebookLM UI"
-    echo "  smoke-test    Run smoke tests against deployed mesh (gateway, dashboard, landing)"
-    echo "  demo          Instant demo: start gateway + dashboard locally (open Mission Control)"
+    echo "  smoke-test    Run smoke tests against deployed mesh services"
+    echo "  demo          Start gateway + local UI for development"
     echo ""
     echo "Commands:"
     echo "  status      Check system health and agent states"
@@ -95,7 +95,7 @@ function show_help() {
     echo "  vault       Manage API keys and secrets"
     echo "  logs        Tail the live agent metrics log"
     echo "  tui         Launch the Zig-based Terminal User Interface"
-    echo "  mesh        Sovereign mesh VPN (Tailscale-like, Zig); up / down / status"
+    echo "  mesh        Mesh VPN (Tailscale-like, Zig); up / down / status"
     echo "  lynx        Zig text browser (aura-lynx <url>)"
     echo "  api         Run aura-api (VPS HTTP server; AURA_API_PORT=9000)"
     echo "  gateway     Start syncing gateway (IDEs, TUIs, LLM clients through Nexa)"
@@ -117,7 +117,7 @@ case "$CMD" in
         show_help
         ;;
     deploy-mesh)
-        echo "🚀 Deploy mesh (gateway + dashboard + landing to VPS)..."
+        echo "Deploy mesh services to VPS..."
         REPO_ROOT="$AURA_ROOT" bash "$AURA_ROOT/ops/scripts/deploy-mesh.sh"
         ;;
     backup)
@@ -145,7 +145,7 @@ case "$CMD" in
         cd "$AURA_ROOT" && node "$AURA_ROOT/ops/scripts/notebooklm-upload.mjs"
         ;;
     smoke-test)
-        echo "🧪 Smoke-test mesh..."
+        echo "Run mesh smoke tests..."
         if [[ -z "${VPS_IP:-}" ]]; then
             echo "Set VPS_IP before running smoke-test." >&2
             exit 1
@@ -157,7 +157,7 @@ case "$CMD" in
         fi
         ;;
     demo)
-        echo "🎬 Instant demo: starting gateway + dashboard..."
+        echo "Starting local gateway and UI..."
         export AURA_ROOT="$AURA_ROOT" AURA_VAULT_FILE="$AURA_VAULT_FILE" AURA_LOG_DIR="$AURA_LOG_DIR"
         if ! gateway_is_running "$(gateway_url)"; then
             echo "  Starting gateway in background..."
@@ -168,9 +168,9 @@ case "$CMD" in
             done
         fi
         echo "  Gateway: $(gateway_url)"
-        echo "  Opening Mission Control (dashboard)..."
+        echo "  Starting local UI..."
         (cd "$AURA_ROOT/apps/aura-dashboard" && AURA_DASHBOARD_PORT="${AURA_DASHBOARD_PORT:-3003}" npm run dev 2>/dev/null &) || true
-        echo "  Demo ready. Open http://localhost:${AURA_DASHBOARD_PORT:-3003} (dashboard) and use vault token to log in."
+        echo "  Ready. Open http://localhost:${AURA_DASHBOARD_PORT:-3003} and use the vault token to log in."
         echo "  Docs URL: $(gateway_url)/docs/nexa"
         ;;
     status)

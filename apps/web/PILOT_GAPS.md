@@ -13,7 +13,7 @@
 - [x] Pilot dataset ingestion script ready (`mounir_onboarding.sql`)
 - [ ] Run `mounir_onboarding.sql` against production Supabase project
 - [ ] Verify RAG indexing for Venice Gym agreement (requires AI keys)
-- [ ] Book 15-minute onboarding call with Mounir (Sovereign Calendar Ready in `~/sovereign_calendar.py`)
+- [ ] Book 15-minute onboarding call with Mounir (Sovereign Calendar ready in `tools/sovereign_calendar.py`)
 
 ## Immediate Build Order — DONE
 1. ~~Schema extension + migration for statuses and action log~~

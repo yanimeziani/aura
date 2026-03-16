@@ -1,4 +1,4 @@
-# PRD — Cerberus / Pegasus "Final Boss" Setup (Mobile → Debian → Debian VPS) for Dragun.app
+# PRD — Cerberus / Pegasus Setup (Mobile → Debian → Debian VPS) for Dragun.app
 
 **Version:** 1.0
 **Owner:** Yani
@@ -8,9 +8,9 @@
 
 ---
 
-## 1) Purpose and Vision
+## 1) Purpose
 
-Build a 24/7 "mobile-to-cloud" command center where a Samsung Z Fold (Pegasus app) is the cockpit,
+Build a 24/7 "mobile-to-cloud" operator interface where a Samsung Z Fold (Pegasus app) is the client,
 a Debian machine is the staging ground, and a Debian VPS is the always-on executor. Cerberus
 is the lightweight runtime that hosts agents, while Pegasus is the control plane (Android app +
 compat API) that provides dashboards, HITL approvals, and cost visibility. Together they manage
@@ -19,7 +19,7 @@ two always-available agents:
 1. **DevSecOps Agent (BMAD v6):** keeps infra stable, secure, observable, cheap, and deployable anytime.
 2. **Growth Hacking Coder Agent (BMAD v6):** builds and ships growth loops, scrapers, SEO pages, content automation, and experiments with minimal human input.
 
-The system must be lean: minimal tokens, minimal cost, maximum automation, and clear
+The system must be lean: minimal tokens, controlled cost, high automation, and clear
 human-in-the-loop (HITL) checkpoints for risky actions.
 
 ---
@@ -35,7 +35,7 @@ human-in-the-loop (HITL) checkpoints for risky actions.
 
 ## 3) Target Users
 
-- **Primary:** Yani (Founder) operating from phone, sometimes with limited money/tokens.
+- **Primary:** Yani operating from phone, sometimes with limited money/tokens.
 - **Secondary:** "future VA agent" role (top-level coordinator), but initially you are the VA.
 
 ---
@@ -277,7 +277,7 @@ Retention: 30 days minimum locally, optionally push summaries to repo as `ops/lo
 
 ## 18) Acceptance Criteria (Must Pass)
 
-- From phone: one command opens cockpit and shows open tasks, alerts, and costs
+- From phone: one command opens client and shows open tasks, alerts, and costs
 - Agents can: create PR branches, run tests, propose merges
 - DevSecOps agent: detects failing build and proposes fix; can rollback with approval
 - Growth agent: ships a measurable experiment behind a feature flag

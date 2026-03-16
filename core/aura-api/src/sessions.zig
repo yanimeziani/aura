@@ -4,7 +4,8 @@
 
 const std = @import("std");
 
-const SESSIONS_DIR = "/home/yani/Aura/var/aura-api/sessions";
+const DEFAULT_AURA_ROOT = "/opt/aura";
+const LEGACY_SESSIONS_DIR = "/home/yani/Aura/var/aura-api/sessions";
 
 // ── Public API ────────────────────────────────────────────────────────────────
 
@@ -80,10 +81,16 @@ pub fn syncFromGateway(allocator: std.mem.Allocator, workspace_id: []const u8) !
 // ── Internal ──────────────────────────────────────────────────────────────────
 
 fn ensureDir() !void {
+    var buf: [512]u8 = undefined;
+    const sessions_dir = try sessionsDirPath(&buf);
+    return ensureDirFor(sessions_dir);
+}
+
+fn ensureDirFor(sessions_dir: []const u8) !void {
     // mkdir -p SESSIONS_DIR
     var buf: [512]u8 = undefined;
     var pos: usize = 1;
-    var it = std.mem.splitScalar(u8, SESSIONS_DIR[1..], '/');
+    var it = std.mem.splitScalar(u8, sessions_dir[1..], '/');
     buf[0] = '/';
     while (it.next()) |part| {
         @memcpy(buf[pos..pos + part.len], part);
@@ -98,11 +105,27 @@ fn ensureDir() !void {
 }
 
 fn sessionPath(allocator: std.mem.Allocator, id: []const u8) ![]u8 {
-    return std.fmt.allocPrint(allocator, SESSIONS_DIR ++ "/{s}.json", .{id});
+    var buf: [512]u8 = undefined;
+    const sessions_dir = try sessionsDirPath(&buf);
+    return std.fmt.allocPrint(allocator, "{s}/{s}.json", .{ sessions_dir, id });
 }
 
 fn tmpPath(allocator: std.mem.Allocator, id: []const u8) ![]u8 {
-    return std.fmt.allocPrint(allocator, SESSIONS_DIR ++ "/{s}.json.tmp", .{id});
+    var buf: [512]u8 = undefined;
+    const sessions_dir = try sessionsDirPath(&buf);
+    return std.fmt.allocPrint(allocator, "{s}/{s}.json.tmp", .{ sessions_dir, id });
+}
+
+fn sessionsDirPath(buf: []u8) ![]const u8 {
+    if (std.posix.getenv("NEXA_API_SESSIONS_DIR")) |path| return path;
+    if (std.posix.getenv("AURA_API_SESSIONS_DIR")) |path| return path;
+    if (std.posix.getenv("NEXA_ROOT")) |root| {
+        return std.fmt.bufPrint(buf, "{s}/var/aura-api/sessions", .{root});
+    }
+    if (std.posix.getenv("AURA_ROOT")) |root| {
+        return std.fmt.bufPrint(buf, "{s}/var/aura-api/sessions", .{root});
+    }
+    return DEFAULT_AURA_ROOT ++ "/var/aura-api/sessions";
 }
 
 // ── Tests ─────────────────────────────────────────────────────────────────────

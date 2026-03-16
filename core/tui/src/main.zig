@@ -1,107 +1,311 @@
 const std = @import("std");
 
+const Mode = enum {
+    codex,
+    gemini,
+    claude,
+
+    fn fromString(raw: []const u8) ?Mode {
+        if (std.ascii.eqlIgnoreCase(raw, "codex")) return .codex;
+        if (std.ascii.eqlIgnoreCase(raw, "gemini")) return .gemini;
+        if (std.ascii.eqlIgnoreCase(raw, "claude")) return .claude;
+        return null;
+    }
+
+    fn label(self: Mode) []const u8 {
+        return switch (self) {
+            .codex => "codex",
+            .gemini => "gemini",
+            .claude => "claude",
+        };
+    }
+
+    fn systemPrompt(self: Mode) []const u8 {
+        return switch (self) {
+            .codex =>
+            \\You are an in-house coding terminal. Be direct, implementation-first, and concise.
+            \\Prefer actionable code and exact commands. Assume local sovereign infrastructure.
+            ,
+            .gemini =>
+            \\You are an in-house research and synthesis terminal. Be structured, analytical, and clear.
+            \\Prefer concise explanations, tradeoffs, and next steps.
+            ,
+            .claude =>
+            \\You are an in-house architecture and writing terminal. Be careful, coherent, and high-signal.
+            \\Prefer polished reasoning, but stay concise and practical.
+            ,
+        };
+    }
+};
+
+const Message = struct {
+    role: []u8,
+    content: []u8,
+};
+
+const Config = struct {
+    mode: Mode,
+    model: []const u8,
+    host: []const u8,
+};
+
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     defer _ = gpa.deinit();
     const allocator = gpa.allocator();
 
-    while (true) {
-        // Clear screen and reset cursor
-        std.debug.print("\x1B[2J\x1B[H", .{});
-        std.debug.print("=== \x1B[36;1mAURA COMMAND CENTER\x1B[0m ===\n\n", .{});
-        
-        // Fetch Systemctl Status
-        var status_proc = std.process.Child.init(&[_][]const u8{"systemctl", "is-active", "aura_autopilot.service", "ai_pay.service", "ai_agency_web.service"}, allocator);
-        status_proc.stdout_behavior = .Pipe;
-        status_proc.stderr_behavior = .Ignore;
-        _ = status_proc.spawn() catch |err| {
-            std.debug.print("Failed to fetch status: {}\n", .{err});
-        };
-        
-        const status_out = status_proc.stdout.?.readToEndAlloc(allocator, 1024 * 64) catch "";
-        defer if (status_out.len > 0) allocator.free(status_out);
-        _ = status_proc.wait() catch {};
-        
-        std.debug.print("\x1B[33m[ Daemons Status ]\x1B[0m\n", .{});
-        var split = std.mem.splitScalar(u8, status_out, '\n');
-        const services = [_][]const u8{"Autopilot  ", "Payment API", "Web UI     "};
-        var i: usize = 0;
-        while (split.next()) |line| {
-            if (line.len == 0 or i >= 3) continue;
-            const color = if (std.mem.eql(u8, line, "active")) "\x1B[32m" else "\x1B[31m";
-            std.debug.print("  {s} : {s}{s}\x1B[0m\n", .{services[i], color, line});
-            i += 1;
-        }
+    var cfg = Config{
+        .mode = parseModeArg() orelse .codex,
+        .model = std.posix.getenv("NEXA_LOCAL_MODEL") orelse "qwen2.5:1.5b",
+        .host = std.posix.getenv("OLLAMA_HOST") orelse "http://127.0.0.1:11434",
+    };
 
-        // Mesh Status — live from aura-api (falls back gracefully if offline)
-        std.debug.print("\n\x1B[33m[ Mesh & Traffic ]\x1B[0m\n", .{});
-        var mesh_proc = std.process.Child.init(
-            &[_][]const u8{ "curl", "-sf", "--max-time", "2", "http://localhost:9000/mesh" },
-            allocator,
-        );
-        mesh_proc.stdout_behavior = .Pipe;
-        mesh_proc.stderr_behavior = .Ignore;
-        const mesh_spawned = mesh_proc.spawn();
-        if (mesh_spawned) |_| {
-            const mesh_out = mesh_proc.stdout.?.readToEndAlloc(allocator, 4096) catch "";
-            defer if (mesh_out.len > 0) allocator.free(mesh_out);
-            _ = mesh_proc.wait() catch {};
-            if (mesh_out.len > 0) {
-                std.debug.print("  {s}\n", .{mesh_out});
-            } else {
-                std.debug.print("  aura-api offline (run: aura-api)\n", .{});
-            }
-        } else |_| {
-            std.debug.print("  curl not found; start aura-api and check PATH\n", .{});
+    var history = std.ArrayList(Message).empty;
+    defer {
+        for (history.items) |msg| {
+            allocator.free(msg.role);
+            allocator.free(msg.content);
         }
-
-        std.debug.print("\n\x1B[33m[ Controls ]\x1B[0m\n", .{});
-        std.debug.print("  \x1B[1m1.\x1B[0m Start Services\n", .{});
-        std.debug.print("  \x1B[1m2.\x1B[0m Stop Services\n", .{});
-        std.debug.print("  \x1B[1m3.\x1B[0m Run Vault Manager\n", .{});
-        std.debug.print("  \x1B[1m4.\x1B[0m View Agent Logs (tail)\n", .{});
-        std.debug.print("  \x1B[1m5.\x1B[0m Trigger Frontend Build\n", .{});
-        std.debug.print("  \x1B[1m6.\x1B[0m Configure Webhooks\n", .{});
-        std.debug.print("  \x1B[1m7.\x1B[0m View Mesh Details\n", .{});
-        std.debug.print("  \x1B[1mq.\x1B[0m Quit to Shell\n\n", .{});
-        std.debug.print("Select an option: ", .{});
-
-        var buf: [16]u8 = undefined;
-        const len = std.posix.read(std.posix.STDIN_FILENO, &buf) catch 0;
-        if (len > 0) {
-            const char = buf[0];
-            if (char == 'q' or char == 'Q') {
-                break;
-            } else if (char == '1') {
-                try exec(allocator, &[_][]const u8{"sudo", "systemctl", "start", "aura_autopilot.service", "ai_pay.service", "ai_agency_web.service"});
-            } else if (char == '2') {
-                try exec(allocator, &[_][]const u8{"sudo", "systemctl", "stop", "aura_autopilot.service", "ai_pay.service", "ai_agency_web.service"});
-            } else if (char == '3') {
-                try exec(allocator, &[_][]const u8{"python3", "/home/yani/Aura/vault/vault_manager.py"});
-            } else if (char == '4') {
-                try exec(allocator, &[_][]const u8{"less", "+F", "/home/yani/Aura/ai_agency_wealth/agency_metrics.log"});
-            } else if (char == '5') {
-                try exec(allocator, &[_][]const u8{"bash", "-c", "cd /home/yani/Aura/ai_agency_web && npm run build"});
-            } else if (char == '6') {
-                try exec(allocator, &[_][]const u8{"python3", "/home/yani/Aura/vault/vault_manager.py", "webhook"});
-            } else if (char == '7') {
-                try exec(allocator, &[_][]const u8{"curl", "-s", "http://localhost:9000/mesh"});
-            }
-        } else {
-            break;
-        }
+        history.deinit(allocator);
     }
-    
-    std.debug.print("\n\x1B[36mExiting Aura TUI.\x1B[0m\n", .{});
+
+    try appendMessage(allocator, &history, "system", cfg.mode.systemPrompt());
+
+    var stdout_buffer: [4096]u8 = undefined;
+    var stdout_writer = std.fs.File.stdout().writer(&stdout_buffer);
+    const stdout = &stdout_writer.interface;
+
+    try printBanner(stdout, cfg);
+    try stdout.flush();
+
+    var stdin_buffer: [4096]u8 = undefined;
+    var stdin_reader = std.fs.File.stdin().reader(&stdin_buffer);
+    const stdin = &stdin_reader.interface;
+
+    while (true) {
+        try stdout.print("\n[{s}:{s}] > ", .{ cfg.mode.label(), cfg.model });
+        try stdout.flush();
+
+        const raw_line = stdin.takeDelimiterExclusive('\n') catch |err| switch (err) {
+            error.EndOfStream => break,
+            else => return err,
+        };
+        const trimmed = std.mem.trim(u8, raw_line, " \r\t");
+        if (trimmed.len == 0) continue;
+
+        if (trimmed[0] == '/') {
+            const should_continue = try handleCommand(allocator, stdout, &history, &cfg, trimmed);
+            try stdout.flush();
+            if (!should_continue) break;
+            continue;
+        }
+
+        try appendMessage(allocator, &history, "user", trimmed);
+        const reply = requestChat(allocator, cfg, history.items) catch |err| {
+            try stdout.print("\nerror: {}\n", .{err});
+            try stdout.flush();
+            _ = history.pop();
+            continue;
+        };
+        defer allocator.free(reply);
+
+        try appendMessage(allocator, &history, "assistant", reply);
+        try stdout.print("\n{s}\n", .{reply});
+        try stdout.flush();
+    }
 }
 
-fn exec(allocator: std.mem.Allocator, argv: []const []const u8) !void {
-    // Clear screen before executing
-    std.debug.print("\x1B[2J\x1B[H", .{});
-    var proc = std.process.Child.init(argv, allocator);
-    _ = try proc.spawnAndWait();
-    
-    std.debug.print("\n\x1B[32m[Command finished. Press Enter to continue...]\x1B[0m", .{});
-    var buf: [1]u8 = undefined;
-    _ = std.posix.read(std.posix.STDIN_FILENO, &buf) catch 0;
+fn parseModeArg() ?Mode {
+    var args = std.process.args();
+    _ = args.skip();
+    if (args.next()) |arg| {
+        return Mode.fromString(arg);
+    }
+    return null;
+}
+
+fn printBanner(stdout: *std.Io.Writer, cfg: Config) !void {
+    try stdout.print(
+        \\AURA LOCAL TERMINAL
+        \\mode:  {s}
+        \\model: {s}
+        \\host:  {s}
+        \\
+        \\Commands:
+        \\  /help                  show commands
+        \\  /mode codex|gemini|claude
+        \\  /model <ollama-model>
+        \\  /clear                 reset conversation
+        \\  /status                show current config
+        \\  /quit
+        \\
+    , .{ cfg.mode.label(), cfg.model, cfg.host });
+}
+
+fn handleCommand(
+    allocator: std.mem.Allocator,
+    stdout: *std.Io.Writer,
+    history: *std.ArrayList(Message),
+    cfg: *Config,
+    line: []const u8,
+) !bool {
+    if (std.mem.eql(u8, line, "/quit")) return false;
+    if (std.mem.eql(u8, line, "/help")) {
+        try stdout.print(
+            \\commands:
+            \\  /help
+            \\  /mode codex|gemini|claude
+            \\  /model <ollama-model>
+            \\  /clear
+            \\  /status
+            \\  /quit
+            \\
+        , .{});
+        return true;
+    }
+    if (std.mem.eql(u8, line, "/status")) {
+        try stdout.print("mode={s} model={s} host={s}\n", .{ cfg.mode.label(), cfg.model, cfg.host });
+        return true;
+    }
+    if (std.mem.eql(u8, line, "/clear")) {
+        for (history.items) |msg| {
+            allocator.free(msg.role);
+            allocator.free(msg.content);
+        }
+        history.clearRetainingCapacity();
+        try appendMessage(allocator, history, "system", cfg.mode.systemPrompt());
+        try stdout.print("conversation cleared\n", .{});
+        return true;
+    }
+    if (std.mem.startsWith(u8, line, "/mode ")) {
+        const raw = std.mem.trim(u8, line["/mode ".len..], " \t");
+        const mode = Mode.fromString(raw) orelse {
+            try stdout.print("unknown mode: {s}\n", .{raw});
+            return true;
+        };
+        cfg.mode = mode;
+        for (history.items) |msg| {
+            allocator.free(msg.role);
+            allocator.free(msg.content);
+        }
+        history.clearRetainingCapacity();
+        try appendMessage(allocator, history, "system", cfg.mode.systemPrompt());
+        try stdout.print("mode set to {s}\n", .{cfg.mode.label()});
+        return true;
+    }
+    if (std.mem.startsWith(u8, line, "/model ")) {
+        const raw = std.mem.trim(u8, line["/model ".len..], " \t");
+        if (raw.len == 0) {
+            try stdout.print("missing model name\n", .{});
+            return true;
+        }
+        cfg.model = try allocator.dupe(u8, raw);
+        try stdout.print("model set to {s}\n", .{cfg.model});
+        return true;
+    }
+
+    try stdout.print("unknown command: {s}\n", .{line});
+    return true;
+}
+
+fn appendMessage(
+    allocator: std.mem.Allocator,
+    history: *std.ArrayList(Message),
+    role: []const u8,
+    content: []const u8,
+) !void {
+    try history.append(allocator, .{
+        .role = try allocator.dupe(u8, role),
+        .content = try allocator.dupe(u8, content),
+    });
+}
+
+fn requestChat(
+    allocator: std.mem.Allocator,
+    cfg: Config,
+    history: []const Message,
+) ![]u8 {
+    var client = std.http.Client{ .allocator = allocator };
+    defer client.deinit();
+    return requestChatInner(allocator, &client, cfg, history);
+}
+
+fn requestChatInner(
+    allocator: std.mem.Allocator,
+    client: *std.http.Client,
+    cfg: Config,
+    history: []const Message,
+) ![]u8 {
+    var body = std.ArrayList(u8).empty;
+    defer body.deinit(allocator);
+    try buildRequestBody(allocator, &body, cfg, history);
+
+    const url = try std.fmt.allocPrint(allocator, "{s}/api/chat", .{cfg.host});
+    defer allocator.free(url);
+
+    var aw: std.Io.Writer.Allocating = .init(allocator);
+    defer aw.deinit();
+
+    const result = try client.fetch(.{
+        .location = .{ .url = url },
+        .method = .POST,
+        .payload = body.items,
+        .extra_headers = &.{
+            .{ .name = "Content-Type", .value = "application/json" },
+        },
+        .response_writer = &aw.writer,
+    });
+
+    if (result.status != .ok) return error.UpstreamError;
+
+    const response_body = aw.writer.buffer[0..aw.writer.end];
+    return extractAssistantContent(allocator, response_body);
+}
+
+fn buildRequestBody(
+    allocator: std.mem.Allocator,
+    out: *std.ArrayList(u8),
+    cfg: Config,
+    history: []const Message,
+) !void {
+    try out.appendSlice(allocator, "{\"model\":");
+    try appendJsonString(allocator, out, cfg.model);
+    try out.appendSlice(allocator, ",\"stream\":false,\"options\":{\"temperature\":0.2,\"num_predict\":192},\"messages\":[");
+    for (history, 0..) |msg, i| {
+        if (i != 0) try out.appendSlice(allocator, ",");
+        try out.appendSlice(allocator, "{\"role\":");
+        try appendJsonString(allocator, out, msg.role);
+        try out.appendSlice(allocator, ",\"content\":");
+        try appendJsonString(allocator, out, msg.content);
+        try out.appendSlice(allocator, "}");
+    }
+    try out.appendSlice(allocator, "]}");
+}
+
+fn appendJsonString(allocator: std.mem.Allocator, out: *std.ArrayList(u8), value: []const u8) !void {
+    try out.append(allocator, '"');
+    for (value) |c| {
+        switch (c) {
+            '\\' => try out.appendSlice(allocator, "\\\\"),
+            '"' => try out.appendSlice(allocator, "\\\""),
+            '\n' => try out.appendSlice(allocator, "\\n"),
+            '\r' => try out.appendSlice(allocator, "\\r"),
+            '\t' => try out.appendSlice(allocator, "\\t"),
+            else => try out.append(allocator, c),
+        }
+    }
+    try out.append(allocator, '"');
+}
+
+fn extractAssistantContent(allocator: std.mem.Allocator, body: []const u8) ![]u8 {
+    var parsed = try std.json.parseFromSlice(std.json.Value, allocator, body, .{});
+    defer parsed.deinit();
+
+    const root = parsed.value;
+    const obj = root.object;
+    const message = obj.get("message") orelse return error.InvalidResponse;
+    if (message != .object) return error.InvalidResponse;
+    const content = message.object.get("content") orelse return error.InvalidResponse;
+    if (content != .string) return error.InvalidResponse;
+    return allocator.dupe(u8, content.string);
 }

@@ -21,7 +21,7 @@ No dependency on online providers; the mesh *is* the provider, using open-weight
 
 ### 1. Offline on device (no WiFi)
 
-- **Client:** PWA or native app on Z Fold (Mission Control / Cursor-like UX).
+- **Client:** PWA or native app on Z Fold (operator UI / Cursor-like UX).
 - **Inference on device:** Small OSS model (e.g. Phi-3 mini, Qwen2-0.5B, or TinyLlama) via:
   - **Ollama Android** (when available), or
   - **WebAssembly / ONNX** in the browser or a lightweight runtime (e.g. Transformers.js, llama.cpp WASM).
@@ -68,7 +68,7 @@ So “distributing the best OSS model for current tasks dynamically” = **task 
 | `GET /v1/models` → Ollama tags + cloud | Merge models from **all registered nodes** + optional cloud; mark `mesh: true` and `node_id`. |
 | `POST /v1/chat/completions` → try Ollama, then Groq | **Router:** task/model → pick node from registry → proxy to that node’s OpenAI-compatible API; fallback to next node or cloud if configured. |
 | `providers` with `mesh: True` (Ollama) | **Mesh = pool of nodes**; each node is a “provider” with a URL and model list. |
-| Dashboard / Mission Control | **PWA + offline:** cache UI; when offline, use on-device small model or “queue for when mesh is back.” |
+| Dashboard / operator UI | **PWA + offline:** cache UI; when offline, use on-device small model or “queue for when mesh is back.” |
 
 So we keep the same API contract; we add a **node registry**, a **router/scheduler**, and optional **on-device inference** for offline.
 
@@ -102,6 +102,6 @@ So we keep the same API contract; we add a **node registry**, a **router/schedul
 
 - **Yes:** We can design for high-velocity coding on Z Fold (and similar) **without WiFi** (on-device small OSS model) and **with WiFi but no online provider** (gateway + org-wide distributed OSS inference).
 - **Mechanism:** Dynamic choice of “best OSS model for current task” and “which org node runs it” via a **node registry** and **router** in the gateway, plus optional **on-device inference** for offline.
-- **Current codebase:** Gateway already has mesh-first Ollama and `/v1/models`; adding a multi-node registry and a router in front of Ollama (and future nodes) is the natural next step. No need to change the external API; Cursor and Mission Control keep pointing at the gateway.
+- **Current codebase:** Gateway already has mesh-first Ollama and `/v1/models`; adding a multi-node registry and a router in front of Ollama (and future nodes) is the natural next step. No need to change the external API; Cursor and operator UI keep pointing at the gateway.
 
 This doc is the **vision and roadmap**; implementation can proceed incrementally (registry → router → task hints → discovery → offline client).

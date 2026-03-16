@@ -1,7 +1,7 @@
 num,category,method_name,description,output_pattern
 1,collaboration,Stakeholder Round Table,Convene multiple personas to contribute diverse perspectives - essential for requirements gathering and finding balanced solutions across competing interests,perspectives → synthesis → alignment
 2,collaboration,Expert Panel Review,Assemble domain experts for deep specialized analysis - ideal when technical depth and peer review quality are needed,expert views → consensus → recommendations
-3,collaboration,Debate Club Showdown,Two personas argue opposing positions while a moderator scores points - great for exploring controversial decisions and finding middle ground,thesis → antithesis → synthesis
+3,collaboration,Structured Debate,Two personas examine opposing positions while a moderator summarizes trade-offs - useful for exploring controversial decisions and finding middle ground,position A → position B → synthesis
 4,collaboration,User Persona Focus Group,Gather your product's user personas to react to proposals and share frustrations - essential for validating features and discovering unmet needs,reactions → concerns → priorities
 5,collaboration,Time Traveler Council,Past-you and future-you advise present-you on decisions - powerful for gaining perspective on long-term consequences vs short-term pressures,past wisdom → present choice → future impact
 6,collaboration,Cross-Functional War Room,Product manager + engineer + designer tackle a problem together - reveals trade-offs between feasibility desirability and viability,constraints → trade-offs → balanced solution

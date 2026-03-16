@@ -11,7 +11,12 @@ include_dirs = [
     "apps/aura-landing-next",
     "research"
 ]
-include_root_files = ["README.md", "GEMINI.md", "SECURITY.md", "CONTRIBUTING.md"]
+include_root_files = [
+    "README.md",
+    "docs/reference/GEMINI.md",
+    "SECURITY.md",
+    "CONTRIBUTING.md",
+]
 
 def is_valid_md(filepath):
     # Ignore node_modules, vendored code, zig-cache, etc.

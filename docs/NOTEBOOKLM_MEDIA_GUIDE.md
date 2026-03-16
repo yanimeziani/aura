@@ -6,7 +6,7 @@ This file helps NotebookLM consume the Nexa documentation corpus for long-form s
 
 ## What Nexa is
 
-Nexa is a sovereign collaboration protocol stack for humans and AI systems operating across unstable, hostile, or vendor-controlled environments.
+Nexa is a collaboration and deployment stack for humans and AI systems operating across unstable, hostile, or vendor-controlled environments.
 
 Core themes:
 

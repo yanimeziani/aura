@@ -10,7 +10,7 @@ Assessment of production readiness for the Cerberus runtime and Pegasus control 
 |-----------|-----------|--------|
 | **Cerberus runtime** | **Deployable with caveats** | Mature core, 3,230+ tests, strong security; pre-1.0, no API/CLI stability guarantee |
 | **pegasus-compat API** | **Operational** | Full REST surface for Pegasus app; used in VPS deploy; change default credentials |
-| **Pegasus (Android)** | **Alpha** | Feature-complete for current flows; Mission Control (Spec 006) proposed, not built |
+| **Pegasus (Android)** | **Alpha** | Feature-complete for current flows; operator UI (Spec 006) proposed, not built |
 
 ---
 
@@ -65,7 +65,7 @@ Auth is Bearer token after login; internal/agent traffic can bypass (e.g. Caddy 
 ### Gaps / Actions
 
 - **Default credentials:** Default `yani` / `cerberus2026`. **Must change in production** (env override or change-password after first login).
-- **Mission Control (Spec 006):** Event multiplexer, normalized stream (`/events/ws`), steer API, and trail persistence are **not yet implemented** in pegasus-compat. Current API supports existing Pegasus “simple” flows only.
+- **operator UI (Spec 006):** Event multiplexer, normalized stream (`/events/ws`), steer API, and trail persistence are **not yet implemented** in pegasus-compat. Current API supports existing Pegasus “simple” flows only.
 
 **Verdict:** **Production-ready for current Pegasus feature set** provided default credentials are changed and API is behind HTTPS (e.g. Caddy).
 
@@ -86,9 +86,9 @@ Kotlin/Jetpack Compose (Material 3) app for phone/fold — dashboard, HITL queue
 ### Caveats
 
 - **Explicitly Alpha** in README (“Features (Alpha)”).
-- **Mission Control (Spec 006):** Multi-pane real-time view, live trail timeline, steer controls, replay — **proposed only**. App does not depend on them yet; they require backend additions (event multiplexer, steer API, etc.).
+- **operator UI (Spec 006):** Multi-pane real-time view, live trail timeline, steer controls, replay — **proposed only**. App does not depend on them yet; they require backend additions (event multiplexer, steer API, etc.).
 
-**Verdict:** **Alpha but usable** for current “simple” operator flows (dashboard, HITL, costs, terminal). Mission Control is a future phase.
+**Verdict:** **Alpha but usable** for current “simple” operator flows (dashboard, HITL, costs, terminal). operator UI is a future phase.
 
 ---
 
@@ -113,14 +113,14 @@ Kotlin/Jetpack Compose (Material 3) app for phone/fold — dashboard, HITL queue
 
 - [ ] Point to production API URL (e.g. `https://pegasus.meziani.org`).
 - [ ] Ensure SSH host/port/user are correct for production VPS.
-- [ ] Treat as Alpha: monitor for regressions and plan for Mission Control when backend supports it.
+- [ ] Treat as Alpha: monitor for regressions and plan for operator UI when backend supports it.
 
 ---
 
 ## 5. Roadmap (from specs)
 
 - **Spec 005 (Meziani–Dragun roster):** In progress; VPS path and roster defined.
-- **Spec 006 (Pegasus Mission Control):** Proposed. Phase 1 (read-only real-time events), Phase 2 (steer API + Pane D), Phase 3 (replay/forensics) will increase production capability for power users but are not required for current production use.
+- **Spec 006 (Pegasus operator UI):** Proposed. Phase 1 (read-only real-time events), Phase 2 (steer API + Pane D), Phase 3 (replay/forensics) will increase production capability for power users but are not required for current production use.
 
 ---
 

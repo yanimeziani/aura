@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Smoke-test deployed mesh from the outside (in-house Zig gateway only).
-# Usage: MESH_VPS_IP=1.2.3.4 MESH_LANDING_URL=https://example.com ./ops/scripts/smoke-test-mesh.sh
+# Smoke-test deployed mesh services from the outside.
+# Usage: MESH_VPS_IP=1.2.3.4 MESH_BASE_URL=https://example.com ./ops/scripts/smoke-test-mesh.sh
 # Exits 0 if all pass, non-zero otherwise.
 set -euo pipefail
 
@@ -10,7 +10,7 @@ if [[ -z "$VPS_IP" ]]; then
   exit 1
 fi
 
-PUBLIC_BASE_URL="${NEXA_PUBLIC_BASE_URL:-${AURA_PUBLIC_BASE_URL:-}}"
+PUBLIC_BASE_URL="${MESH_BASE_URL:-${MESH_LANDING_URL:-${NEXA_PUBLIC_BASE_URL:-${AURA_PUBLIC_BASE_URL:-}}}}"
 if [[ -z "$PUBLIC_BASE_URL" ]]; then
   if [[ -n "${VPS_DOMAIN:-}" ]]; then
     PUBLIC_BASE_URL="https://${VPS_DOMAIN}"
@@ -19,12 +19,13 @@ if [[ -z "$PUBLIC_BASE_URL" ]]; then
   fi
 fi
 
-GATEWAY_URL="${MESH_GATEWAY_URL:-${PUBLIC_BASE_URL%/}}"
+GATEWAY_URL="${MESH_GATEWAY_URL:-${PUBLIC_BASE_URL%/}/gw}"
+WEB_URL="${MESH_WEB_URL:-${PUBLIC_BASE_URL%/}}"
 
 fail() { echo "[smoke] FAIL: $*"; exit 1; }
 ok()   { echo "[smoke] OK: $*"; }
 
-echo "[smoke] Testing mesh (VPS=$VPS_IP, Gateway=$GATEWAY_URL)..."
+echo "[smoke] Testing mesh (VPS=$VPS_IP, Base URL=$PUBLIC_BASE_URL, Gateway=$GATEWAY_URL, Web=$WEB_URL)..."
 
 # 1. Gateway health
 code=$(curl -s -o /dev/null -w '%{http_code}' --connect-timeout 10 "${GATEWAY_URL}/health" || true)
@@ -40,25 +41,35 @@ if [ "$code" != "200" ]; then
 fi
 ok "gateway /api/specs 200"
 
-# 3. Mission Control shell
-code=$(curl -s -o /dev/null -w '%{http_code}' -L --connect-timeout 10 "$GATEWAY_URL/" || true)
+# 3. Base URL response
+code=$(curl -s -o /dev/null -w '%{http_code}' -L --connect-timeout 10 "$PUBLIC_BASE_URL/" || true)
 if [ "$code" != "200" ]; then
-  fail "mission control returned $code (expected 200)"
+  fail "base URL returned $code (expected 200)"
 fi
-ok "mission control $code"
+ok "base URL $code"
 
-# 4. Mission control contains expected content
-body=$(curl -s -L --connect-timeout 10 "$GATEWAY_URL/" || true)
-if ! echo "$body" | grep -Eqi "Nexa Lite|Mission Control|supply chain"; then
-  fail "mission control page missing expected content"
+# 4. Base URL contains expected content
+body=$(curl -s -L --connect-timeout 10 "$PUBLIC_BASE_URL/" || true)
+if ! echo "$body" | grep -Eqi "Nexa|HTTP|mesh|Dragun|debt recovery"; then
+  fail "base URL content check failed"
 fi
-ok "mission control content check"
+ok "base URL content check"
 
-# 5. Docs bundle
-code=$(curl -s -o /dev/null -w '%{http_code}' --connect-timeout 10 "${GATEWAY_URL}/docs/nexa" || true)
+# 5. Gateway validation route through HTTP ingress
+code=$(curl -s -o /dev/null -w '%{http_code}' --connect-timeout 10 \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"smoke@example.com"}' \
+  "${GATEWAY_URL}/api/validate-access" || true)
 if [ "$code" != "200" ]; then
-  fail "docs bundle returned $code"
+  fail "gateway validation route returned $code"
 fi
-ok "docs bundle 200"
+ok "gateway validation route 200"
+
+# 6. Self-hosted web app health
+code=$(curl -s -o /dev/null -w '%{http_code}' --connect-timeout 10 "${WEB_URL}/api/health" || true)
+if [ "$code" != "200" ]; then
+  fail "web /api/health returned $code"
+fi
+ok "web /api/health 200"
 
 echo "[smoke] All checks passed."

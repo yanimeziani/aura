@@ -17,8 +17,8 @@
 | **Run backup** | SSH to VPS, run backup script, or rely on deploy | Manual / only during deploy. |
 | **Rotate vault token** | Run vault_manager rotate-token → restart gateway → re-enter token on phone/dashboard | Multi-step, multi-device. |
 | **Restart gateway/dashboard** | SSH + systemctl restart | Manual. |
-| **Sync config (cockpit)** | Run sync-cockpit.sh from laptop | Manual. |
-| **See where backups go** | No UI; call API or read backup-nodes.json | Not visible in Mission Control. |
+| **Sync config** | Run `ops/scripts/sync-client.sh` from laptop | Manual. |
+| **See where backups go** | No UI; call API or read backup-nodes.json | Not visible in operator UI. |
 
 ---
 
@@ -31,7 +31,7 @@
 | **Health check** | Continuous | Dashboard polls every 30s (health), 60s (providers, models, regions) | No auto-remediation; only display. |
 | **Vault token rotation** | When needed | Fully manual: script + restart + re-login everywhere | No single “rotate and apply” path. |
 | **Gateway/dashboard restart** | After config or token change | systemctl on VPS | No API or UI trigger. |
-| **Config sync (roster, prompts)** | When config changes | sync-cockpit.sh | Manual run. |
+| **Config sync (roster, prompts)** | When config changes | `ops/scripts/sync-client.sh` | Manual run. |
 | **Smoke test** | After deploy | GitHub Actions runs smoke-test-mesh.sh | OK. No re-run from UI. |
 | **Backup routing** | Per backup | Script picks largest node; no schedule | Backups only on deploy unless script run manually. |
 
@@ -51,14 +51,14 @@
 
 ## 4. Target state (automated, maintainable, resilient)
 
-- **≤3 taps:** Every operator action completable in ≤3 taps from Mission Control (or equivalent).
+- **≤3 taps:** Every operator action completable in ≤3 taps from operator UI (or equivalent).
 - **Routine tasks:** Deploy, backup, health, token rotation have a one-tap or zero-tap path (API + optional UI), and scheduled backup where appropriate.
 - **Resilience:** Retries with backoff for API calls; SSE auto-reconnect; backup tries next node on failure; gateway restarts via systemd (documented).
 
 Concrete measures:
 
 1. **Dashboard resilience:** Retry fetch for health, providers, models, regions (e.g. 3 attempts with backoff). Agent Terminal: reconnect SSE after disconnect with exponential backoff (e.g. 2s, 4s, 8s, cap 60s).
-2. **One-tap from Mission Control:** “Run backup now” (calls gateway API that runs backup script on server). “Deploy mesh” (gateway calls GitHub Actions workflow_dispatch). “Where do backups go?” (existing GET /api/backup/nodes shown in UI).
+2. **One-tap from operator UI:** “Run backup now” (calls gateway API that runs backup script on server). “Deploy mesh” (gateway calls GitHub Actions workflow_dispatch). “Where do backups go?” (existing GET /api/backup/nodes shown in UI).
 3. **Scheduled backup:** Cron or systemd timer on VPS to run backup-dynamic-then-delete.sh daily (or configurable), with backup routed to largest node.
 4. **Token rotation:** Optional gateway endpoint POST /api/vault/rotate-token (vault auth) that rotates token, syncs envs, and returns new token so one client can update; dashboard can offer “Rotate token” and store new token (still requires gateway restart via systemd or future API).
 5. **Documentation:** Keep this audit updated as flows change; document cron/timer and env vars in deployment guide.
@@ -72,7 +72,7 @@ Concrete measures:
 | Deploy mesh | `ops/scripts/deploy-mesh.sh`, `.github/workflows/deploy-mesh.yml` |
 | Backup + route to largest node | `ops/scripts/backup-dynamic-then-delete.sh`, `core/vault/backup-nodes.json` |
 | Gateway APIs | `ops/gateway/app.py` |
-| Mission Control UI | `apps/aura-dashboard/src/` |
+| Operator UI | `apps/aura-dashboard/src/` |
 | Vault + token rotation | `core/vault/vault_manager.py` |
 | Catch-up (phone back) | `GET /sync/catch-up`, dashboard visibility handler |
 | Backup nodes API | `GET /api/backup/nodes` |

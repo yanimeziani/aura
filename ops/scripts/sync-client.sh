@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# sync-cockpit.sh — The "Final Boss" Sync Bridge (Z Fold <-> VPS)
+# Sync bridge (Z Fold <-> VPS)
 set -euo pipefail
 
 # Configuration
@@ -10,8 +10,8 @@ LOCAL_ROOT="/root"
 REMOTE_CONFIG_DIR="/opt/configs"
 REMOTE_CERBERUS_DIR="/opt/cerberus"
 
-info() { printf '\033[0;34m[cockpit-sync]\033[0m %s\n' "$*"; }
-ok()   { printf '\033[0;32m[cockpit-sync]\033[0m %s\n' "$*"; }
+info() { printf '\033[0;34m[client-sync]\033[0m %s\n' "$*"; }
+ok()   { printf '\033[0;32m[client-sync]\033[0m %s\n' "$*"; }
 
 # 1. Environment Parity Check (Dependencies)
 info "Checking A/V Digestion Stack dependencies..."

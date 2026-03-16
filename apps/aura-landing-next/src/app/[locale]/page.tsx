@@ -175,21 +175,23 @@ export default function LandingPage() {
   const journeySteps = t.raw("journeySteps") as string[];
   const phaseTitles = [t("phaseOneTitle"), t("phaseTwoTitle"), t("phaseThreeTitle")];
   const phaseBodies = [t("phaseOneBody"), t("phaseTwoBody"), t("phaseThreeBody")];
+  const isRtl = locale.startsWith("ar");
 
   return (
-    <main className={styles.pageShell} dir={locale.startsWith("ar") ? "rtl" : "ltr"}>
+    <main className={styles.pageShell} dir={isRtl ? "rtl" : "ltr"}>
       <div className={styles.backgroundMesh} aria-hidden="true" />
+      <div className={styles.backgroundGrid} aria-hidden="true" />
 
       <header className={styles.topbar}>
         <div className={styles.wordmarkBlock}>
-          <span className={styles.wordmark}>{t("heroEyebrow")}</span>
-          <span className={styles.wordsub}>nexa.global</span>
+          <span className={styles.wordmark}>Nexa</span>
+          <span className={styles.wordsub}>nexa.meziani.ai</span>
         </div>
 
         <nav className={styles.nav}>
-          <a href="#phases">{t("secondaryCta")}</a>
-          <a href="#journey">{t("journeyHeadline")}</a>
-          <a href="#brief">{t("primaryCta")}</a>
+          <a href="#system">{t("navSystem")}</a>
+          <a href="#rails">{t("navSafety")}</a>
+          <a href="#brief">{t("navBrief")}</a>
         </nav>
 
         <div className={styles.segmentToggle} aria-label="Language / region">
@@ -208,9 +210,9 @@ export default function LandingPage() {
       <section className={styles.heroSection}>
         <div className={styles.heroCopy}>
           <div className={styles.eyebrowRow}>
-            <span className={styles.eyebrowChip}>{t("funnelTag")}</span>
+            <span className={styles.eyebrowChip}>{t("heroEyebrow")}</span>
             <span className={styles.eyebrowChip}>{t("navLabel")}</span>
-            <span className={styles.eyebrowChip}>Safe ops</span>
+            <span className={styles.eyebrowChip}>{t("operatingPremise")}</span>
           </div>
 
           <h1 className={styles.heroTitle}>{t("heroTitle")}</h1>
@@ -234,25 +236,43 @@ export default function LandingPage() {
             ))}
           </div>
 
-          <article className={styles.proofPanel}>
-            <div className={styles.panelLabel}>Mental ops</div>
-            <h2>{t("problemHeadline")}</h2>
-            <p>{t("problemBody")}</p>
-            <div className={styles.metricGrid}>
-              <div className={styles.metricCard}>
-                <span className={styles.metricValue}>1</span>
-                <span className={styles.metricLabel}>{t("metricControl")}</span>
+          <div className={styles.heroDeck}>
+            <article className={styles.proofPanel}>
+              <div className={styles.panelLabel}>{t("operatingPremise")}</div>
+              <h2>{t("problemHeadline")}</h2>
+              <p>{t("problemBody")}</p>
+              <div className={styles.metricGrid}>
+                <div className={styles.metricCard}>
+                  <span className={styles.metricValue}>1</span>
+                  <span className={styles.metricLabel}>{t("metricControl")}</span>
+                </div>
+                <div className={styles.metricCard}>
+                  <span className={styles.metricValue}>48h</span>
+                  <span className={styles.metricLabel}>{t("metricTurnaround")}</span>
+                </div>
+                <div className={styles.metricCard}>
+                  <span className={styles.metricValue}>0</span>
+                  <span className={styles.metricLabel}>{t("metricLockin")}</span>
+                </div>
               </div>
-              <div className={styles.metricCard}>
-                <span className={styles.metricValue}>48h</span>
-                <span className={styles.metricLabel}>{t("metricTurnaround")}</span>
+            </article>
+
+            <article className={styles.signalPanel}>
+              <div className={styles.panelLabel}>{t("launchSurfaceTag")}</div>
+              <h2>{t("launchSurfaceTitle")}</h2>
+              <p>{t("launchSurfaceBody")}</p>
+              <div className={styles.signalList}>
+                <div className={styles.signalItem}>
+                  <span className={styles.signalTitle}>{t("funnelTag")}</span>
+                  <span className={styles.signalBody}>{t("auditCtaBody")}</span>
+                </div>
+                <div className={styles.signalItem}>
+                  <span className={styles.signalTitle}>{t("deploymentIntake")}</span>
+                  <span className={styles.signalBody}>{t("intakeBody")}</span>
+                </div>
               </div>
-              <div className={styles.metricCard}>
-                <span className={styles.metricValue}>0</span>
-                <span className={styles.metricLabel}>{t("metricLockin")}</span>
-              </div>
-            </div>
-          </article>
+            </article>
+          </div>
         </div>
 
         <aside className={styles.intakeRail} id="brief">
@@ -343,15 +363,27 @@ export default function LandingPage() {
           <span className={styles.sectionTag}>{t("journeySectionTag")}</span>
           <h2>{t("journeyHeadline")}</h2>
         </div>
-        <div className={styles.journeyList}>
-          {journeySteps.map((step, idx) => (
-            <div key={idx} className={styles.journeyStep}>
-              <span className={styles.journeyNum}>{idx + 1}</span>
-              <p>{step}</p>
+        <div className={styles.journeyLayout}>
+          <div className={styles.journeyList}>
+            {journeySteps.map((step, idx) => (
+              <div key={idx} className={styles.journeyStep}>
+                <span className={styles.journeyNum}>{idx + 1}</span>
+                <p>{step}</p>
+              </div>
+            ))}
+          </div>
+          <article className={styles.journeyCard}>
+            <span className={styles.panelLabel}>{t("deploymentIntake")}</span>
+            <h3>{t("intakeTitle")}</h3>
+            <p>{t("intakeBody")}</p>
+            <div className={styles.heroActions}>
+              <a className={styles.secondaryButton} href="#brief">
+                {t("openBrief")}
+              </a>
             </div>
-          ))}
+          </article>
         </div>
-        <div className={styles.heroActions} style={{ marginTop: "1.5rem" }}>
+        <div className={styles.journeyActions}>
           <a className={styles.primaryButton} href="#brief">
             {t("primaryCta")}
           </a>
@@ -425,7 +457,7 @@ export default function LandingPage() {
       </section>
 
       <footer className={styles.footer}>
-        <span>Nexa</span>
+        <span>{`Nexa // ${locale}`}</span>
         <span>{t("footerNote")}</span>
       </footer>
     </main>

@@ -23,16 +23,18 @@ const monoFont = IBM_Plex_Mono({
   display: 'swap',
 })
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://nexa.meziani.ai'
+
 export const metadata: Metadata = {
-  metadataBase: new URL('https://nexa.global'),
-  title: 'Nexa | Sovereign Agentic Infrastructure',
+  metadataBase: new URL(siteUrl),
+  title: 'Nexa | Governed Automation for High-Consequence Operations',
   description:
-    'Nexa is sovereign agentic infrastructure for governed automation, mesh-aware operations, and recovery-first deployment.',
+    'Nexa designs and deploys governed automation for collections, compliance, and document-heavy operations without brittle lock-in.',
   openGraph: {
     title: 'Nexa',
     description:
-      'Sovereign agentic infrastructure for operators, systems, and recovery.',
-    url: 'https://nexa.global',
+      'Governed automation for operators, systems, and high-consequence workflows.',
+    url: siteUrl,
     siteName: 'Nexa',
     locale: 'en_CA',
     type: 'website',
@@ -41,7 +43,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Nexa',
     description:
-      'Sovereign agentic infrastructure for operators, systems, and recovery.',
+      'Governed automation for operators, systems, and high-consequence workflows.',
   },
 }
 

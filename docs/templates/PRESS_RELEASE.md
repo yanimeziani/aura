@@ -1,10 +1,10 @@
 # FOR IMMEDIATE RELEASE
 
-## Nexa: Open-source sovereign collaboration protocol infrastructure
+## Nexa: Open-source infrastructure repository
 
-**[CITY, STATE] — [DATE]** — The Nexa project announced the open-source release of **Nexa**, a sovereign collaboration protocol stack for humans and AI systems. The project focuses on operator control, trust boundaries, recovery-first architecture, and multi-path transport rather than dependence on a single platform or cloud vendor.
+**[CITY, STATE] — [DATE]** — The Nexa project announced the open-source release of **Nexa**, a repository for operator tooling, deployment workflows, mesh-aware services, and supporting documentation.
 
-Nexa combines a gateway control surface, bounded agent execution, transport-aware routing, and portable operational state into one open-source monorepo intended for serious technical operators and contributors.
+Nexa combines a gateway, bounded agent execution, transport-aware routing, and portable operational state in one repository.
 
 ### Key Features of Nexa
 

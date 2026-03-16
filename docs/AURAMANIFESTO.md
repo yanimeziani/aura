@@ -6,7 +6,7 @@
 graph LR
 A[Aura Core] --> B[Ansible Control]
 Bginx -->|HTTPS| B
-B --> C[Kotlin Mission Control]
+B --> C[Kotlin operator UI]
 
 C --> D[Android Agent]
 D -->|TLS 1.3| E[VPS Infrastructure]

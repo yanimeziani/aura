@@ -1,6 +1,6 @@
 # Automation Priority 50
 
-This is the current highest-value list of full-auto tasks for Aura, grounded in the repo's existing CLI, deploy scripts, gateway APIs, Mission Control dashboard, and CI workflows.
+This is the current highest-value list of full-auto tasks for Aura, grounded in the repo's existing CLI, deploy scripts, gateway APIs, operator UI dashboard, and CI workflows.
 
 Status key:
 - `Live`: already automated in the repo today.
@@ -9,7 +9,7 @@ Status key:
 
 ## 1. Core operator commands
 
-1. `Live` — `aura demo`: start gateway plus local Mission Control for an instant demo.
+1. `Live` — `aura demo`: start gateway plus local operator UI for an local demo.
 2. `Live` — `aura gateway`: start the FastAPI syncing gateway on the documented port.
 3. `Live` — `aura deploy-mesh`: back up the VPS, sync docs, deploy gateway, dashboard, and landing.
 4. `Live` — `aura backup`: run the dynamic backup and cleanup script locally.
@@ -37,12 +37,12 @@ Status key:
 
 21. `Live` — `GET /health`: liveness probe for local and remote automation.
 22. `Live` — `GET /health/services`: service availability probe across gateway-adjacent ports.
-23. `Live` — `GET /providers`: provider discovery for Mission Control and other clients.
+23. `Live` — `GET /providers`: provider discovery for operator UI and other clients.
 24. `Live` — `GET /v1/models`: unified model discovery with mesh-first ordering.
 25. `Live` — `POST /api/validate-token`: dashboard login validation against the vault token.
 26. `Live` — `GET /docs/aura`: on-demand public/operator docs bundle built from curated docs plus `docs/updates/`.
 27. `Live` — `POST /telemetry/visit`: automatically record locale/country landing traffic.
-28. `Live` — `GET /telemetry/regions`: aggregate telemetry for Mission Control region clusters.
+28. `Live` — `GET /telemetry/regions`: aggregate telemetry for operator UI region clusters.
 29. `Live` — `POST /sync/session`: write shared context for IDE, TUI, and CLI continuity.
 30. `Live` — `GET /sync/session/{workspace_id}`: restore shared workspace context.
 
@@ -52,18 +52,18 @@ Status key:
 32. `Live` — `GET /api/hitl/actions`: discover the actions that require operator confirmation.
 33. `Live` — `GET /sync/catch-up`: restore recent state after phone/background interruptions.
 34. `Partial` — dashboard login is automated, but token rotation still forces manual re-entry across clients.
-35. `Next` — one-tap “rotate token and apply” flow from Mission Control using a gated gateway endpoint.
+35. `Next` — one-tap “rotate token and apply” flow from operator UI using a gated gateway endpoint.
 36. `Next` — one-tap “restart gateway/dashboard” operator action exposed through the gateway with HITL.
 
 ## 5. Dashboard and operator UX
 
-37. `Live` — Mission Control polls health and provider/model/region data without operator SSH.
+37. `Live` — operator UI polls health and provider/model/region data without operator SSH.
 38. `Partial` — Agent Terminal surfaces retry state, but SSE reconnect is not fully automatic.
 39. `Next` — automatic SSE reconnect with exponential backoff after disconnect.
 40. `Next` — retry with backoff for health, providers, models, and regions so transient faults do not flip the UI offline.
-41. `Next` — “Run backup now” button in Mission Control calling the server-side backup path.
-42. `Next` — “Deploy mesh” button in Mission Control triggering the GitHub Actions workflow dispatch path.
-43. `Next` — “Backup destinations” panel in Mission Control using the existing backup nodes API surface.
+41. `Next` — “Run backup now” button in operator UI calling the server-side backup path.
+42. `Next` — “Deploy mesh” button in operator UI triggering the GitHub Actions workflow dispatch path.
+43. `Next` — “Backup destinations” panel in operator UI using the existing backup nodes API surface.
 44. `Next` — consolidated “all logs” terminal view to reduce multi-tab scan overhead.
 
 ## 6. Scheduled and resilience automation
@@ -73,13 +73,13 @@ Status key:
 47. `Next` — backup retry and fallback across multiple backup nodes instead of a single best-choice attempt.
 48. `Next` — automatic post-deploy rollback or halt when dashboard or landing build fails on the VPS.
 49. `Next` — auto-remediation hooks for unhealthy services detected by gateway health probes.
-50. `Next` — one-command or zero-command config sync for roster, prompts, and cockpit state after changes.
+50. `Next` — one-command or zero-command config sync for roster, prompts, and client state after changes.
 
 ## Operational reading
 
 If only a few operator actions get prioritized next, the sequence should be:
-1. Mission Control-triggered backup.
-2. Mission Control-triggered deploy.
+1. operator UI-triggered backup.
+2. operator UI-triggered deploy.
 3. Scheduled VPS backups.
 4. SSE and fetch retry resilience.
 5. Token rotation without manual re-login across every client.

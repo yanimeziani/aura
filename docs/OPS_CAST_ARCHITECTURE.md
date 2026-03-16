@@ -24,7 +24,7 @@ A one-way export job tails the required logs, strips secrets and identifiers, no
 An isolated worker or node runs only OSS local models plus TTS. It reads sanitized packets and curated docs, generates the two-host script, and publishes audio artifacts. No vault. No prod SSH. No write path into production.
 
 4. Operator zone
-Mission Control, dashboards, and human review. Operators can listen, inspect the sanitized packet, and decide whether any follow-up action should be pushed into the HITL queue.
+operator UI, dashboards, and human review. Operators can listen, inspect the sanitized packet, and decide whether any follow-up action should be pushed into the HITL queue.
 
 ## Data split
 

@@ -17,8 +17,8 @@ const sessions = @import("sessions.zig");
 
 // ── Config ────────────────────────────────────────────────────────────────────
 
-const AURA_ROOT = "/home/yani/Aura";
-const MESH_STATUS_FILE = AURA_ROOT ++ "/var/aura-mesh/status.json";
+const DEFAULT_AURA_ROOT = "/opt/aura";
+const LEGACY_AURA_ROOT = "/home/yani/Aura";
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
@@ -106,7 +106,9 @@ fn handleMesh(allocator: std.mem.Allocator, conn: net.Server.Connection) !void {
 }
 
 fn readMeshStatusFile(allocator: std.mem.Allocator) ![]const u8 {
-    const file = try std.fs.openFileAbsolute(MESH_STATUS_FILE, .{});
+    const path = try meshStatusFilePath(allocator);
+    defer allocator.free(path);
+    const file = try std.fs.openFileAbsolute(path, .{});
     defer file.close();
     return file.readToEndAlloc(allocator, 4096);
 }
@@ -115,7 +117,8 @@ fn readMeshStatusFile(allocator: std.mem.Allocator) ![]const u8 {
 
 fn handleProviders(allocator: std.mem.Allocator, conn: net.Server.Connection) !void {
     // Read vault/aura-vault.json to check which keys are present.
-    const vault_path = AURA_ROOT ++ "/vault/aura-vault.json";
+    const vault_path = try vaultFilePath(allocator);
+    defer allocator.free(vault_path);
     const has_groq = keyExistsInVault(allocator, vault_path, "GROQ_API_KEY") or
         (std.posix.getenv("GROQ_API_KEY") != null);
     const has_gemini = keyExistsInVault(allocator, vault_path, "GEMINI_API_KEY") or
@@ -130,6 +133,32 @@ fn handleProviders(allocator: std.mem.Allocator, conn: net.Server.Connection) !v
     });
 
     return writeJson(conn, 200, body);
+}
+
+fn auraRoot() []const u8 {
+    return std.posix.getenv("NEXA_ROOT") orelse
+        std.posix.getenv("AURA_ROOT") orelse
+        DEFAULT_AURA_ROOT;
+}
+
+fn meshStatusFilePath(allocator: std.mem.Allocator) ![]u8 {
+    if (std.posix.getenv("NEXA_MESH_STATUS_FILE")) |path| {
+        return allocator.dupe(u8, path);
+    }
+    if (std.posix.getenv("AURA_MESH_STATUS_FILE")) |path| {
+        return allocator.dupe(u8, path);
+    }
+    return std.fmt.allocPrint(allocator, "{s}/var/aura-mesh/status.json", .{auraRoot()});
+}
+
+fn vaultFilePath(allocator: std.mem.Allocator) ![]u8 {
+    if (std.posix.getenv("NEXA_VAULT_FILE")) |path| {
+        return allocator.dupe(u8, path);
+    }
+    if (std.posix.getenv("AURA_VAULT_FILE")) |path| {
+        return allocator.dupe(u8, path);
+    }
+    return std.fmt.allocPrint(allocator, "{s}/vault/aura-vault.json", .{auraRoot()});
 }
 
 /// Returns true if `key` appears as a JSON key in the vault file.

@@ -73,7 +73,7 @@ Then Cursor, a TUI, or a CLI can read/write the same context so they stay in syn
 
 ### Phone ↔ VPS continuity
 
-Run the **process on the VPS** (gateway + agents there). On the phone, open Mission Control with `NEXT_PUBLIC_GATEWAY_URL` (or `__NEXA_GATEWAY__`) pointing at the VPS. When the phone sleeps or the tab backgrounds, the process keeps running on the VPS. When the phone returns or the tab is focused again, the dashboard calls `GET /sync/catch-up` (session + recent log lines), repaints the terminal with that state, then reconnects to the live log streams — so the phone shows the same as the VPS without losing output.
+Run the process on the VPS. On the phone, open the client with `NEXT_PUBLIC_GATEWAY_URL` (or `__NEXA_GATEWAY__`) pointing at the VPS. When the phone sleeps or the tab backgrounds, the process keeps running on the VPS. When the phone returns or the tab is focused again, the client calls `GET /sync/catch-up` (session + recent log lines), restores the terminal state, then reconnects to the live log streams.
 
 | Endpoint | Description |
 |---------|-------------|

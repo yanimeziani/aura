@@ -26,12 +26,12 @@ def create_export(filename, files, dirs):
 
 # 1. Vision & Manifesto
 create_export("Aura_Vision_Manifesto.txt", 
-    ["README.md", "GEMINI.md", "docs/PRD.md", "docs/AURAMANIFESTO.md", "docs/Notebook.lm.md", "research/aura-manifesto/main.tex"], 
+    ["README.md", "docs/reference/GEMINI.md", "docs/PRD.md", "docs/AURAMANIFESTO.md", "docs/Notebook.lm.md", "research/aura-manifesto/main.tex"], 
     [])
 
 # 2. Technical Architecture
 create_export("Aura_Technical_Architecture.txt", 
-    ["GEMINI.md", "docs/SYSTEM_CAPABILITIES.md", "docs/PROJECT_SOURCE_TRUTH.md"], 
+    ["docs/reference/GEMINI.md", "docs/SYSTEM_CAPABILITIES.md", "docs/PROJECT_SOURCE_TRUTH.md"], 
     ["core/cerberus/specs", "apps/web/supabase/migrations"])
 
 # 3. Agents (Career-Twin & SDR)
@@ -43,4 +43,3 @@ create_export("Aura_Agents_Product.txt",
 create_export("Aura_Ops_Runbook.txt", 
     ["docs/DEPLOYMENT_GUIDE.md", "docs/VPS_DEPLOYMENT.md", "docs/VPS_READY.md", "apps/mobile/RELEASE_APK.md"], 
     ["ops/scripts"])
-

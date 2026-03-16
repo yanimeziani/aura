@@ -1,4 +1,4 @@
-# Nexa Quickstart — 99% automated, plug-and-play on any system
+# Nexa Quickstart
 
 Architectural source of truth before refactors or deployment changes:
 
@@ -7,7 +7,7 @@ Architectural source of truth before refactors or deployment changes:
 - [TRUST_MODEL.md](/root/docs/TRUST_MODEL.md)
 - [THREAT_MODEL.md](/root/docs/THREAT_MODEL.md)
 
-**Goal:** Almost every task is fully automated in a **safe**, **efficient**, and **standardized** way. Works on **Linux, macOS, and Windows** with a single entry point. You’re building the **OSS foundation** plus a **boilerplate workspace** for an **instant demo**, then **onboarding**.
+**Goal:** Provide a standard local and VPS setup path. Works on Linux, macOS, and Windows with a single entry point.
 
 ---
 
@@ -36,7 +36,7 @@ nexa.cmd gateway
 nexa.cmd vault
 ```
 
-**Automation commands (no manual steps):**
+**Automation commands:**
 
 | Command | What it does |
 |--------|----------------|
@@ -44,7 +44,7 @@ nexa.cmd vault
 | `nexa backup` | Backup dynamic logs/json/md; route to largest org node if configured. |
 | `nexa docs-bundle` | Build the NotebookLM-safe doc bundle (core docs + `docs/updates/`). |
 | `nexa smoke-test` | Run smoke tests against the deployed mesh. |
-| `nexa demo` | **Instant demo:** start gateway + dashboard locally; open Mission Control. |
+| `nexa demo` | Start gateway + dashboard locally; open the operator UI. |
 | `make verify-release` | Run the hermetic production verification gate in Docker before push/deploy. |
 
 **Or use Make:**
@@ -57,14 +57,14 @@ make demo
 
 ---
 
-## Instant demo (boilerplate workspace)
+## Local Demo
 
-To see Nexa in under a minute, no vault or VPS — **on any system**:
+To run a local demo without a VPS:
 
 1. **Start the demo** (from repo root)
    - **Linux/macOS:** `./ops/bin/nexa demo` or `python3 nexa.py demo`
    - **Windows:** `nexa.cmd demo` or `py -3 nexa.py demo`
-   This starts the gateway and (if Node is installed) the Mission Control dashboard locally.
+   This starts the gateway and, if Node is installed, the operator UI locally.
 
 2. **Open**
    - Dashboard: http://localhost:3003  
@@ -90,7 +90,7 @@ After the demo, to run the full stack and deploy:
    nexa vault sync    # sync to .env targets
    ```
 
-2. **Token for Mission Control**
+2. **Token for operator UI**
    Use the vault token from the previous step (or run `nexa vault` → `rotate-token` and use the printed token) to log in at the dashboard.
 
 3. **Deploy to your VPS**
@@ -111,7 +111,7 @@ After the demo, to run the full stack and deploy:
 
 ---
 
-## Safe, efficient, standardized
+## Operational Notes
 
 - **Safe:** Backup runs before deploy; no logs/PII/vault in the public docs bundle; vault and tokens stay local or in env.
 - **Efficient:** One command per task; idempotent deploy and backup; docs built on demand.
@@ -125,7 +125,7 @@ After the demo, to run the full stack and deploy:
 - **Legal / policy:** Accepting DISCLAIMER and responsible use.
 - **One-time infra:** SSH key to VPS, domain/DNS if you use your own.
 
-Everything else — deploy, backup, docs, smoke test, demo — is one command.
+Most routine tasks — deploy, backup, docs, smoke test, and demo — are available as single commands.
 
 ---
 

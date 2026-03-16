@@ -139,7 +139,7 @@ def read_file(path):
 
 
 def generate_vision_manifesto():
-    """PDF 1: The big-picture narrative for journalists, investors, researchers."""
+    """PDF 1: High-level architecture and deployment summary."""
     pdf = AuraPDF(
         "Aura: The Sovereignty Manifesto",
         "A Framework for Human-First AI Autonomy"
@@ -184,7 +184,7 @@ The stack implements its own Mesh VPN (WireGuard in Zig), its own Edge Protectio
 and its own AI agent runtime.
     """)
     pdf.body("""
-Operating from a mobile cockpit (Samsung Z Fold), the Fleet Commander manages global
+Operating from a mobile client (Samsung Z Fold), the operator manages global
 infrastructure through a Mobile-to-Cloud architecture where the phone is the staging ground
 and the VPS is the always-on executor.
     """)
@@ -221,7 +221,7 @@ and tracks engagement through the Resend API.
 
     pdf.section("6. Operational Principles: BMAD")
     pdf.body("""
-The Fleet Commander operates under BMAD: Build, Monitor, Automate, Document.
+The operator operates under BMAD: Build, Monitor, Automate, Document.
 
 - Ruthless Documentation: Every agent action produces an artifact (diff, log, or decision summary).
 - Cost Discipline: Cheap models handle triage and summarization. Premium models (Claude Sonnet) reserved for architecture and complex debugging. Hard budget caps with automatic downgrade and Panic Mode.
@@ -247,7 +247,7 @@ Aura is not just a tool. It is a template for sovereign AI operations.
 Any individual, from a solo founder to a researcher to a journalist operating under hostile conditions,
 can fork this stack and achieve complete operational sovereignty in ten minutes.
 
-The code is open source. The manifesto is public. The mission is clear:
+The code is open source. The reference document is public. The mission is clear:
 AI should empower humans, not enslave them to platform dependencies.
     """)
 
@@ -366,7 +366,7 @@ Features:
 Technology: Kotlin, Jetpack Compose, Material 3
 
 Features:
-- One-handed navigation (Three-Tap Rule)
+- One-handed navigation (mobile interaction limit)
 - High-contrast night-ops UI
 - HITL approval queue (single-tap approve/deny)
 - Cost monitoring dashboard (tokens/day, $/day)
@@ -588,7 +588,7 @@ through systems they don't control, their agents run on platforms they don't own
 operational continuity depends on third-party uptime.
 
 The Meziani AI Audit Protocol addresses this by providing a systematic transition pathway
-from vulnerable, vendor-locked dependencies to sovereign, military-grade decentralized operations.
+from vulnerable, vendor-locked dependencies to sovereign, hardened decentralized operations.
     """)
 
     pdf.section("2. The Audit Protocol")
@@ -641,7 +641,7 @@ and sensitive organizations. Includes:
     pdf.body("""
 A high-stakes technical audit and strategy protocol for organizations transitioning
 to sovereign AI operations. Delivered through the Meziani AI Audit Agent via mobile
-cockpit for 24/7 global oversight.
+client for 24/7 remote oversight.
     """)
 
     pdf.section("4. Technology Differentiators")
@@ -686,7 +686,7 @@ def generate_research_paper():
     pdf.section("Abstract")
     pdf.body("""
 This paper outlines the architecture and deployment strategy for Aura, an open-source,
-sovereign, and military-grade decentralized agentic monorepo. Building upon foundational
+sovereign, and hardened decentralized agentic monorepo. Building upon foundational
 work in multimodal architectures and Hamiltonian State Space Duality (Akasha 2, arXiv:2601.06212),
 Aura integrates mobile control (Pegasus), cloud execution (Cerberus), and specialized AI agents
 into a unified, zero-trust ecosystem. We prioritize operator-first design and extreme resilience
@@ -700,8 +700,8 @@ on centralized infrastructure providers. This dependency undermines the sovereig
 individuals and organizations who deploy these agents.
 
 Aura addresses this challenge through a holistic framework that emphasizes local-first control
-and military-grade security protocols. By integrating a lean Zig-based agent runtime (Cerberus)
-with a robust Next.js/React dashboard and a mobile mission control application (Pegasus),
+and hardened security protocols. By integrating a lean Zig-based agent runtime (Cerberus)
+with a robust Next.js/React dashboard and a mobile client application (Pegasus),
 Aura provides a comprehensive solution for managing AI agents in a fully decentralized context.
     """)
 
@@ -709,7 +709,7 @@ Aura provides a comprehensive solution for managing AI agents in a fully decentr
     pdf.body("""
 Aura is the practical realization of theoretical frameworks established in prior research.
 The integration of Hamiltonian State Space Duality (HSSD) within the Akasha 2 architecture
-(Meziani, 2026) provides the low-latency, high-throughput foundation required for military-grade
+(Meziani, 2026) provides the low-latency, high-throughput foundation required for hardened
 autonomous agent coordination.
 
 Key influences include:

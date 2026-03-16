@@ -172,7 +172,7 @@ npx tsx tests/chunking.test.ts
 ## 4. HITL (Human-in-the-Loop)
 
 - **Destructive or outside-mesh actions** (medium-to-critical, big repercussions) require operator confirmation. The gateway returns 403 until the client sends **`X-HITL-Confirm: <action_id>`**.
-- **Agents must never** send the confirm header without explicit operator approval (e.g. via Mission Control). Agents may call the endpoint; if they get 403 with `hitl_required: true`, they must surface the request to the operator and only retry with the header after approval.
+- **Agents must never** send the confirm header without explicit operator approval (e.g. via operator UI). Agents may call the endpoint; if they get 403 with `hitl_required: true`, they must surface the request to the operator and only retry with the header after approval.
 - Gated actions: `delete_session`, `register_org`, `revoke_org`, `attest_org`. See **docs/HITL.md** and **GET /api/hitl/actions**.
 
 ## 5. Document for public / NotebookLM (single URL)
