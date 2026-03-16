@@ -14,14 +14,12 @@ on:
       - 'apps/aura-landing-next/**'
   workflow_dispatch:
 
-env:
-  VPS_IP: ${{ secrets.MESH_SSH_HOST || '89.116.170.202' }}
-  VPS_USER: ${{ secrets.MESH_SSH_USER || 'root' }}
-  LANDING_URL: ${{ secrets.MESH_LANDING_URL || 'https://nexa.meziani.ai' }}
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      MESH_SSH_HOST: ${{ secrets.MESH_SSH_HOST }}
+      MESH_SSH_USER: ${{ secrets.MESH_SSH_USER }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -33,7 +31,7 @@ jobs:
 
       - name: Build Nexa landing export
         run: |
-          npm install --workspace apps/aura-landing-next
+          npm ci --workspace apps/aura-landing-next
           npm run build --workspace apps/aura-landing-next
 
       - name: Setup SSH key
@@ -43,31 +41,30 @@ jobs:
 
       - name: Add VPS to known_hosts
         run: |
+          VPS_IP="${MESH_SSH_HOST:-89.116.170.202}"
           mkdir -p ~/.ssh
-          ssh-keyscan -H ${{ env.VPS_IP }} >> ~/.ssh/known_hosts 2>/dev/null || true
+          ssh-keyscan -H "$VPS_IP" >> ~/.ssh/known_hosts 2>/dev/null || true
 
       - name: Deploy to mesh
         run: |
+          export VPS_IP="${MESH_SSH_HOST:-89.116.170.202}"
+          export VPS_USER="${MESH_SSH_USER:-root}"
           chmod +x ops/scripts/deploy-mesh.sh
           REPO_ROOT="$PWD" ./ops/scripts/deploy-mesh.sh
-        env:
-          VPS_IP: ${{ env.VPS_IP }}
-          VPS_USER: ${{ env.VPS_USER }}
 
   test:
     runs-on: ubuntu-latest
     needs: deploy
     env:
-      MESH_VPS_IP: ${{ env.VPS_IP }}
-      MESH_LANDING_URL: ${{ env.LANDING_URL }}
+      MESH_SSH_HOST: ${{ secrets.MESH_SSH_HOST }}
+      MESH_LANDING_URL: ${{ secrets.MESH_LANDING_URL }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Smoke test mesh
         run: |
+          export MESH_VPS_IP="${MESH_SSH_HOST:-89.116.170.202}"
+          export MESH_LANDING_URL="${MESH_LANDING_URL:-https://nexa.meziani.ai}"
           chmod +x ops/scripts/smoke-test-mesh.sh
           ./ops/scripts/smoke-test-mesh.sh
-        env:
-          MESH_VPS_IP: ${{ env.VPS_IP }}
-          MESH_LANDING_URL: ${{ env.LANDING_URL }}
