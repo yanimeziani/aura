@@ -1,0 +1,59 @@
+{
+  "title": "Aura Ops Cast \u2014 webhook-github.ndjson",
+  "source_name": "webhook-github.ndjson",
+  "source_path": "/root/ops/var/aura-flow/spool/webhook-github.ndjson",
+  "created_at": "2026-03-15T22:18:52",
+  "provider": "local",
+  "model": "deterministic-local",
+  "target_minutes": 60,
+  "target_words": 2000,
+  "bulletin_state": "live",
+  "summary": [
+    "No error/exception signals detected in the recent window."
+  ],
+  "key_events": [],
+  "errors": [],
+  "rag_context": [
+    {
+      "score": 4,
+      "path": "/root/docs/AGENTS.md",
+      "chunk_id": "AGENTS.md:25",
+      "text": "```typescript\nconst { data, error } = await supabase.from('debtors').select('*').eq('id', id).single();\nif (error || !data) {\n  throw new Error(`Failed to fetch debtor: ${error?.message}`);\n}\n```"
+    },
+    {
+      "score": 3,
+      "path": "/root/docs/AGENTS.md",
+      "chunk_id": "AGENTS.md:24",
+      "text": "#### Error Handling\n- Throw descriptive errors with context\n- Use try/catch for async operations\n- Log errors with appropriate context (avoid logging secrets)"
+    },
+    {
+      "score": 1,
+      "path": "/root/docs/AGENTS.md",
+      "chunk_id": "AGENTS.md:18",
+      "text": "- **KISS**: Keep code simple and readable. Avoid clever tricks.\n- **YAGNI**: Don't add code \"just in case\". Wait for concrete requirements.\n- **Fail Fast**: Prefer explicit errors over silent failures.\n- **Secure by Default**: Deny access first, grant explicitly."
+    },
+    {
+      "score": 1,
+      "path": "/root/docs/AGENTS.md",
+      "chunk_id": "AGENTS.md:42",
+      "text": "- **Never** use `any` type in TypeScript\n- **Never** commit secrets or credentials\n- **Never** skip error handling\n- **Never** make unrelated changes in a PR\n- **Avoid** deep nesting (max 3-4 levels)\n- **Avoid** magic numbers \u2014 use named constants"
+    },
+    {
+      "score": 1,
+      "path": "/root/docs/updates/2026-03-15-automation-priority-50.md",
+      "chunk_id": "2026-03-15-automation-priority-50.md:11",
+      "text": "31. `Live` \u2014 `DELETE /sync/session/{workspace_id}` with HITL confirmation for destructive session clears.\n32. `Live` \u2014 `GET /api/hitl/actions`: discover the actions that require operator confirmation.\n33. `Live` \u2014 `GET /sync/catch-up`: restore recent state after phone/background interruptions.\n34. `Partial` \u2014 dashboard login is automated, but token rotation still forces manual re-entry across clients.\n35. `Next` \u2014 one-tap \u201crotate token and apply\u201d flow from Mission Control using a gated gateway endpoint.\n36. `Next` \u2014 one-tap \u201crestart gateway/dashboard\u201d operator action exposed through the gateway with HITL."
+    },
+    {
+      "score": 1,
+      "path": "/root/docs/updates/2026-03-15-automation-priority-50.md",
+      "chunk_id": "2026-03-15-automation-priority-50.md:15",
+      "text": "45. `Partial` \u2014 backups run automatically during deploy, but not yet on a schedule.\n46. `Next` \u2014 daily systemd timer or cron for `backup-dynamic-then-delete.sh` on the VPS.\n47. `Next` \u2014 backup retry and fallback across multiple backup nodes instead of a single best-choice attempt.\n48. `Next` \u2014 automatic post-deploy rollback or halt when dashboard or landing build fails on the VPS.\n49. `Next` \u2014 auto-remediation hooks for unhealthy services detected by gateway health probes.\n50. `Next` \u2014 one-command or zero-command config sync for roster, prompts, and cockpit state after changes."
+    }
+  ],
+  "script": "HOST_A: This is the hourly Aura Stack operations handoff for webhook-github.ndjson. The aim of this episode is a 60-minute operator briefing built from sanitized telemetry and curated project documentation.\n\nHOST_B: This run is deterministic fallback mode, so the script is concise and should be treated as a control-plane summary, not a long-form narrative. The production path should use a local OSS model inside the isolated generation zone.\n\nHOST_A: Current state. No error/exception signals detected in the recent window.\n\nHOST_B: Recent event. No high-signal events were extracted from the current window.\n\nHOST_A: Risk signal. No explicit errors were extracted from the current window.\n\nHOST_B: Project context from AGENTS.md. ```typescript const { data, error } = await supabase.from('debtors').select('*').eq('id', id).single(); if (error || !data) {   throw new Error(`Failed to fetch debtor: ${error?.message}`); } ```\n\nHOST_B: Project context from AGENTS.md. #### Error Handling - Throw descriptive errors with context - Use try/catch for async operations - Log errors with appropriate context (avoid logging secrets)\n\nHOST_B: Project context from AGENTS.md. - **KISS**: Keep code simple and readable. Avoid clever tricks. - **YAGNI**: Don't add code \"just in case\". Wait for concrete requirements. - **Fail Fast**: Prefer explicit errors over silent failures. - **Secure by Default**: Deny access first, grant explicitly.\n\nHOST_B: Project context from AGENTS.md. - **Never** use `any` type in TypeScript - **Never** commit secrets or credentials - **Never** skip error handling - **Never** make unrelated changes in a PR - **Avoid** deep nesting (max 3-4 levels) - **Avoid** magic numbers \u2014 use named constants\n\nHOST_A: Operator actions for the next cycle are to verify the underlying service health, confirm the telemetry source is still fresh, and check whether any alerts require human approval before remediation.\n\nHOST_B: Security note. This episode was generated from sanitized telemetry and curated documentation only. Raw logs, vault material, and public documentation remain separate trust zones.",
+  "files": {
+    "script": "20260315_221852_webhook-github.ndjson_local_e6a70f055b6d3140.txt",
+    "json": "20260315_221852_webhook-github.ndjson_local_e6a70f055b6d3140.json"
+  }
+}

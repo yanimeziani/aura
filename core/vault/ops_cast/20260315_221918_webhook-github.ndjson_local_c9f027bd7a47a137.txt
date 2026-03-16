@@ -1,0 +1,21 @@
+HOST_A: This is the hourly Aura Stack operations handoff for webhook-github.ndjson. The aim of this episode is a 60-minute operator briefing built from sanitized telemetry and curated project documentation.
+
+HOST_B: This run is deterministic fallback mode, so the script is concise and should be treated as a control-plane summary, not a long-form narrative. The production path should use a local OSS model inside the isolated generation zone.
+
+HOST_A: Current state. No error/exception signals detected in the recent window.
+
+HOST_B: Recent event. No high-signal events were extracted from the current window.
+
+HOST_A: Risk signal. No explicit errors were extracted from the current window.
+
+HOST_B: Project context from README.md. **⚠️ [Disclaimer and responsible use](./DISCLAIMER.md)** — This software is provided "as is." You may not use it for illegal, harmful, or dangerous purposes. See [DISCLAIMER.md](./DISCLAIMER.md) before use.
+
+HOST_B: Project context from README.md. Aura is a holistic, decentralized framework for AI research, deployment, and autonomous agent orchestration. It provides a secure technical layer for hosting specialized personas with absolute sovereignty and human-in-the-loop (HITL) coordination.
+
+HOST_B: Project context from README.md. In the Aura ecosystem, physical devices are treated as disposable. Whether a developer drops their phone in a river or it is confiscated at a border, the protocol dictates that a **brand new off-the-shelf device** must be capable of being **fully restored to a sovereign state within exactly ten minutes.**
+
+HOST_B: Project context from README.md. This is achieved through: - **Dotfile Sovereignty**: All environment configurations are version-controlled and portable. - **Agentic Recovery**: Automated scripts to rebuild the entire stack (Web, Mobile, Runtime) from source truth. - **Cloud-Edge Parity**: Seamless deployment between local hardware and remote VPS infr
+
+HOST_A: Operator actions for the next cycle are to verify the underlying service health, confirm the telemetry source is still fresh, and check whether any alerts require human approval before remediation.
+
+HOST_B: Security note. This episode was generated from sanitized telemetry and curated documentation only. Raw logs, vault material, and public documentation remain separate trust zones.

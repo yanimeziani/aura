@@ -1,0 +1,21 @@
+HOST_A: This is the hourly Aura Stack operations handoff for webhook-github.ndjson. The aim of this episode is a 60-minute operator briefing built from sanitized telemetry and curated project documentation.
+
+HOST_B: This run is deterministic fallback mode, so the script is concise and should be treated as a control-plane summary, not a long-form narrative. The production path should use a local OSS model inside the isolated generation zone.
+
+HOST_A: Current state. No error/exception signals detected in the recent window.
+
+HOST_B: Recent event. No high-signal events were extracted from the current window.
+
+HOST_A: Risk signal. No explicit errors were extracted from the current window.
+
+HOST_B: Project context from AGENTS.md. ```typescript const { data, error } = await supabase.from('debtors').select('*').eq('id', id).single(); if (error || !data) {   throw new Error(`Failed to fetch debtor: ${error?.message}`); } ```
+
+HOST_B: Project context from AGENTS.md. #### Error Handling - Throw descriptive errors with context - Use try/catch for async operations - Log errors with appropriate context (avoid logging secrets)
+
+HOST_B: Project context from AGENTS.md. - **KISS**: Keep code simple and readable. Avoid clever tricks. - **YAGNI**: Don't add code "just in case". Wait for concrete requirements. - **Fail Fast**: Prefer explicit errors over silent failures. - **Secure by Default**: Deny access first, grant explicitly.
+
+HOST_B: Project context from AGENTS.md. - **Never** use `any` type in TypeScript - **Never** commit secrets or credentials - **Never** skip error handling - **Never** make unrelated changes in a PR - **Avoid** deep nesting (max 3-4 levels) - **Avoid** magic numbers — use named constants
+
+HOST_A: Operator actions for the next cycle are to verify the underlying service health, confirm the telemetry source is still fresh, and check whether any alerts require human approval before remediation.
+
+HOST_B: Security note. This episode was generated from sanitized telemetry and curated documentation only. Raw logs, vault material, and public documentation remain separate trust zones.

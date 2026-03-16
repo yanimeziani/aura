@@ -7,22 +7,36 @@ import { logStreamUrl, fetchLogsTail } from "@/lib/gateway";
 const LOG_TABS = ["agency", "server", "flow", "watchdog", "maid", "n8n", "fulfiller"] as const;
 type LogName = (typeof LOG_TABS)[number];
 
-export default function AgentTerminal({ token }: { token: string | null }) {
+export default function AgentTerminal({
+  token,
+  reconnectLogs,
+  onReconnectApplied,
+}: {
+  token: string | null;
+  reconnectLogs?: Record<string, string[]> | null;
+  onReconnectApplied?: () => void;
+}) {
   const [activeTab, setActiveTab] = useState<LogName>("agency");
   const [lines, setLines] = useState<string[]>([]);
   const [connected, setConnected] = useState(false);
   const [error, setError] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
   const esRef = useRef<EventSource | null>(null);
+  const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const reconnectCountRef = useRef(0);
+  const MAX_RECONNECT_DELAY_MS = 15000;
 
   const connect = useCallback(
-    (tab: LogName) => {
-      // Close existing connection
+    (tab: LogName, keepLines = false) => {
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+        reconnectTimeoutRef.current = null;
+      }
       if (esRef.current) {
         esRef.current.close();
         esRef.current = null;
       }
-      setLines([]);
+      if (!keepLines) setLines([]);
       setConnected(false);
       setError("");
 
@@ -31,6 +45,7 @@ export default function AgentTerminal({ token }: { token: string | null }) {
       esRef.current = es;
 
       es.onopen = () => {
+        reconnectCountRef.current = 0;
         setConnected(true);
         setError("");
       };
@@ -38,18 +53,29 @@ export default function AgentTerminal({ token }: { token: string | null }) {
       es.onmessage = (event) => {
         setLines((prev) => {
           const next = [...prev, event.data];
-          // Keep last 500 lines to avoid memory bloat
           return next.length > 500 ? next.slice(-500) : next;
         });
       };
 
       es.onerror = () => {
         setConnected(false);
-        setError("SSE disconnected — retrying...");
+        setError("SSE disconnected — reconnecting...");
+        const delay = Math.min(2000 * 2 ** reconnectCountRef.current, MAX_RECONNECT_DELAY_MS);
+        reconnectCountRef.current += 1;
+        reconnectTimeoutRef.current = setTimeout(() => connect(tab, true), delay);
       };
     },
     [token]
   );
+
+  // When phone returns: apply stream-back from VPS then resume live
+  useEffect(() => {
+    if (!reconnectLogs || Object.keys(reconnectLogs).length === 0) return;
+    const tabLines = reconnectLogs[activeTab] ?? [];
+    setLines(tabLines);
+    onReconnectApplied?.();
+    connect(activeTab, true);
+  }, [reconnectLogs, activeTab, connect, onReconnectApplied]);
 
   // Fallback: fetch static tail if SSE fails after 3s
   useEffect(() => {
@@ -74,6 +100,10 @@ export default function AgentTerminal({ token }: { token: string | null }) {
 
     return () => {
       clearTimeout(fallbackTimeout);
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+        reconnectTimeoutRef.current = null;
+      }
       if (esRef.current) {
         esRef.current.close();
         esRef.current = null;

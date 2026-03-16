@@ -24,24 +24,24 @@ const monoFont = IBM_Plex_Mono({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://meziani.ai'),
-  title: 'Meziani AI Labs | Sovereign AI Systems',
+  metadataBase: new URL('https://nexa.global'),
+  title: 'Nexa | Sovereign Agentic Infrastructure',
   description:
-    'Landing surface for Meziani AI Labs: sovereign automation, governed AI systems, and Vercel-ready product fronts for serious operators.',
+    'Nexa is sovereign agentic infrastructure for governed automation, mesh-aware operations, and recovery-first deployment.',
   openGraph: {
-    title: 'Meziani AI Labs',
+    title: 'Nexa',
     description:
-      'Sovereign automation, governed AI systems, and production-grade landing surfaces for Canadian and MENA operators.',
-    url: 'https://meziani.ai',
-    siteName: 'Meziani AI Labs',
+      'Sovereign agentic infrastructure for operators, systems, and recovery.',
+    url: 'https://nexa.global',
+    siteName: 'Nexa',
     locale: 'en_CA',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Meziani AI Labs',
+    title: 'Nexa',
     description:
-      'Sovereign automation, governed AI systems, and production-grade landing surfaces for serious operators.',
+      'Sovereign agentic infrastructure for operators, systems, and recovery.',
   },
 }
 

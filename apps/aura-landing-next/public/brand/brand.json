@@ -1,39 +1,39 @@
 {
-  "name": "Meziani",
-  "legalName": "Meziani AI Inc.",
-  "tagline": "Sovereign AI Infrastructure",
-  "url": "https://meziani.ai",
-  "brandUrl": "https://brand.meziani.ai",
+  "name": "Nexa",
+  "legalName": "Nexa OSS",
+  "tagline": "Sovereign Agentic Infrastructure",
+  "url": "https://nexa.global",
+  "brandUrl": "https://brand.nexa.global",
   "logo": {
-    "primary": "https://brand.meziani.ai/brand/logo.svg",
-    "dark": "https://brand.meziani.ai/brand/logo-dark.svg",
-    "icon": "https://brand.meziani.ai/brand/icon.svg"
+    "primary": "https://brand.nexa.global/brand/logo.svg",
+    "dark": "https://brand.nexa.global/brand/logo-dark.svg",
+    "icon": "https://brand.nexa.global/brand/icon.svg"
   },
   "colors": {
-    "primary":    { "name": "Aura Black",   "hex": "#0D1117", "rgb": "13,17,23"    },
-    "brand":      { "name": "Aura Blue",    "hex": "#3B82F6", "rgb": "59,130,246"  },
-    "accent":     { "name": "Aura Gold",    "hex": "#D4A017", "rgb": "212,160,23"  },
-    "surface":    { "name": "Aura Surface", "hex": "#161B27", "rgb": "22,27,39"    },
-    "muted":      { "name": "Aura Muted",   "hex": "#6B7280", "rgb": "107,114,128" },
-    "white":      { "name": "Aura White",   "hex": "#F9FAFB", "rgb": "249,250,251" }
+    "primary":    { "name": "Nexa Black",   "hex": "#0E1116", "rgb": "14,17,22"    },
+    "brand":      { "name": "Nexa Blue",    "hex": "#2563EB", "rgb": "37,99,235"   },
+    "signal":     { "name": "Nexa Cyan",    "hex": "#0EA5A4", "rgb": "14,165,164"  },
+    "accent":     { "name": "Nexa Gold",    "hex": "#C69214", "rgb": "198,146,20"  },
+    "surface":    { "name": "Nexa Surface", "hex": "#161B22", "rgb": "22,27,34"    },
+    "muted":      { "name": "Nexa Steel",   "hex": "#5E6A75", "rgb": "94,106,117"  },
+    "white":      { "name": "Nexa White",   "hex": "#F5F7FA", "rgb": "245,247,250" }
   },
   "typography": {
-    "heading": { "family": "Inter", "weight": "700", "google": "Inter:wght@700" },
-    "body":    { "family": "Inter", "weight": "400", "google": "Inter:wght@400;500" },
-    "mono":    { "family": "JetBrains Mono", "weight": "400", "google": "JetBrains+Mono:wght@400" }
+    "heading": { "family": "Space Grotesk", "weight": "700", "google": "Space+Grotesk:wght@700" },
+    "body":    { "family": "IBM Plex Sans", "weight": "400", "google": "IBM+Plex+Sans:wght@400;500;600;700" },
+    "mono":    { "family": "IBM Plex Mono", "weight": "400", "google": "IBM+Plex+Mono:wght@400;500;600" }
   },
   "voice": {
-    "tone": ["technical", "sovereign", "precise", "trustworthy"],
-    "avoid": ["buzzwords", "hype", "vague claims"],
+    "tone": ["technical", "sovereign", "precise", "calm", "global"],
+    "avoid": ["buzzwords", "hype", "vague claims", "theatrics"],
     "taglines": [
-      "Sovereign AI Infrastructure",
-      "Autonomous systems. No lock-in.",
-      "Built in Zig. Runs forever.",
-      "Your data. Your stack. Your rules."
+      "Sovereign Agentic Infrastructure",
+      "Portable Systems. Persistent Control.",
+      "Global Systems, Local Control.",
+      "Infrastructure That Survives the Device."
     ]
   },
   "social": {
-    "twitter": "https://twitter.com/meziani_ai",
-    "github": "https://github.com/meziani-ai"
+    "github": "https://github.com/nexa-oss/nexa"
   }
 }

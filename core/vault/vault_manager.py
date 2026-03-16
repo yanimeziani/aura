@@ -1,22 +1,26 @@
 import os
 import json
+import secrets
 import sqlite3
 import subprocess
 import sys
 from pathlib import Path
 
 # --- CONFIGURATION REGISTRY ---
-# Define every key needed by every vertical in Aura.
+# Define every key needed by every vertical in Nexa.
 VAULT_REGISTRY = {
     "GROQ_API_KEY": {"desc": "Groq Cloud API Key (for fast agent execution)", "required": True},
     "RESEND_API_KEY": {"desc": "Resend API Key (for outreach email dispatch)", "required": True},
     "STRIPE_SECRET_KEY": {"desc": "Stripe Live/Test Secret Key (for payments)", "required": True},
     "STRIPE_WEBHOOK_SECRET": {"desc": "Stripe Webhook Signing Secret (for fulfillment)", "required": True},
     "STRIPE_WEBHOOK_SECRET_THIN": {"desc": "Stripe Webhook Signing Secret (THIN payload destination)", "required": False},
-    "OPENAI_MODEL_NAME": {"desc": "Groq/OpenAI Model Name (e.g., llama-3.3-70b-versatile)", "default": "llama-3.3-70b-versatile"},
+    "NEXA_DEFAULT_COLLAB_MODEL": {"desc": "Canonical shared collaborative coding model", "default": "Qwen/Qwen3-Coder-480B-A35B-Instruct"},
+    "NEXA_DEFAULT_EDGE_MODEL": {"desc": "Canonical edge/mobile fallback coding model", "default": "qwen2.5-coder:7b-instruct"},
+    "NEXA_PHONE_RUNTIME": {"desc": "Canonical Android phone runtime label", "default": "mlc-vulkan"},
+    "OPENAI_MODEL_NAME": {"desc": "Active OpenAI-compatible provider model override", "default": "Qwen/Qwen3-Coder-480B-A35B-Instruct"},
     "OPENAI_API_BASE": {"desc": "Groq/OpenAI API Base URL", "default": "https://api.groq.com/openai/v1"},
     "N8N_WEBHOOK_URL": {"desc": "URL of your n8n MCP/Gateway webhook", "default": "http://localhost:5678/webhook/mcp-gateway"},
-    "OPS_AUTOMATION_WEBHOOK_URL": {"desc": "URL of Aura ops automation webhook (preferred over n8n)", "default": "http://127.0.0.1:9100/ops/stripe"},
+    "OPS_AUTOMATION_WEBHOOK_URL": {"desc": "URL of Nexa ops automation webhook (preferred over n8n)", "default": "http://127.0.0.1:9100/ops/stripe"},
     "GEMINI_API_KEY": {"desc": "Google Gemini API Key (for Gemini CLI / gateway)", "required": False},
     "OWNER_EMAIL": {"desc": "Email of the system owner", "default": ""},
     "AURA_VAULT_TOKEN": {"desc": "Secret token for vault-level operations", "required": True},
@@ -24,7 +28,7 @@ VAULT_REGISTRY = {
 
 _VAULT_DIR = Path(__file__).resolve().parent
 AURA_ROOT = Path(os.environ.get("AURA_HOME", _VAULT_DIR.parent.parent))
-VAULT_FILE = _VAULT_DIR / "aura-vault.json"
+VAULT_FILE = Path(os.environ.get("AURA_VAULT_FILE", _VAULT_DIR / "aura-vault.json"))
 ENV_TARGETS = [
     AURA_ROOT / "core" / "wealth" / ".env",
     AURA_ROOT / "core" / "ai_agency_wealth" / ".env",
@@ -160,12 +164,32 @@ def configure_webhooks():
         print("\nNo changes made to webhook settings.")
 
 
+def rotate_vault_token():
+    """Generate a new AURA_VAULT_TOKEN, save to vault, print once. Dashboard users must re-login with the new token."""
+    if not VAULT_FILE.exists():
+        print(f"Vault file not found: {VAULT_FILE}")
+        print("Set AURA_VAULT_FILE to your vault path, or run from a clone that has the vault.")
+        sys.exit(1)
+    vault = load_vault()
+    new_token = secrets.token_urlsafe(32)
+    vault["AURA_VAULT_TOKEN"] = new_token
+    save_vault(vault)
+    print("AURA_VAULT_TOKEN rotated and saved.")
+    print("\nNew token (store in password manager; use for Mission Control login):")
+    print(new_token)
+    print("\nNext steps:")
+    print("  - Restart aura-gateway on the server so it reads the new token.")
+    print("  - Clear or re-enter token in dashboard (localStorage is invalidated).")
+
+
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         if sys.argv[1] == "sync":
             sync_envs(load_vault())
         elif sys.argv[1] == "webhook":
             configure_webhooks()
+        elif sys.argv[1] == "rotate-token":
+            rotate_vault_token()
         else:
             bootstrap_vault()
     else:

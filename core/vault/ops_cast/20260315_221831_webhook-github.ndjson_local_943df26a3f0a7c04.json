@@ -1,0 +1,22 @@
+{
+  "title": "Aura Ops Cast \u2014 webhook-github.ndjson",
+  "source_name": "webhook-github.ndjson",
+  "source_path": "/root/ops/var/aura-flow/spool/webhook-github.ndjson",
+  "created_at": "2026-03-15T22:18:31",
+  "provider": "local",
+  "model": "deterministic-local",
+  "target_minutes": 60,
+  "target_words": 2000,
+  "bulletin_state": "live",
+  "summary": [
+    "No error/exception signals detected in the recent window."
+  ],
+  "key_events": [],
+  "errors": [],
+  "rag_context": [],
+  "script": "HOST_A: This is the hourly Aura Stack operations handoff for webhook-github.ndjson. The aim of this episode is a 60-minute operator briefing built from sanitized telemetry and curated project documentation.\n\nHOST_B: This run is deterministic fallback mode, so the script is concise and should be treated as a control-plane summary, not a long-form narrative. The production path should use a local OSS model inside the isolated generation zone.\n\nHOST_A: Current state. No error/exception signals detected in the recent window.\n\nHOST_B: Recent event. No high-signal events were extracted from the current window.\n\nHOST_A: Risk signal. No explicit errors were extracted from the current window.\n\nHOST_A: Operator actions for the next cycle are to verify the underlying service health, confirm the telemetry source is still fresh, and check whether any alerts require human approval before remediation.\n\nHOST_B: Security note. This episode was generated from sanitized telemetry and curated documentation only. Raw logs, vault material, and public documentation remain separate trust zones.",
+  "files": {
+    "script": "20260315_221831_webhook-github.ndjson_local_943df26a3f0a7c04.txt",
+    "json": "20260315_221831_webhook-github.ndjson_local_943df26a3f0a7c04.json"
+  }
+}

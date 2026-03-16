@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aura — Sovereign Outreach Network</title>
+<title>Nexa — Sovereign Outreach Network</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { background: #06060c; color: #e0e0e0; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro', 'Segoe UI', sans-serif; overflow: hidden; }
@@ -58,9 +58,9 @@ footer a:hover { color: #4af; }
 <canvas id="canvas"></canvas>
 
 <div class="hud hud-top">
-  <h1>AURA</h1>
+  <h1>NEXA</h1>
   <div class="sub">Sovereign Agentic Infrastructure</div>
-  <div class="role">Yani Meziani — Founder & Architect</div>
+  <div class="role">OSS protocol launch surface</div>
 </div>
 
 <div class="hud hud-right">
@@ -104,7 +104,7 @@ footer a:hover { color: #4af; }
   </div>
 </div>
 
-<footer><a href="index.html">aura.meziani.org/launch</a></footer>
+<footer><a href="/docs/nexa">nexa.global/docs</a></footer>
 
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js';
@@ -112,7 +112,7 @@ import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.169.0/exampl
 
 const R = 2.0;
 
-// ── Operation targets — reflects Aura's actual outreach operation ───
+// ── Operation targets — reflects Nexa's public outreach surface ───
 // Each target maps to a real channel in the launch plan
 const TARGETS = [
   // Media outreach (Career-Twin + Media Agent)
@@ -133,9 +133,9 @@ const TARGETS = [
   { name: 'EU Digital',        region: 'Brussels',    type: 'UN',       lat: 50.85, lon:   4.35, color: 0xaa88ff, delay: 5400 },
 ];
 
-// Origin: Hostinger VPS (sovereign node) + Yani's location
+// Origin: sovereign VPS node + operator launch region
 const ORIGIN = { lat: 50.11, lon: 8.68 }; // Frankfurt (VPS datacenter)
-const FOUNDER = { lat: 45.50, lon: -73.57 }; // Montreal (Yani)
+const FOUNDER = { lat: 45.50, lon: -73.57 }; // Montreal
 
 // Phases shown on screen
 const PHASES = [

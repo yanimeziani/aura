@@ -1,0 +1,7 @@
+[
+  {
+    "host": "root@89.116.170.202",
+    "storage_path": "/opt/aura/backups-incoming",
+    "label": "mesh-vps"
+  }
+]

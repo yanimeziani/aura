@@ -82,12 +82,18 @@
 
 .segmentToggle {
   display: inline-flex;
+  flex-wrap: wrap;
   gap: 6px;
   padding: 6px;
   border: 1px solid var(--line-strong);
   border-radius: 999px;
   background: rgb(255 255 255 / 0.04);
   backdrop-filter: blur(16px);
+}
+
+.segmentToggle .toggleButton {
+  padding: 8px 12px;
+  font-size: 0.85rem;
 }
 
 .toggleButton {
@@ -164,6 +170,14 @@
   color: var(--text-soft);
   font-size: 1.1rem;
   line-height: 1.7;
+}
+
+.funnelSubline {
+  margin: 14px 0 0;
+  color: var(--accent-teal);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  letter-spacing: 0.06em;
 }
 
 .heroActions,
@@ -405,6 +419,75 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 18px;
+}
+
+.phasesGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.phaseCard {
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.06), rgb(255 255 255 / 0.02));
+  padding: 24px;
+  box-shadow: 0 20px 60px rgb(0 0 0 / 0.2);
+}
+
+.phaseCard h3 {
+  margin: 12px 0 8px;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  letter-spacing: -0.02em;
+}
+
+.phaseCard p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 0.98rem;
+  line-height: 1.65;
+}
+
+@media (max-width: 768px) {
+  .phasesGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.journeyList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 560px;
+}
+
+.journeyStep {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.journeyNum {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgb(244 176 82 / 0.25), rgb(240 143 78 / 0.2));
+  color: #f4b052;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.journeyStep p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 1.02rem;
+  line-height: 1.6;
 }
 
 .infoCard {

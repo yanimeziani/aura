@@ -1,0 +1,14 @@
+{
+  "name": "nexa-recovery",
+  "version": "0.1.0",
+  "invariants": [
+    "operator_authority_portable",
+    "device_loss_survivable",
+    "session_reconnect_supported",
+    "vault_state_separable_from_runtime_logs"
+  ],
+  "continuity": {
+    "catch_up_max_lines": 1000,
+    "default_lines": 100
+  }
+}

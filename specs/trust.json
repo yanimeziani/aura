@@ -1,0 +1,60 @@
+{
+  "name": "nexa-trust",
+  "version": "0.1.0",
+  "trust_tiers": [
+    "unverified",
+    "domain_verified",
+    "registry_verified",
+    "fully_verified",
+    "sovereign"
+  ],
+  "allowed_transitions": {
+    "unverified": [
+      "domain_verified",
+      "registry_verified",
+      "fully_verified"
+    ],
+    "domain_verified": [
+      "registry_verified",
+      "fully_verified",
+      "unverified"
+    ],
+    "registry_verified": [
+      "fully_verified",
+      "unverified"
+    ],
+    "fully_verified": [
+      "sovereign",
+      "unverified"
+    ],
+    "sovereign": [
+      "unverified"
+    ]
+  },
+  "hitl_actions": [
+    {
+      "id": "delete_session",
+      "method": "DELETE",
+      "path": "/sync/session/{workspace_id}",
+      "reason": "Destructive: removes synced session data."
+    },
+    {
+      "id": "register_org",
+      "method": "POST",
+      "path": "/api/org/register",
+      "reason": "Outside mesh: writes to org registry."
+    },
+    {
+      "id": "revoke_org",
+      "method": "POST",
+      "path": "/api/org/{org_id}/revoke",
+      "reason": "Destructive: demotes org trust; big repercussion."
+    },
+    {
+      "id": "attest_org",
+      "method": "POST",
+      "path": "/api/org/{org_id}/attest",
+      "reason": "Trust change: sovereign override; big repercussion."
+    }
+  ]
+}

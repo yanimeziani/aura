@@ -1,0 +1,13 @@
+HOST_A: This is the hourly Aura Stack operations handoff for webhook-github.ndjson. The aim of this episode is a 60-minute operator briefing built from sanitized telemetry and curated project documentation.
+
+HOST_B: This run is deterministic fallback mode, so the script is concise and should be treated as a control-plane summary, not a long-form narrative. The production path should use a local OSS model inside the isolated generation zone.
+
+HOST_A: Current state. No error/exception signals detected in the recent window.
+
+HOST_B: Recent event. No high-signal events were extracted from the current window.
+
+HOST_A: Risk signal. No explicit errors were extracted from the current window.
+
+HOST_A: Operator actions for the next cycle are to verify the underlying service health, confirm the telemetry source is still fresh, and check whether any alerts require human approval before remediation.
+
+HOST_B: Security note. This episode was generated from sanitized telemetry and curated documentation only. Raw logs, vault material, and public documentation remain separate trust zones.

@@ -1,0 +1,59 @@
+{
+  "title": "Aura Ops Cast \u2014 agency_metrics",
+  "source_name": "agency_metrics",
+  "source_path": "/root/core/ai_agency_wealth/agency_metrics.log",
+  "created_at": "2026-03-15T23:22:14",
+  "provider": "local",
+  "model": "deterministic-local",
+  "target_minutes": 60,
+  "target_words": 7000,
+  "bulletin_state": "empty",
+  "summary": [
+    "Log file missing or empty."
+  ],
+  "key_events": [],
+  "errors": [],
+  "rag_context": [
+    {
+      "score": 2,
+      "path": "/root/docs/updates/README.md",
+      "chunk_id": "README.md:3",
+      "text": "- **URL:** `GET /docs/nexa` (e.g. `https://<gateway-host>/gw/docs/nexa`) \u2014 NotebookLM and public/operator consumption.\n- **Realtime:** The bundle is built on each request from the repo; any `.md` file you add under `docs/updates/` is included automatically.\n- **Rules:**\n  - Write only **core Nexa documentation**: architecture, runbooks, product updates, operator briefs. No logs, PII, vault content, or deployment-specific secrets.\n  - Use descriptive filenames: `YYYY-MM-DD-short-topic.md` or `topic-update.md`.\n  - This directory is for **additions and updates** that should be reflected in media summarisation and audio/video assets for operators and public.\n  - Write like a technical source memo, not marketing copy: state the mechanism, changed behavior, operational impact, limits, and recovery notes.\n  - Keep tone neutral and reusable for NotebookLM ingestion. Avoid hype, theatrics, or negative persona framing.\n  - Follow [NOTEBOOKLM_SOURCE_GUIDE.md](/root/docs/NOTEBOOKLM_SOURCE_GUIDE.md) for the full source-writing contract."
+    },
+    {
+      "score": 1,
+      "path": "/root/README.md",
+      "chunk_id": "README.md:14",
+      "text": "This is achieved through:\n- **Dotfile Sovereignty**: All environment configurations are version-controlled and portable.\n- **Agentic Recovery**: Automated scripts to rebuild the entire stack (Web, Mobile, Runtime) from source truth.\n- **Cloud-Edge Parity**: Seamless deployment between local hardware and remote VPS infrastructure."
+    },
+    {
+      "score": 1,
+      "path": "/root/README.md",
+      "chunk_id": "README.md:28",
+      "text": "1.  **Career-Twin Agent**: Autonomous professional profile management, inquiry handling, and interview scheduling.\n2.  **SDR Agent**: Automated B2B sales development, prospect research, and personalized outreach sequences."
+    },
+    {
+      "score": 1,
+      "path": "/root/docs/QUICKSTART.md",
+      "chunk_id": "QUICKSTART.md:31",
+      "text": "- **Safe:** Backup runs before deploy; no logs/PII/vault in the public docs bundle; vault and tokens stay local or in env.\n- **Efficient:** One command per task; idempotent deploy and backup; docs built on demand.\n- **Standardized:** Same commands for everyone: `nexa deploy-mesh`, `nexa backup`, `nexa demo`. Env vars (`AURA_ROOT`, `VPS_IP`, `AURA_VAULT_FILE`, etc.) override paths and targets."
+    },
+    {
+      "score": 1,
+      "path": "/root/docs/QUICKSTART.md",
+      "chunk_id": "QUICKSTART.md:38",
+      "text": "- **Linux / macOS:** Run `./ops/bin/nexa <command>`. Uses `python3`; paths are resolved from repo root.\n- **Windows:** Run `nexa.cmd <command>` or `py -3 nexa.py <command>`. For `backup` and `deploy-mesh` (bash scripts), Git Bash must be on PATH, or use WSL.\n- **No hardcoded paths:** All defaults resolve from the repo root and the current stack layout. Override with `AURA_ROOT`, `AURA_VAULT_FILE`, `AURA_DATA_DIR`, `AURA_LOG_DIR`, `VPS_IP`, etc.\n- **Transport-ready:** Set `AURA_ROUTE_CLOUD_THROUGH_TOR=1` plus `AURA_TOR_*` and `AURA_IPFS_*` env vars to enable Tor-routed cloud egress and IPFS document transport through the gateway.\n- **Same commands everywhere:** `demo`, `gateway`, `vault`, `docs-bundle`, `status` run natively on all platforms; `deploy-mesh`, `backup`, `smoke-test` run via bash when available."
+    },
+    {
+      "score": 1,
+      "path": "/root/docs/AGENTS.md",
+      "chunk_id": "AGENTS.md:11",
+      "text": "# Run a single test file\nnpx playwright test tests/demo.spec.ts\nnpx tsx tests/chunking.test.ts"
+    }
+  ],
+  "script": "HOST_A: This is the hourly Aura Stack operations handoff for agency_metrics. The aim of this episode is a 60-minute operator briefing built from sanitized telemetry and curated project documentation.\n\nHOST_B: This run is deterministic fallback mode, so the script is concise and should be treated as a control-plane summary, not a long-form narrative. The production path should use a local OSS model inside the isolated generation zone.\n\nHOST_A: Current state. Log file missing or empty.\n\nHOST_B: Recent event. No high-signal events were extracted from the current window.\n\nHOST_A: Risk signal. No explicit errors were extracted from the current window.\n\nHOST_B: Project context from README.md. - **URL:** `GET /docs/nexa` (e.g. `https://<gateway-host>/gw/docs/nexa`) \u2014 NotebookLM and public/operator consumption. - **Realtime:** The bundle is built on each request from the repo; any `.md` file you add under `docs/updates/` is included automatically. - **Rules:**   - Write only **core Nexa documentation**: archi\n\nHOST_B: Project context from README.md. This is achieved through: - **Dotfile Sovereignty**: All environment configurations are version-controlled and portable. - **Agentic Recovery**: Automated scripts to rebuild the entire stack (Web, Mobile, Runtime) from source truth. - **Cloud-Edge Parity**: Seamless deployment between local hardware and remote VPS infr\n\nHOST_B: Project context from README.md. 1.  **Career-Twin Agent**: Autonomous professional profile management, inquiry handling, and interview scheduling. 2.  **SDR Agent**: Automated B2B sales development, prospect research, and personalized outreach sequences.\n\nHOST_B: Project context from QUICKSTART.md. - **Safe:** Backup runs before deploy; no logs/PII/vault in the public docs bundle; vault and tokens stay local or in env. - **Efficient:** One command per task; idempotent deploy and backup; docs built on demand. - **Standardized:** Same commands for everyone: `nexa deploy-mesh`, `nexa backup`, `nexa demo`. Env vars (\n\nHOST_A: Operator actions for the next cycle are to verify the underlying service health, confirm the telemetry source is still fresh, and check whether any alerts require human approval before remediation.\n\nHOST_B: Security note. This episode was generated from sanitized telemetry and curated documentation only. Raw logs, vault material, and public documentation remain separate trust zones.",
+  "files": {
+    "script": "20260315_232214_agency_metrics.log_local_63491b967d25be3f.txt",
+    "json": "20260315_232214_agency_metrics.log_local_63491b967d25be3f.json"
+  }
+}

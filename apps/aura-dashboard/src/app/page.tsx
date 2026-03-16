@@ -1,19 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Activity, LogOut } from "lucide-react";
 import { getStoredToken, clearToken } from "@/lib/auth";
+import { fetchCatchUp, getGatewayLabel } from "@/lib/gateway";
 import SystemHealth from "@/components/SystemHealth";
 import MeshStatus from "@/components/MeshStatus";
 import AgentTerminal from "@/components/AgentTerminal";
 import QuickActions from "@/components/QuickActions";
+import RegionClusters from "@/components/RegionClusters";
 
 export default function DashboardPage() {
   const router = useRouter();
   const [token, setToken] = useState<string | null>(null);
   const [authed, setAuthed] = useState(false);
   const [time, setTime] = useState("");
+  const [reconnectLogs, setReconnectLogs] = useState<Record<string, string[]> | null>(null);
+  const [gatewayLabel, setGatewayLabel] = useState("resolving");
 
   useEffect(() => {
     const stored = getStoredToken();
@@ -40,6 +44,24 @@ export default function DashboardPage() {
     return () => clearInterval(id);
   }, []);
 
+  useEffect(() => {
+    setGatewayLabel(getGatewayLabel());
+  }, []);
+
+  // When phone/tab returns: stream back from VPS (process kept running there)
+  const onVisibilityChange = useCallback(() => {
+    if (typeof document === "undefined" || document.visibilityState !== "visible") return;
+    const t = getStoredToken();
+    if (!t) return;
+    fetchCatchUp(t, "aura", 100).then(({ logs_tail }) => {
+      if (logs_tail && Object.keys(logs_tail).length > 0) setReconnectLogs(logs_tail);
+    });
+  }, []);
+  useEffect(() => {
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", onVisibilityChange);
+  }, [onVisibilityChange]);
+
   function handleLogout() {
     clearToken();
     router.push("/login");
@@ -64,7 +86,7 @@ export default function DashboardPage() {
       <header className="border-4 border-white p-4 md:p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase leading-none">
-            AURA // MISSION CONTROL
+            NEXA // MISSION CONTROL
           </h1>
           <p className="text-xs opacity-50 mt-1">
             v0.1.0 // SOVEREIGN_MESH // OPERATOR_DASHBOARD
@@ -105,15 +127,22 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* AGENT TERMINAL — full width */}
-      <AgentTerminal token={token} />
+      {/* AGENT TERMINAL — full width; stream-back from VPS when phone returns */}
+      <AgentTerminal
+        token={token}
+        reconnectLogs={reconnectLogs}
+        onReconnectApplied={() => setReconnectLogs(null)}
+      />
 
       {/* BOTTOM GRID */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-        <div className="md:col-span-6">
+        <div className="md:col-span-4">
           <QuickActions token={token} />
         </div>
-        <div className="md:col-span-6">
+        <div className="md:col-span-4">
+          <RegionClusters />
+        </div>
+        <div className="md:col-span-4">
           <div className="border-4 border-white p-0">
             <div className="bg-white text-black p-2 px-4 font-bold uppercase text-xs tracking-widest">
               Session Sync
@@ -129,7 +158,7 @@ export default function DashboardPage() {
               </div>
               <div className="flex justify-between text-sm">
                 <span className="opacity-50 uppercase text-xs">Gateway</span>
-                <span className="text-terminal">:8765</span>
+                <span className="text-terminal break-all text-right">{gatewayLabel}</span>
               </div>
               <div className="border-t-2 border-white/10 pt-3 mt-3 text-[10px] opacity-30 uppercase text-center">
                 IDE / TUI / CLI shared context
@@ -140,12 +169,15 @@ export default function DashboardPage() {
       </div>
 
       {/* FOOTER */}
-      <footer className="border-4 border-white bg-white text-black p-2 px-4 md:px-6 flex flex-col md:flex-row justify-between items-center text-[10px] font-bold uppercase tracking-widest gap-2">
+      <footer className="border-4 border-white bg-white text-black p-2 px-4 md:px-6 flex flex-col md:flex-row justify-between items-center text-[10px] font-bold uppercase tracking-widest gap-2 flex-wrap">
         <div className="flex gap-4 md:gap-6">
-          <span>GATEWAY: 127.0.0.1:8765</span>
+          <span>GATEWAY: {gatewayLabel.toUpperCase()}</span>
           <span>MODE: SOVEREIGN</span>
         </div>
-        <div>ENCRYPTION: VAULT_AES // MESH_FIRST: ACTIVE</div>
+        <div className="flex items-center gap-4">
+          <span>ENCRYPTION: VAULT_AES // MESH_FIRST: ACTIVE</span>
+          <a href="https://github.com/meziani-ai/aura/blob/main/DISCLAIMER.md" target="_blank" rel="noopener noreferrer" className="normal-case opacity-70 hover:opacity-100">Disclaimer</a>
+        </div>
       </footer>
     </div>
   );

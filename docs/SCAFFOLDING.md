@@ -1,10 +1,10 @@
-# Aura Sovereign Scaffolding Guide
+# Nexa Sovereign Scaffolding Guide
 
 **Status**: ACTIVE / MANDATORY
 **Version**: 1.0.0
 **Philosophy**: All In-House, All Tailored. No external boilerplates.
 
-This document unifies the scaffolding procedures across the Aura ecosystem. All new components must follow these patterns to ensure military-grade consistency and sovereign integrity.
+This document unifies the scaffolding procedures across the Nexa ecosystem. All new components must follow the protocol architecture in [ARCHITECTURE.md](/root/docs/ARCHITECTURE.md), [PROTOCOL.md](/root/docs/PROTOCOL.md), [TRUST_MODEL.md](/root/docs/TRUST_MODEL.md), and [THREAT_MODEL.md](/root/docs/THREAT_MODEL.md) before implementation details are chosen.
 
 ---
 
@@ -13,6 +13,7 @@ This document unifies the scaffolding procedures across the Aura ecosystem. All 
 - **Never Launch Alone**: All scaffolding plans must be reviewed by a Co-Pilot.
 - **Sovereign-First**: Use local-only tools (Ollama/litllm) for generation where possible.
 - **Brutalist**: Data-dense, high-signal, zero-fluff code and docs.
+- **Protocol-First**: New scaffolds should strengthen identity, trust, transport, recovery, or operator control.
 
 ---
 
@@ -99,7 +100,7 @@ Update `/docs/DEPLOY.md` with new service requirements and ports.
 ## 6. Documentation Scaffolding (Docs Maid)
 Every new scaffolded component MUST be registered in:
 1. `docs/PROJECT_SUMMARY.md` (High-level overview)
-2. `docs/MEZIANI_AI_AUDIT_PROTOCOL.md` (If it affects sovereign infrastructure)
+2. `docs/PROTOCOL.md` and `docs/TRUST_MODEL.md` (if it affects sovereign infrastructure)
 3. `vault/roster/CHANNEL.md` (Operational log)
 
 **"We do not front; we build, deploy, and own the results."**

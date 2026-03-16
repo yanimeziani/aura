@@ -1,8 +1,8 @@
-# Aura: System Capabilities & Agent Architecture
+# Nexa: System Capabilities & Agent Architecture
 
 ## Overview
 
-Aura provides a high-efficiency framework for autonomous agent orchestration, specializing in two primary functional domains: external profile representation (Career-Twin) and automated business development (SDR).
+Nexa provides a framework for sovereign agent orchestration, but agent personas are only one layer of the system. The canonical model for the project now lives in [ARCHITECTURE.md](/root/docs/ARCHITECTURE.md), [PROTOCOL.md](/root/docs/PROTOCOL.md), [TRUST_MODEL.md](/root/docs/TRUST_MODEL.md), and [THREAT_MODEL.md](/root/docs/THREAT_MODEL.md). This document describes current agent-facing capabilities inside that larger protocol architecture.
 
 ## 1. Career-Twin Agent Persona
 
@@ -12,7 +12,7 @@ Aura provides a high-efficiency framework for autonomous agent orchestration, sp
 - **Persona Configuration**: Cerberus logic defined in `core/cerberus/configs/career-twin-agent.json`.
 - **System Prompts**: Technical profile and logic in `core/cerberus/runtime/cerberus-core/prompts/career_twin_prompt.txt`.
 - **Memory Structure**: Initialized via `core/cerberus/scripts/init-career-twin-memory.sh`.
-- **Aura Web Interface**: Management dashboard in `apps/web/app/[locale]/career-twin/`.
+- **Nexa Web Interface**: Management dashboard in `apps/web/app/[locale]/career-twin/`.
 - **API Endpoints**: REST-based coordination in `apps/web/app/api/career-twin/`.
 - **Data Schema**: Supabase migration in `apps/web/supabase/migrations/20260303000001_career_twin_tables.sql`.
 - **System Spec**: Technical architecture in `core/cerberus/specs/career-digital-twin.md`.
@@ -54,7 +54,7 @@ Aura provides a high-efficiency framework for autonomous agent orchestration, sp
 - **Resource Usage**: <1MB binary footprint for the Cerberus core.
 
 ### Security & Sovereignty
-- **Strict Zero-Trust Architecture**: Every network interface is treated as a hostile environment. (Note: TOR and IPFS layers are currently in active development/planned for future release).
+- **Strict Zero-Trust Architecture**: Every network interface is treated as a hostile environment.
 - **Encrypted Memory**: Local-first storage for all sensitive agent memory.
 - **RLS Policies**: Row-Level Security ensures data isolation and access control.
 - **HITL Gates**: Mandatory human oversight for high-risk agent actions.

@@ -1,10 +1,10 @@
-# Aura: Sovereign Agentic Monorepo — System Specification
+# Nexa: Sovereign Agentic Monorepo — System Specification
 
-Aura is a holistic, decentralized framework for AI research, deployment, and autonomous agent orchestration. It provides a secure, technical layer for hosting specialized personas with absolute sovereignty and human-in-the-loop (HITL) coordination.
+Nexa is a holistic, decentralized framework for AI research, deployment, and autonomous agent orchestration. It provides a secure, technical layer for hosting specialized personas with absolute sovereignty and human-in-the-loop (HITL) coordination.
 
 ## Core System Components
 
-- **[`/apps/web`](./apps/web) (Aura Web)**: A Next.js 16 / React 19 dashboard for high-throughput data visualization, telemetry, and agent control.
+- **[`/apps/web`](./apps/web) (Nexa Web)**: A Next.js 16 / React 19 dashboard for high-throughput data visualization, telemetry, and agent control.
 - **[`/apps/mobile`](./apps/mobile) (Pegasus)**: An Android/Kotlin interface for secure, mobile-to-cloud mission control and HITL approvals.
 - **[`/core/cerberus`](./core/cerberus) (Cerberus Runtime)**: A high-performance, Zig-based agent execution engine (<1MB binary) hosting autonomous personas.
 - **[`/ops`](./ops)**: Infrastructure automation, deployment scripts, and environmental configuration.
@@ -23,7 +23,7 @@ Aura is a holistic, decentralized framework for AI research, deployment, and aut
 - **Backend Runtime**: Zig (Cerberus Engine).
 - **Mobile Client**: Android SDK / Kotlin (Pegasus).
 - **Data Persistence**: Supabase (PostgreSQL with Row-Level Security).
-- **AI Orchestration**: Multi-provider support via Model Context Protocol (MCP). Default models are served via local or in-house Aura components. External providers are used only for high-complexity tasks with explicit HITL approval.
+- **AI Orchestration**: Multi-provider support via Model Context Protocol (MCP). Default models are served via local or in-house Nexa components. External providers are used only for high-complexity tasks with explicit HITL approval.
 
 ---
 
@@ -34,7 +34,7 @@ Aura is a holistic, decentralized framework for AI research, deployment, and aut
 npm run build
 ```
 
-### Aura Web (Dashboard)
+### Nexa Web (Dashboard)
 ```bash
 cd apps/web
 npm run dev        # Development environment
@@ -56,7 +56,7 @@ zig build -Doptimize=ReleaseSmall
 2.  **Vibe Coding (Operational Methodology)**: Maintaining technical velocity through continuous AI orchestration. Systems are architected to be controlled via high-level intent rather than manual character-by-character composition.
 3.  **Three-Tap Rule (UI/UX Constraint)**: For the Pegasus mobile interface, any operation requiring more than three user interactions (taps) to initiate is considered a workflow failure.
 4.  **Security Model**: Strict adherence to Supabase Row-Level Security (RLS). No secrets in version control; utilize environment variables and encrypted vaults.
-5.  **HITL Gatekeeping**: Every high-impact agent action (e.g., outbound communication, state changes) must pass through a human-in-the-loop approval gate (via Pegasus or Aura Web).
+5.  **HITL Gatekeeping**: Every high-impact agent action (e.g., outbound communication, state changes) must pass through a human-in-the-loop approval gate (via Pegasus or Nexa Web).
 6.  **Resource Optimization**: Preference for low-overhead implementations (e.g., Zig, minimal dependencies) to ensure performance on edge infrastructure.
 7.  **Documentation Standards**: Architecture specifications are maintained in `docs/` and agent-specific logic in `core/cerberus/specs/`.
 

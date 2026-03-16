@@ -1,0 +1,62 @@
+# Full pipeline: deploy → smoke test. Fail the run if tests fail (fix and push to redeploy).
+# Secrets: MESH_SSH_KEY. Optional: MESH_SSH_HOST, MESH_SSH_USER, MESH_LANDING_URL.
+
+name: Deploy → Test (mesh)
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'ops/**'
+      - 'apps/aura-dashboard/**'
+      - 'apps/aura-landing-next/**'
+  workflow_dispatch:
+
+env:
+  VPS_IP: ${{ secrets.MESH_SSH_HOST || '89.116.170.202' }}
+  VPS_USER: ${{ secrets.MESH_SSH_USER || 'root' }}
+  LANDING_URL: ${{ secrets.MESH_LANDING_URL || 'https://nexa.global' }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup SSH key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.MESH_SSH_KEY }}
+
+      - name: Add VPS to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ env.VPS_IP }} >> ~/.ssh/known_hosts 2>/dev/null || true
+
+      - name: Deploy to mesh
+        run: |
+          chmod +x ops/scripts/deploy-mesh.sh
+          REPO_ROOT="$PWD" ./ops/scripts/deploy-mesh.sh
+        env:
+          VPS_IP: ${{ env.VPS_IP }}
+          VPS_USER: ${{ env.VPS_USER }}
+
+  test:
+    runs-on: ubuntu-latest
+    needs: deploy
+    env:
+      MESH_VPS_IP: ${{ env.VPS_IP }}
+      MESH_LANDING_URL: ${{ env.LANDING_URL }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Smoke test mesh
+        run: |
+          chmod +x ops/scripts/smoke-test-mesh.sh
+          ./ops/scripts/smoke-test-mesh.sh
+        env:
+          MESH_VPS_IP: ${{ env.VPS_IP }}
+          MESH_LANDING_URL: ${{ env.LANDING_URL }}

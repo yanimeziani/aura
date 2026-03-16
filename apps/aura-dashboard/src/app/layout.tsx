@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
+import { GatewayConfigLoader } from "@/components/GatewayConfigLoader";
 
 const mono = IBM_Plex_Mono({
   subsets: ["latin"],
@@ -9,8 +10,8 @@ const mono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AURA // MISSION CONTROL",
-  description: "Sovereign operator dashboard for the Aura mesh",
+  title: "NEXA // MISSION CONTROL",
+  description: "Sovereign operator dashboard for the Nexa mesh",
 };
 
 export default function RootLayout({
@@ -21,6 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={mono.variable}>
       <body className="font-mono bg-black text-white antialiased selection:bg-white selection:text-black">
+        <GatewayConfigLoader />
         {children}
       </body>
     </html>

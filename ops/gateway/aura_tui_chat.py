@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-Minimalist TUI chat with Aura agent (Groq via gateway).
-Uses RAG-style context: loads Aura docs (AGENTS, AURA_PRO_GUIDE, ONBOARDING) and
+Minimalist TUI chat with the Nexa agent (Groq via gateway).
+Uses RAG-style context: loads Nexa docs (AGENTS, NEXA_PRO_GUIDE, ONBOARDING) and
 optional session sync so the agent has full project context.
 Usage: python aura_tui_chat.py
 Requires: gateway running (uvicorn gateway.app:app --port 8765)
-Env: AURA_GATEWAY_URL, AURA_ROOT (repo root for docs), AURA_CHAT_WORKSPACE (sync key)
+Env: NEXA_GATEWAY_URL, NEXA_ROOT (repo root for docs), NEXA_CHAT_WORKSPACE (sync key)
 """
 import json
 import os
@@ -14,15 +14,15 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-DEFAULT_URL = os.environ.get("AURA_GATEWAY_URL", "http://127.0.0.1:8765").rstrip("/")
-LOG_TOKEN = os.environ.get("AURA_LOG_TOKEN", "")
-AURA_ROOT = Path(os.environ.get("AURA_ROOT", "/home/yani/Aura"))
-WORKSPACE_ID = os.environ.get("AURA_CHAT_WORKSPACE", "aura")
+DEFAULT_URL = os.environ.get("NEXA_GATEWAY_URL", os.environ.get("AURA_GATEWAY_URL", "http://127.0.0.1:8765")).rstrip("/")
+LOG_TOKEN = os.environ.get("NEXA_LOG_TOKEN", os.environ.get("AURA_LOG_TOKEN", ""))
+AURA_ROOT = Path(os.environ.get("NEXA_ROOT", os.environ.get("AURA_ROOT", Path(__file__).resolve().parents[2])))
+WORKSPACE_ID = os.environ.get("NEXA_CHAT_WORKSPACE", os.environ.get("AURA_CHAT_WORKSPACE", "nexa"))
 # Cap total doc context to avoid token overflow (~5k tokens)
 MAX_CONTEXT_CHARS = 24_000
 
 BASE_SYSTEM = (
-    "You are Aura, a concise assistant for Meziani AI Labs. "
+    "You are Nexa, a concise assistant for sovereign infrastructure operations. "
     "You help with sovereign digitalisation, automation, and focused execution. "
     "Keep replies clear and to the point unless asked for depth. "
     "Use the project context below to answer about this codebase, commands, and principles."
@@ -40,10 +40,10 @@ def _load_doc(path: Path, max_chars: int) -> str:
 
 
 def load_aura_context() -> str:
-    """Load key Aura docs and optional session sync into a single context string."""
+    """Load key Nexa docs and optional session sync into a single context string."""
     docs_dir = AURA_ROOT / "docs"
     # Order matters: principles and onboarding first, then pro guide
-    doc_files = ["AGENTS.md", "ONBOARDING.md", "AURA_PRO_GUIDE.md", "README.md"]
+    doc_files = ["AGENTS.md", "ONBOARDING.md", "NEXA_PRO_GUIDE.md", "README.md"]
     remaining = MAX_CONTEXT_CHARS
     parts = []
     for name in doc_files:
@@ -145,9 +145,9 @@ def fetch_logs(name: str = "", n: int = 40) -> str:
 
 
 def main() -> None:
-    print("Aura — minimal chat (agent0)")
+    print("Nexa — minimal chat (agent0)")
     print("Gateway:", DEFAULT_URL)
-    print("Context: Aura docs + session sync from", AURA_ROOT)
+    print("Context: Nexa docs + session sync from", AURA_ROOT)
     print("Commands: /quit  /clear  /reload  /logs [name]  /stream <name>")
     print("-" * 40)
 
@@ -214,7 +214,7 @@ def main() -> None:
         messages.append({"role": "user", "content": line})
         reply = chat(messages)
         messages.append({"role": "assistant", "content": reply})
-        print("Aura:", reply)
+        print("Nexa:", reply)
         print()
 
 

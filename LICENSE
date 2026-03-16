@@ -1,31 +1,21 @@
-Functional Source License, Version 1.1, MIT Future License
+MIT License
 
-Copyright 2026 Meziani AI
+Copyright (c) 2026 Nexa contributors
 
-Licensor: Meziani AI
-Software: Aura Monorepo (including Cerberus, Pegasus, Dragun, and associated stacks)
-Change Date: March 13, 2028
-Change License: MIT License
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-Purpose
-The Licensor provides this Software to you for your internal use, testing, and modification. 
-You may not use this Software to provide a competing product or service to third parties. 
-On the Change Date, the license automatically converts to the Change License (MIT).
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-1. Grant
-Licensor grants you a non-exclusive, worldwide, royalty-free license to use, copy, modify, 
-and redistribute the Software, subject to the Limitations below.
-
-2. Limitations
-You may not use the Software to provide a product or service that competes with the Software 
-or any commercial offering of the Licensor. 
-You may not remove or alter this license notice.
-
-3. Change License
-On the Change Date, this license automatically terminates and the Software becomes licensed 
-under the Change License (MIT License). All subsequent use, copying, modification, and 
-redistribution will be governed by the Change License.
-
-4. No Warranty
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED. 
-THE LICENSOR SHALL NOT BE LIABLE FOR ANY DAMAGES ARISING FROM THE USE OF THIS SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

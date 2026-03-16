@@ -1,0 +1,44 @@
+{
+  "name": "nexa-protocol",
+  "version": "0.1.0",
+  "actors": [
+    "operator",
+    "agent",
+    "node",
+    "device",
+    "organisation",
+    "gateway"
+  ],
+  "identifiers": {
+    "workspace_id": {
+      "pattern": "^[a-z0-9][a-z0-9._-]{1,63}$",
+      "default": "nexa",
+      "max_length": 64
+    },
+    "org_id": {
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*-[a-z]{2}$",
+      "max_length": 128
+    },
+    "node_id": {
+      "pattern": "^[a-z0-9][a-z0-9._-]{1,63}$",
+      "max_length": 64
+    }
+  },
+  "session": {
+    "max_payload_bytes": 262144,
+    "required_top_level_type": "object"
+  },
+  "artifacts": {
+    "ipfs_filename_pattern": "^[A-Za-z0-9._-]{1,128}$"
+  },
+  "inference": {
+    "default_collab_model": "Qwen/Qwen3-Coder-480B-A35B-Instruct",
+    "default_edge_model": "qwen2.5-coder:7b-instruct",
+    "default_phone_runtime": "mlc-vulkan",
+    "routing_policy": {
+      "shared_collaboration_prefers": "default_collab_model",
+      "mobile_or_degraded_prefers": "default_edge_model",
+      "parallel_mobile_agents": "multiplex_single_runtime"
+    }
+  }
+}

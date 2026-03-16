@@ -67,7 +67,7 @@ export default function GlobePage() {
       // Fallback demo data
       setData({
         nodes: [
-          { id: "meziani-labs", type: "sovereign", label: "Meziani Labs", country: "CA", tier: "sovereign", agents: 3 },
+          { id: "nexa-core", type: "sovereign", label: "Nexa Core", country: "CA", tier: "sovereign", agents: 3 },
           { id: "demo-uk", type: "org", label: "Demo Corp UK", country: "GB", tier: "registry_verified", agents: 2 },
           { id: "demo-de", type: "org", label: "Demo GmbH", country: "DE", tier: "domain_verified", agents: 1 },
           { id: "demo-jp", type: "lead", label: "Prospect Tokyo", country: "JP", tier: "prospect" },
@@ -81,17 +81,17 @@ export default function GlobePage() {
           { id: "demo-mx", type: "lead", label: "Prospect CDMX", country: "MX", tier: "prospect" },
         ],
         connections: [
-          { from: "meziani-labs", to: "demo-uk", type: "mesh", strength: 0.75 },
-          { from: "meziani-labs", to: "demo-de", type: "mesh", strength: 0.5 },
-          { from: "meziani-labs", to: "demo-fr", type: "mesh", strength: 0.1 },
-          { from: "meziani-labs", to: "demo-jp", type: "outreach", strength: 0.2 },
-          { from: "meziani-labs", to: "demo-br", type: "outreach", strength: 0.2 },
-          { from: "meziani-labs", to: "demo-au", type: "outreach", strength: 0.2 },
-          { from: "meziani-labs", to: "demo-sg", type: "outreach", strength: 0.2 },
-          { from: "meziani-labs", to: "demo-in", type: "outreach", strength: 0.2 },
-          { from: "meziani-labs", to: "demo-ng", type: "outreach", strength: 0.2 },
-          { from: "meziani-labs", to: "demo-us", type: "outreach", strength: 0.2 },
-          { from: "meziani-labs", to: "demo-mx", type: "outreach", strength: 0.2 },
+          { from: "nexa-core", to: "demo-uk", type: "mesh", strength: 0.75 },
+          { from: "nexa-core", to: "demo-de", type: "mesh", strength: 0.5 },
+          { from: "nexa-core", to: "demo-fr", type: "mesh", strength: 0.1 },
+          { from: "nexa-core", to: "demo-jp", type: "outreach", strength: 0.2 },
+          { from: "nexa-core", to: "demo-br", type: "outreach", strength: 0.2 },
+          { from: "nexa-core", to: "demo-au", type: "outreach", strength: 0.2 },
+          { from: "nexa-core", to: "demo-sg", type: "outreach", strength: 0.2 },
+          { from: "nexa-core", to: "demo-in", type: "outreach", strength: 0.2 },
+          { from: "nexa-core", to: "demo-ng", type: "outreach", strength: 0.2 },
+          { from: "nexa-core", to: "demo-us", type: "outreach", strength: 0.2 },
+          { from: "nexa-core", to: "demo-mx", type: "outreach", strength: 0.2 },
         ],
       });
     } finally {

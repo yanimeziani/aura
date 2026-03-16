@@ -1,0 +1,21 @@
+HOST_A: This is the hourly Aura Stack operations handoff for agency_metrics. The aim of this episode is a 60-minute operator briefing built from sanitized telemetry and curated project documentation.
+
+HOST_B: This run is deterministic fallback mode, so the script is concise and should be treated as a control-plane summary, not a long-form narrative. The production path should use a local OSS model inside the isolated generation zone.
+
+HOST_A: Current state. Log file missing or empty.
+
+HOST_B: Recent event. No high-signal events were extracted from the current window.
+
+HOST_A: Risk signal. No explicit errors were extracted from the current window.
+
+HOST_B: Project context from README.md. - **URL:** `GET /docs/nexa` (e.g. `https://<gateway-host>/gw/docs/nexa`) — NotebookLM and public/operator consumption. - **Realtime:** The bundle is built on each request from the repo; any `.md` file you add under `docs/updates/` is included automatically. - **Rules:**   - Write only **core Nexa documentation**: archi
+
+HOST_B: Project context from README.md. This is achieved through: - **Dotfile Sovereignty**: All environment configurations are version-controlled and portable. - **Agentic Recovery**: Automated scripts to rebuild the entire stack (Web, Mobile, Runtime) from source truth. - **Cloud-Edge Parity**: Seamless deployment between local hardware and remote VPS infr
+
+HOST_B: Project context from README.md. 1.  **Career-Twin Agent**: Autonomous professional profile management, inquiry handling, and interview scheduling. 2.  **SDR Agent**: Automated B2B sales development, prospect research, and personalized outreach sequences.
+
+HOST_B: Project context from QUICKSTART.md. - **Safe:** Backup runs before deploy; no logs/PII/vault in the public docs bundle; vault and tokens stay local or in env. - **Efficient:** One command per task; idempotent deploy and backup; docs built on demand. - **Standardized:** Same commands for everyone: `nexa deploy-mesh`, `nexa backup`, `nexa demo`. Env vars (
+
+HOST_A: Operator actions for the next cycle are to verify the underlying service health, confirm the telemetry source is still fresh, and check whether any alerts require human approval before remediation.
+
+HOST_B: Security note. This episode was generated from sanitized telemetry and curated documentation only. Raw logs, vault material, and public documentation remain separate trust zones.

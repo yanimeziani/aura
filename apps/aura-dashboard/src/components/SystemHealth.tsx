@@ -13,8 +13,8 @@ interface ServiceState {
 const INITIAL_SERVICES: ServiceState[] = [
   { name: "Gateway", port: 8765, status: "checking" },
   { name: "Cerberus", port: 3000, status: "checking" },
-  { name: "Aura API", port: 3001, status: "checking" },
-  { name: "Aura Flow", port: 3002, status: "checking" },
+  { name: "Nexa API", port: 3001, status: "checking" },
+  { name: "Nexa Flow", port: 3002, status: "checking" },
   { name: "Ollama", port: 11434, status: "checking" },
   { name: "Pegasus API", port: 8080, status: "checking" },
   { name: "Dashboard", port: 3003, status: "checking" },

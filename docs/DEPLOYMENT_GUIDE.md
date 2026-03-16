@@ -1,6 +1,8 @@
-# Aura: Deployment & Configuration Guide
+# Nexa: Deployment & Configuration Guide
 
-This guide provides the necessary procedures for deploying and configuring the Aura monorepo components (Cerberus, Pegasus, Aura Web) on a Linux-based system or VPS.
+This guide provides the necessary procedures for deploying and configuring Nexa components on a Linux-based system or VPS.
+
+Deployment decisions should follow the protocol architecture and trust assumptions in [ARCHITECTURE.md](/root/docs/ARCHITECTURE.md), [PROTOCOL.md](/root/docs/PROTOCOL.md), [TRUST_MODEL.md](/root/docs/TRUST_MODEL.md), and [THREAT_MODEL.md](/root/docs/THREAT_MODEL.md), especially for exposed services, transport routing, and recovery paths.
 
 ## Prerequisites
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
-# Aura shell integration (zsh):
-# - Removes the dangerous `alias aura='cd ...'` footgun
+# Nexa shell integration (zsh):
+# - Removes the dangerous alias footgun
 # - Provides `aura cd` to cd in-place (current shell)
 # - Adds simple completion for common subcommands
 
@@ -32,12 +32,12 @@ _aura_complete() {
     "lynx:Text browser"
     "opensea:Internet (status/open)"
     "skill:Skills belt (list/show/run)"
-    "api:Run aura-api"
+    "api:Run nexa-api"
     "gateway:Run gateway"
     "docs-maid:Run docs maid"
     "stub:Persistent stub"
     "stub-duplicate:Stub duplication"
-    "cd:cd to Aura repo root"
+    "cd:cd to Nexa repo root"
     "help:Help"
   )
 

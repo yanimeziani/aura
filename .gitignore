@@ -1,4 +1,4 @@
-# --- Aura Monorepo Ignore List ---
+# --- Nexa Monorepo Ignore List ---
 
 # Environment Secrets (CRITICAL)
 .env
@@ -19,7 +19,7 @@ out/
 .npm
 .turbo
 
-# Zig (Cerberus + Aura)
+# Zig (Cerberus + Nexa)
 zig-cache/
 zig-out/
 .zig-cache/
@@ -68,4 +68,11 @@ Downloads/
 # specific folders to ignore
 /android-sdk/
 /exports/
-
+/archive/
+/Aura_Full_Documentation_Export.txt
+/Aura_Full_Documentation_Export.md
+/aura_bundle.tar.gz
+/exports/notebook-lm/Aura_*
+/apps/web/public/Aura_Full_Documentation_Export.txt
+/nexa-docs-notebooklm.txt
+*.tsbuildinfo

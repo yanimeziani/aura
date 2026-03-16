@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Shield, AlertTriangle } from "lucide-react";
 import { storeToken } from "@/lib/auth";
-import { validateToken } from "@/lib/gateway";
+import { validateToken, getGatewayUrl } from "@/lib/gateway";
 
 export default function LoginPage() {
   const [token, setToken] = useState("");
@@ -26,7 +26,13 @@ export default function LoginPage() {
         setError("INVALID_TOKEN: Access denied");
       }
     } catch {
-      setError("GATEWAY_UNREACHABLE: Cannot connect to Aura mesh");
+      const url = getGatewayUrl();
+      setError(
+        `Gateway not reachable at ${url}. Start it from repo root, then reload this page.\n\n` +
+          "Linux/macOS: ./ops/bin/nexa gateway   or   python3 nexa.py gateway\n" +
+          "Windows:    nexa.cmd gateway   or   py -3 nexa.py gateway\n\n" +
+          "Or run the full demo: ./ops/bin/nexa demo  (starts gateway + dashboard)."
+      );
     } finally {
       setLoading(false);
     }
@@ -39,7 +45,7 @@ export default function LoginPage() {
           <div className="text-center space-y-2">
             <Shield className="w-12 h-12 mx-auto opacity-70" />
             <h1 className="text-2xl font-black tracking-tighter uppercase">
-              AURA // AUTH
+              NEXA // AUTH
             </h1>
             <p className="text-xs opacity-50 uppercase">
               Vault token required for mesh access
@@ -67,9 +73,11 @@ export default function LoginPage() {
             </div>
 
             {error && (
-              <div className="border-2 border-danger p-3 text-danger text-xs flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 shrink-0" />
-                {error}
+              <div className="border-2 border-danger p-3 text-danger text-xs flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                <pre className="whitespace-pre-wrap break-words m-0 font-mono">
+                  {error}
+                </pre>
               </div>
             )}
 

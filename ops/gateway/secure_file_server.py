@@ -5,8 +5,8 @@ import signal
 from urllib.parse import urlparse, parse_qs
 
 PORT = 9090
-TOKEN = os.environ.get("AURA_EXPORT_TOKEN", "")
-FILE_TO_SERVE = "/tmp/Aura_Full_Documentation_Export.txt"
+TOKEN = os.environ.get("NEXA_EXPORT_TOKEN", "")
+FILE_TO_SERVE = os.environ.get("NEXA_EXPORT_FILE", "/tmp/nexa-docs-notebooklm.txt")
 
 class SecureFileHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
@@ -22,7 +22,7 @@ class SecureFileHandler(http.server.SimpleHTTPRequestHandler):
         if parsed_url.path == "/download":
             if os.path.exists(FILE_TO_SERVE):
                 self.send_response(200)
-                self.send_header("Content-Disposition", f'attachment; filename="Aura_Full_Documentation_Export.txt"')
+                self.send_header("Content-Disposition", 'attachment; filename="nexa-docs-notebooklm.txt"')
                 self.send_header("Content-Length", str(os.path.getsize(FILE_TO_SERVE)))
                 self.send_header("Content-Type", "text/plain")
                 self.end_headers()

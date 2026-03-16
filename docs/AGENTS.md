@@ -168,3 +168,19 @@ npx tsx tests/chunking.test.ts
 - **Never** make unrelated changes in a PR
 - **Avoid** deep nesting (max 3-4 levels)
 - **Avoid** magic numbers — use named constants
+
+## 4. HITL (Human-in-the-Loop)
+
+- **Destructive or outside-mesh actions** (medium-to-critical, big repercussions) require operator confirmation. The gateway returns 403 until the client sends **`X-HITL-Confirm: <action_id>`**.
+- **Agents must never** send the confirm header without explicit operator approval (e.g. via Mission Control). Agents may call the endpoint; if they get 403 with `hitl_required: true`, they must surface the request to the operator and only retry with the header after approval.
+- Gated actions: `delete_session`, `register_org`, `revoke_org`, `attest_org`. See **docs/HITL.md** and **GET /api/hitl/actions**.
+
+## 5. Document for public / NotebookLM (single URL)
+
+- **Always document updates in `docs/updates/`** so they appear in the realtime docs bundle.
+- The single URL **`GET /docs/nexa`** (e.g. `https://<gateway>/gw/docs/nexa`) is built on each request from curated docs + **all `docs/updates/*.md`**. Operators and public use it for NotebookLM, media summarisation, and audio/video assets.
+- Write only core Nexa docs (architecture, runbooks, product updates). **Never** put logs, PII, vault content, or deployment-specific data in `docs/updates/`.
+- Use clear filenames: `YYYY-MM-DD-topic.md` or `topic-update.md`.
+- Treat the docs bundle as a source corpus for NotebookLM and self-supervised review. Write in a technical, neutral style that improves retrieval and synthesis quality rather than pushing a persona.
+- Prefer architecture, interfaces, invariants, failure modes, and recovery procedures over slogans or promotional framing.
+- Follow **[docs/NOTEBOOKLM_SOURCE_GUIDE.md](/root/docs/NOTEBOOKLM_SOURCE_GUIDE.md)** for source-writing rules that keep generated assets well-rounded without biasing tone negatively.

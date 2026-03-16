@@ -1,10 +1,37 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+resolve_realpath() {
+    python3 - "$1" <<'PY'
+import os
+import sys
+print(os.path.realpath(sys.argv[1]))
+PY
+}
+
+resolve_runtime_path() {
+    local kind="$1"
+    PYTHONPATH="$AURA_ROOT${PYTHONPATH:+:$PYTHONPATH}" python3 - "$kind" <<'PY'
+import sys
+from aura_runtime import log_dir, vault_file
+
+kind = sys.argv[1]
+if kind == "vault_file":
+    print(vault_file())
+elif kind == "log_dir":
+    print(log_dir())
+else:
+    raise SystemExit(f"Unknown runtime path kind: {kind}")
+PY
+}
+
 # Resolve Aura repo root dynamically (override with AURA_ROOT if needed).
-REAL_SCRIPT="$(readlink -f "${BASH_SOURCE[0]}")"
+REAL_SCRIPT="$(resolve_realpath "${BASH_SOURCE[0]}")"
 SCRIPT_DIR="$(cd "$(dirname "$REAL_SCRIPT")" && pwd)"
 AURA_ROOT="${AURA_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
+AURA_VAULT_FILE="${AURA_VAULT_FILE:-$(resolve_runtime_path vault_file)}"
+AURA_LOG_DIR="${AURA_LOG_DIR:-$(resolve_runtime_path log_dir)}"
+AURA_REMOTE_ROOT="${AURA_REMOTE_ROOT:-/opt/aura}"
 
 function gateway_url() {
     echo "${AURA_GATEWAY_URL:-http://127.0.0.1:${AURA_GATEWAY_PORT:-8765}}"
@@ -41,37 +68,46 @@ PY
 
 function start_gateway_background() {
     local port="${AURA_GATEWAY_PORT:-8765}"
-    local log_dir="$AURA_ROOT/.aura/logs"
+    local log_dir="$AURA_LOG_DIR"
     mkdir -p "$log_dir"
-    (cd "$AURA_ROOT/ops" && nohup env AURA_ROOT="$AURA_ROOT" AURA_VAULT_FILE="${AURA_VAULT_FILE:-$AURA_ROOT/vault/aura-vault.json}" \
+    (cd "$AURA_ROOT/ops" && nohup env AURA_ROOT="$AURA_ROOT" AURA_VAULT_FILE="$AURA_VAULT_FILE" AURA_LOG_DIR="$AURA_LOG_DIR" \
         python3 -m uvicorn gateway.app:app --host 0.0.0.0 --port "$port" \
         >"$log_dir/gateway.log" 2>&1 < /dev/null &)
 }
 
 function show_help() {
-    echo "🔮 Aura CLI - Autonomous Multi-Agent Command Center"
-    echo "Usage: aura <command> [options]"
+    echo "Nexa CLI - Sovereign operator command center"
+    echo "Usage: nexa <command> [options]"
+    echo ""
+    echo "Automation (99% of tasks — safe, standardized, anyone can run):"
+    echo "  deploy-mesh   Deploy gateway + dashboard + landing to VPS (backup first, then sync)"
+    echo "  backup        Backup dynamic logs/json/md locally (or on VPS if AURA_REMOTE=1)"
+    echo "  docs-bundle   Build NotebookLM-safe doc bundle (core docs + docs/updates/)"
+    echo "  publish-notebooklm  Build + manifest + publish NotebookLM source bundle"
+    echo "  notebooklm-upload   Optional Playwright upload into NotebookLM UI"
+    echo "  smoke-test    Run smoke tests against deployed mesh (gateway, dashboard, landing)"
+    echo "  demo          Instant demo: start gateway + dashboard locally (open Mission Control)"
     echo ""
     echo "Commands:"
     echo "  status      Check system health and agent states"
-    echo "  start       Start all Aura daemons (Autopilot, Web, API)"
-    echo "  stop        Stop all Aura daemons"
+    echo "  start       Start core Nexa daemons (Autopilot, Web, API)"
+    echo "  stop        Stop core Nexa daemons"
     echo "  vault       Manage API keys and secrets"
     echo "  logs        Tail the live agent metrics log"
     echo "  tui         Launch the Zig-based Terminal User Interface"
     echo "  mesh        Sovereign mesh VPN (Tailscale-like, Zig); up / down / status"
     echo "  lynx        Zig text browser (aura-lynx <url>)"
     echo "  api         Run aura-api (VPS HTTP server; AURA_API_PORT=9000)"
-    echo "  gateway     Start syncing gateway (IDEs, TUIs, LLM clients through Aura)"
-    echo "  chat        Minimal TUI chat with Aura agent (requires gateway; agent starts gateway if needed)"
+    echo "  gateway     Start syncing gateway (IDEs, TUIs, LLM clients through Nexa)"
+    echo "  chat        Minimal TUI chat with Nexa agent (requires gateway; agent starts gateway if needed)"
     echo "  voice       Local 24/7 Fedora voice ingress (listen / start / stop / status / logs / transcribe)"
     echo "  opensea     OpenSea ops (read-only): assets / collections / watch"
-    echo "  skill       Aura skills belt (list/show/run)"
+    echo "  skill       Nexa skills belt (list/show/run)"
     echo "  docs-maid   Docs maid: persistent sweep of vault/docs_inbox → docs/, channel, vault"
     echo "  gs [N]      G100 benchmark: full workspace build + test; N epochs (default 1)"
     echo "  stub        Run a command under persistent stub (respawn on exit/kill)"
     echo "  stub-duplicate  Run a command under stub duplication (inner + outer respawn)"
-    echo "  cd          Print Aura repo root (use shell integration to cd)"
+    echo "  cd          Print Nexa repo root (use shell integration to cd)"
     echo "  help        Show this help message"
 }
 
@@ -80,8 +116,65 @@ case "$CMD" in
     ""|help|-h|--help)
         show_help
         ;;
+    deploy-mesh)
+        echo "🚀 Deploy mesh (gateway + dashboard + landing to VPS)..."
+        REPO_ROOT="$AURA_ROOT" bash "$AURA_ROOT/ops/scripts/deploy-mesh.sh"
+        ;;
+    backup)
+        echo "💾 Backup dynamic files (logs, json, md)..."
+        if [[ -n "${AURA_REMOTE:-}" ]] && [[ "$AURA_REMOTE" != "0" ]]; then
+            if [[ -z "${VPS_IP:-}" ]]; then
+                echo "Set VPS_IP before running remote backup." >&2
+                exit 1
+            fi
+            ssh "${VPS_USER:-root}@${VPS_IP}" "AURA_ROOT='${AURA_REMOTE_ROOT}' bash '${AURA_REMOTE_ROOT}/scripts/backup-dynamic-then-delete.sh' ${2:-}"
+        else
+            AURA_ROOT="$AURA_ROOT" bash "$AURA_ROOT/ops/scripts/backup-dynamic-then-delete.sh" "${@:2}"
+        fi
+        ;;
+    docs-bundle)
+        echo "📄 Building docs bundle (NotebookLM / public)..."
+        REPO_ROOT="$AURA_ROOT" python3 "$AURA_ROOT/ops/scripts/build-aura-docs-bundle.py"
+        ;;
+    publish-notebooklm)
+        echo "📦 Publishing NotebookLM bundle..."
+        REPO_ROOT="$AURA_ROOT" AURA_ROOT="$AURA_ROOT" bash "$AURA_ROOT/ops/scripts/publish-notebooklm-bundle.sh"
+        ;;
+    notebooklm-upload)
+        echo "🌐 Uploading into NotebookLM via Playwright..."
+        cd "$AURA_ROOT" && node "$AURA_ROOT/ops/scripts/notebooklm-upload.mjs"
+        ;;
+    smoke-test)
+        echo "🧪 Smoke-test mesh..."
+        if [[ -z "${VPS_IP:-}" ]]; then
+            echo "Set VPS_IP before running smoke-test." >&2
+            exit 1
+        fi
+        if [[ -n "${MESH_LANDING_URL:-}" ]]; then
+            REPO_ROOT="$AURA_ROOT" MESH_VPS_IP="${VPS_IP}" MESH_LANDING_URL="${MESH_LANDING_URL}" bash "$AURA_ROOT/ops/scripts/smoke-test-mesh.sh"
+        else
+            REPO_ROOT="$AURA_ROOT" MESH_VPS_IP="${VPS_IP}" bash "$AURA_ROOT/ops/scripts/smoke-test-mesh.sh"
+        fi
+        ;;
+    demo)
+        echo "🎬 Instant demo: starting gateway + dashboard..."
+        export AURA_ROOT="$AURA_ROOT" AURA_VAULT_FILE="$AURA_VAULT_FILE" AURA_LOG_DIR="$AURA_LOG_DIR"
+        if ! gateway_is_running "$(gateway_url)"; then
+            echo "  Starting gateway in background..."
+            start_gateway_background
+            for _ in {1..20}; do
+                gateway_is_running "$(gateway_url)" && break
+                sleep 0.5
+            done
+        fi
+        echo "  Gateway: $(gateway_url)"
+        echo "  Opening Mission Control (dashboard)..."
+        (cd "$AURA_ROOT/apps/aura-dashboard" && AURA_DASHBOARD_PORT="${AURA_DASHBOARD_PORT:-3003}" npm run dev 2>/dev/null &) || true
+        echo "  Demo ready. Open http://localhost:${AURA_DASHBOARD_PORT:-3003} (dashboard) and use vault token to log in."
+        echo "  Docs URL: $(gateway_url)/docs/nexa"
+        ;;
     status)
-        echo "📊 Aura System Status:"
+        echo "📊 Nexa System Status:"
         if command -v systemctl >/dev/null 2>&1 && systemctl is-system-running >/dev/null 2>&1; then
             sudo systemctl is-active aura_autopilot.service ai_pay.service ai_agency_web.service || true
         else
@@ -169,12 +262,12 @@ case "$CMD" in
         fi
         ;;
     gateway)
-        export AURA_ROOT="$AURA_ROOT" AURA_VAULT_FILE="${AURA_VAULT_FILE:-$AURA_ROOT/vault/aura-vault.json}"
+        export AURA_ROOT="$AURA_ROOT" AURA_VAULT_FILE="$AURA_VAULT_FILE" AURA_LOG_DIR="$AURA_LOG_DIR"
         cd "$AURA_ROOT/ops" && python3 -m uvicorn gateway.app:app --host 0.0.0.0 --port "${AURA_GATEWAY_PORT:-8765}"
         ;;
     chat)
         # Minimal TUI chat with agent; start local gateway if needed.
-        export AURA_ROOT="$AURA_ROOT" AURA_VAULT_FILE="${AURA_VAULT_FILE:-$AURA_ROOT/vault/aura-vault.json}"
+        export AURA_ROOT="$AURA_ROOT" AURA_VAULT_FILE="$AURA_VAULT_FILE" AURA_LOG_DIR="$AURA_LOG_DIR"
         CHAT_GATEWAY_URL="$(gateway_url)"
         export AURA_GATEWAY_URL="$CHAT_GATEWAY_URL"
         if ! gateway_is_running "$CHAT_GATEWAY_URL"; then

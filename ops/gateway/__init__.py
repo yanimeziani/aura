@@ -1,1 +1,1 @@
-# Aura Syncing Gateway — IDEs, TUIs, LLM clients through Aura.
+# Nexa Syncing Gateway — IDEs, TUIs, LLM clients through Nexa.

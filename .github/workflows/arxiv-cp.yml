@@ -34,7 +34,7 @@ jobs:
       - name: Install arxiv-latex-cleaner
         run: pip install arxiv-latex-cleaner
 
-      - name: Prepare Aura Manifesto for arXiv
+      - name: Prepare Nexa Manifesto for arXiv
         run: |
           mkdir -p output
           arxiv_latex_cleaner research/aura-manifesto --output_folder output/aura-manifesto-arxiv
