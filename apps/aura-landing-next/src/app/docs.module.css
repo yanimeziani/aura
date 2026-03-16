@@ -1,0 +1,372 @@
+.pageShell {
+  position: relative;
+  min-height: 100vh;
+  padding: 24px;
+  color: var(--text-main);
+}
+
+.backgroundMesh {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(circle at 18% 16%, rgb(244 176 82 / 0.18), transparent 24%),
+    radial-gradient(circle at 82% 12%, rgb(73 226 202 / 0.16), transparent 24%),
+    linear-gradient(180deg, #091114 0%, #071219 42%, #04080c 100%);
+}
+
+.backgroundGrid {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(rgb(255 255 255 / 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.035) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: linear-gradient(180deg, rgb(0 0 0 / 0.9), transparent 92%);
+}
+
+.topbar,
+.docsHero,
+.sectionBlock,
+.articleLayout {
+  width: min(1240px, 100%);
+  margin: 0 auto;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 0 30px;
+  position: sticky;
+  top: 0;
+  backdrop-filter: blur(18px);
+}
+
+.wordmarkBlock {
+  display: grid;
+  gap: 4px;
+}
+
+.wordmark,
+.wordsub,
+.sectionTag,
+.panelLabel,
+.eyebrowChip,
+.codeLang {
+  font-family: var(--font-mono);
+}
+
+.wordmark {
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+}
+
+.wordsub {
+  color: var(--text-dim);
+  font-size: 0.82rem;
+}
+
+.nav {
+  display: flex;
+  gap: 18px;
+}
+
+.nav a,
+.articlePanel a {
+  color: var(--accent-teal);
+  text-decoration: none;
+}
+
+.segmentToggle {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 6px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.04);
+}
+
+.toggleButton {
+  padding: 8px 12px;
+  border-radius: 999px;
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+
+.toggleActive {
+  background: linear-gradient(135deg, #f1e3bc 0%, #f2af5c 100%);
+  color: #111217;
+}
+
+.docsHero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 380px);
+  gap: 24px;
+  padding: 36px 0 48px;
+}
+
+.heroCopy {
+  padding-top: 12px;
+}
+
+.eyebrowRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.eyebrowChip {
+  padding: 8px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.04);
+  color: var(--text-dim);
+  font-size: 0.74rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.heroTitle {
+  max-width: 12ch;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(3.4rem, 9vw, 6.5rem);
+  line-height: 0.94;
+  letter-spacing: -0.06em;
+}
+
+.heroLead,
+.articleSummary,
+.articlePanel p,
+.articlePanel li {
+  color: var(--text-soft);
+  line-height: 1.72;
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.primaryButton,
+.secondaryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  border-radius: 999px;
+  font-weight: 700;
+  text-decoration: none;
+  padding: 0 22px;
+}
+
+.primaryButton {
+  background: linear-gradient(135deg, #f4cf85 0%, #f08f4e 100%);
+  color: #101114;
+}
+
+.secondaryButton {
+  border: 1px solid var(--line-strong);
+  background: rgb(255 255 255 / 0.03);
+  color: var(--text-main);
+}
+
+.statusPanel,
+.docCard,
+.catalogSection,
+.articlePanel,
+.articleSidebar {
+  border: 1px solid var(--line-strong);
+  border-radius: 28px;
+  background: rgb(7 18 25 / 0.72);
+  box-shadow: 0 18px 60px rgb(0 0 0 / 0.24);
+}
+
+.statusPanel {
+  padding: 24px;
+}
+
+.panelLabel,
+.sectionTag,
+.docMeta {
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.metricList {
+  list-style: none;
+  padding: 0;
+  margin: 24px 0 0;
+  display: grid;
+  gap: 14px;
+}
+
+.metricList li {
+  display: grid;
+  gap: 4px;
+}
+
+.metricList span {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.sectionBlock {
+  padding: 24px 0 44px;
+}
+
+.sectionHeader {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.sectionHeader h2,
+.catalogHeader h3,
+.statusPanel h2,
+.docCard h3,
+.articleTitle,
+.articlePanel h1,
+.articlePanel h2,
+.articlePanel h3,
+.articlePanel h4 {
+  font-family: var(--font-display);
+  margin: 0;
+}
+
+.cardGrid,
+.sectionGrid {
+  display: grid;
+  gap: 18px;
+}
+
+.cardGrid {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.sectionGrid {
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+
+.docCard,
+.catalogSection {
+  padding: 22px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.docCard p,
+.catalogItem span,
+.sidebarLink {
+  color: var(--text-soft);
+}
+
+.catalogHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.catalogList,
+.sidebarLinks {
+  display: grid;
+  gap: 10px;
+}
+
+.catalogItem,
+.sidebarLink {
+  display: grid;
+  gap: 4px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgb(255 255 255 / 0.03);
+  text-decoration: none;
+}
+
+.sidebarLinkActive {
+  border: 1px solid var(--line-strong);
+  color: var(--text-main);
+}
+
+.articleLayout {
+  display: grid;
+  grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+  gap: 22px;
+  padding: 22px 0 48px;
+}
+
+.articleSidebar,
+.articlePanel {
+  padding: 26px;
+}
+
+.articleTitle {
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  line-height: 1;
+  margin-top: 10px;
+}
+
+.sidebarBlock {
+  margin-top: 24px;
+}
+
+.articlePanel {
+  display: grid;
+  gap: 18px;
+}
+
+.articleList {
+  margin: 0;
+  padding-left: 1.2rem;
+  display: grid;
+  gap: 8px;
+}
+
+.codeBlock {
+  margin: 0;
+  padding: 18px;
+  overflow-x: auto;
+  border-radius: 22px;
+  background: rgb(0 0 0 / 0.34);
+  border: 1px solid rgb(255 255 255 / 0.08);
+}
+
+.codeLang {
+  display: block;
+  margin-bottom: 12px;
+  color: var(--accent-gold);
+}
+
+.blockQuote {
+  margin: 0;
+  padding: 0 0 0 18px;
+  border-left: 3px solid var(--accent-teal);
+}
+
+@media (max-width: 960px) {
+  .topbar,
+  .docsHero,
+  .articleLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .topbar {
+    position: static;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
