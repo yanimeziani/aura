@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-# Aura CLI — Unix launcher (Linux/macOS). Plug-and-play.
-# Usage: ./aura <command> [options]
-set -e
-AURA_ROOT="${AURA_ROOT:-$(cd "$(dirname "$0")" && pwd)}"
-export AURA_ROOT
-exec python3 "$AURA_ROOT/aura.py" "$@"

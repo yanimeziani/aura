@@ -5,10 +5,10 @@ from pathlib import Path
 from typing import Iterable
 
 
-def aura_root(explicit: str | Path | None = None) -> Path:
+def nexa_root(explicit: str | Path | None = None) -> Path:
     if explicit:
         return Path(explicit).expanduser().resolve()
-    env_root = os.environ.get("AURA_ROOT")
+    env_root = os.environ.get("NEXA_ROOT")
     if env_root:
         return Path(env_root).expanduser().resolve()
     return Path(__file__).resolve().parent
@@ -35,7 +35,7 @@ def resolve_path(
     env_value = os.environ.get(env_name)
     if env_value:
         return Path(env_value).expanduser().resolve()
-    resolved_root = aura_root(root)
+    resolved_root = nexa_root(root)
     existing = _first_existing(_candidate_paths(resolved_root, candidates))
     if existing is not None:
         return existing
@@ -44,7 +44,7 @@ def resolve_path(
 
 def vault_dir(root: str | Path | None = None) -> Path:
     return resolve_path(
-        env_name="AURA_VAULT_DIR",
+        env_name="NEXA_VAULT_DIR",
         root=root,
         candidates=("core/vault", "vault"),
         default="core/vault",
@@ -52,61 +52,61 @@ def vault_dir(root: str | Path | None = None) -> Path:
 
 
 def vault_file(root: str | Path | None = None) -> Path:
-    root_path = aura_root(root)
-    env_value = os.environ.get("AURA_VAULT_FILE")
+    root_path = nexa_root(root)
+    env_value = os.environ.get("NEXA_VAULT_FILE")
     if env_value:
         return Path(env_value).expanduser().resolve()
-    for candidate in ("aura-vault.json", "vault.json"):
+    for candidate in ("nexa-vault.json", "vault.json"):
         existing = _first_existing((vault_dir(root_path) / candidate,))
         if existing is not None:
             return existing
-    return (vault_dir(root_path) / "aura-vault.json").resolve()
+    return (vault_dir(root_path) / "nexa-vault.json").resolve()
 
 
 def data_dir(root: str | Path | None = None) -> Path:
     return resolve_path(
-        env_name="AURA_DATA_DIR",
+        env_name="NEXA_DATA_DIR",
         root=root,
-        candidates=("data", ".aura/data"),
+        candidates=("data", ".nexa/data"),
         default="data",
     )
 
 
 def log_dir(root: str | Path | None = None) -> Path:
     return resolve_path(
-        env_name="AURA_LOG_DIR",
+        env_name="NEXA_LOG_DIR",
         root=root,
-        candidates=("logs", ".aura/logs"),
-        default=".aura/logs",
+        candidates=("logs", ".nexa/logs"),
+        default=".nexa/logs",
     )
 
 
 def backup_dir(root: str | Path | None = None) -> Path:
     return resolve_path(
-        env_name="AURA_BACKUP_DIR",
+        env_name="NEXA_BACKUP_DIR",
         root=root,
-        candidates=(".aura/backups", "backups"),
-        default=".aura/backups",
+        candidates=(".nexa/backups", "backups"),
+        default=".nexa/backups",
     )
 
 
 def telemetry_file(root: str | Path | None = None) -> Path:
-    root_path = aura_root(root)
+    root_path = nexa_root(root)
     return resolve_path(
-        env_name="AURA_TELEMETRY_FILE",
+        env_name="NEXA_TELEMETRY_FILE",
         root=root_path,
         candidates=(
             "data/telemetry_visits.json",
-            ".aura/data/telemetry_visits.json",
+            ".nexa/data/telemetry_visits.json",
         ),
         default="data/telemetry_visits.json",
     )
 
 
 def leads_file(root: str | Path | None = None) -> Path:
-    root_path = aura_root(root)
+    root_path = nexa_root(root)
     return resolve_path(
-        env_name="AURA_LEADS_FILE",
+        env_name="NEXA_LEADS_FILE",
         root=root_path,
         candidates=(
             "core/wealth/leads.json",
@@ -118,9 +118,9 @@ def leads_file(root: str | Path | None = None) -> Path:
 
 
 def org_registry_file(root: str | Path | None = None) -> Path:
-    root_path = aura_root(root)
+    root_path = nexa_root(root)
     return resolve_path(
-        env_name="AURA_ORG_REGISTRY",
+        env_name="NEXA_ORG_REGISTRY",
         root=root_path,
         candidates=("core/vault/org-registry.json", "vault/org-registry.json"),
         default="core/vault/org-registry.json",
@@ -128,9 +128,9 @@ def org_registry_file(root: str | Path | None = None) -> Path:
 
 
 def backup_nodes_file(root: str | Path | None = None) -> Path:
-    root_path = aura_root(root)
+    root_path = nexa_root(root)
     return resolve_path(
-        env_name="AURA_BACKUP_NODES_FILE",
+        env_name="NEXA_BACKUP_NODES_FILE",
         root=root_path,
         candidates=("core/vault/backup-nodes.json", "vault/backup-nodes.json"),
         default="core/vault/backup-nodes.json",
@@ -138,9 +138,9 @@ def backup_nodes_file(root: str | Path | None = None) -> Path:
 
 
 def docs_inbox_dir(root: str | Path | None = None) -> Path:
-    root_path = aura_root(root)
+    root_path = nexa_root(root)
     return resolve_path(
-        env_name="AURA_DOCS_INBOX_DIR",
+        env_name="NEXA_DOCS_INBOX_DIR",
         root=root_path,
         candidates=("core/vault/docs_inbox", "vault/docs_inbox"),
         default="core/vault/docs_inbox",
@@ -149,20 +149,20 @@ def docs_inbox_dir(root: str | Path | None = None) -> Path:
 
 def sessions_file(root: str | Path | None = None) -> Path:
     return resolve_path(
-        env_name="AURA_GATEWAY_SESSIONS",
+        env_name="NEXA_GATEWAY_SESSIONS",
         root=root,
-        candidates=(".aura/gateway_sessions.json", "data/gateway_sessions.json"),
-        default=".aura/gateway_sessions.json",
+        candidates=(".nexa/gateway_sessions.json", "data/gateway_sessions.json"),
+        default=".nexa/gateway_sessions.json",
     )
 
 
 def export_file(root: str | Path | None = None) -> Path:
     return resolve_path(
-        env_name="AURA_EXPORT_FILE",
+        env_name="NEXA_EXPORT_FILE",
         root=root,
         candidates=(
-            ".aura/exports/Aura_Full_Documentation_Export.txt",
-            "Aura_Full_Documentation_Export.txt",
+            ".nexa/exports/Nexa_Full_Documentation_Export.txt",
+            "Nexa_Full_Documentation_Export.txt",
         ),
-        default=".aura/exports/Aura_Full_Documentation_Export.txt",
+        default=".nexa/exports/Nexa_Full_Documentation_Export.txt",
     )

@@ -18,8 +18,8 @@ This does the following:
 
 - builds `nexa-docs-notebooklm.txt`
 - computes SHA-256 and byte size
-- writes a manifest to `.aura/exports/notebooklm-manifest.json`
-- maintains `.aura/exports/notebooklm/latest.txt`
+- writes a manifest to `.nexa/exports/notebooklm-manifest.json`
+- maintains `.nexa/exports/notebooklm/latest.txt`
 - optionally publishes to IPFS if configured
 
 Primary import targets:
@@ -41,12 +41,12 @@ This drives the NotebookLM web UI and is therefore brittle compared with the sta
 
 For publishing:
 
-- `AURA_DOCS_BUNDLE_OUT`
-- `AURA_NOTEBOOKLM_EXPORT_DIR`
-- `AURA_NOTEBOOKLM_MANIFEST`
-- `AURA_NOTEBOOKLM_SOURCE_URL`
-- `AURA_NOTEBOOKLM_IPFS_PUBLISH=1`
-- `AURA_VAULT_TOKEN` when IPFS publish is enabled
+- `NEXA_DOCS_BUNDLE_OUT`
+- `NEXA_NOTEBOOKLM_EXPORT_DIR`
+- `NEXA_NOTEBOOKLM_MANIFEST`
+- `NEXA_NOTEBOOKLM_SOURCE_URL`
+- `NEXA_NOTEBOOKLM_IPFS_PUBLISH=1`
+- `NEXA_VAULT_TOKEN` when IPFS publish is enabled
 
 For NotebookLM upload:
 

@@ -7,7 +7,7 @@ const notebookUrl = process.env.NOTEBOOKLM_NOTEBOOK_URL || "";
 const sourceMode = (process.env.NOTEBOOKLM_SOURCE_MODE || "url").toLowerCase();
 const sourceUrl = process.env.NOTEBOOKLM_SOURCE_URL || "http://127.0.0.1:8765/docs/nexa";
 const sourceFile = process.env.NOTEBOOKLM_SOURCE_FILE || path.resolve(process.cwd(), "nexa-docs-notebooklm.txt");
-const userDataDir = process.env.NOTEBOOKLM_USER_DATA_DIR || path.resolve(process.cwd(), ".aura/playwright/notebooklm");
+const userDataDir = process.env.NOTEBOOKLM_USER_DATA_DIR || path.resolve(process.cwd(), ".nexa/playwright/notebooklm");
 const headless = (process.env.NOTEBOOKLM_HEADLESS || "0") === "1";
 
 if (!notebookUrl) {

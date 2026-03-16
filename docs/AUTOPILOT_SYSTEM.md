@@ -19,7 +19,7 @@ It performs:
 3. refresh the docs bundle on interval
 4. generate the ops-cast package on interval
 5. optionally run backups on interval
-6. write machine-readable state to `.aura/autopilot/state.json`
+6. write machine-readable state to `.nexa/autopilot/state.json`
 
 ## Service
 

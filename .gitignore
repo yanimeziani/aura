@@ -32,6 +32,7 @@ __pycache__/
 
 # Vault secrets (NEVER commit)
 core/vault/aura-vault.json
+core/vault/nexa-vault.json
 
 # Android/Kotlin (Pegasus)
 .gradle/
@@ -71,6 +72,8 @@ Downloads/
 /archive/
 /Aura_Full_Documentation_Export.txt
 /Aura_Full_Documentation_Export.md
+/Nexa_Full_Documentation_Export.txt
+/Nexa_Full_Documentation_Export.md
 /aura_bundle.tar.gz
 /exports/notebook-lm/Aura_*
 /apps/web/public/Aura_Full_Documentation_Export.txt

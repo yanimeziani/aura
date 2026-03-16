@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # Backup all dynamic runtime files (logs, json, markdown) then delete/clear them.
 # For org devices and VPS: run before or during deploy so state is archived and system starts clean.
-# Does NOT touch vault secrets (e.g. aura-vault.json); only org-registry, sessions, telemetry, leads, logs, exports.
-# If AURA_BACKUP_NODES_FILE is set (or vault/backup-nodes.json exists), routes this backup to the org node
+# Does NOT touch vault secrets (e.g. nexa-vault.json); only org-registry, sessions, telemetry, leads, logs, exports.
+# If NEXA_BACKUP_NODES_FILE is set (or vault/backup-nodes.json exists), routes this backup to the org node
 # with the largest available storage (via SSH df + rsync).
 # Usage:
 #   ./ops/scripts/backup-dynamic-then-delete.sh           # backup then delete
 #   ./ops/scripts/backup-dynamic-then-delete.sh --backup-only   # backup only, do not delete
-#   AURA_ROOT=/opt/aura ./ops/scripts/backup-dynamic-then-delete.sh
+#   NEXA_ROOT=/opt/nexa ./ops/scripts/backup-dynamic-then-delete.sh
 set -euo pipefail
 
 resolve_realpath() {
@@ -40,29 +40,29 @@ for arg in "$@"; do
   esac
 done
 
-AURA_ROOT="${AURA_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
-AURA_BACKUP_DIR="${AURA_BACKUP_DIR:-$AURA_ROOT/.aura/backups}"
-AURA_LOG_DIR="${AURA_LOG_DIR:-$(first_existing_path "$AURA_ROOT/logs" "$AURA_ROOT/.aura/logs")}"
-AURA_DATA_DIR="${AURA_DATA_DIR:-$(first_existing_path "$AURA_ROOT/data" "$AURA_ROOT/.aura/data")}"
-AURA_VAULT_DIR="${AURA_VAULT_DIR:-$(first_existing_path "$AURA_ROOT/core/vault" "$AURA_ROOT/vault")}"
-AURA_DOCS_INBOX_DIR="${AURA_DOCS_INBOX_DIR:-$(first_existing_path "$AURA_ROOT/core/vault/docs_inbox" "$AURA_ROOT/vault/docs_inbox")}"
+NEXA_ROOT="${NEXA_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
+NEXA_BACKUP_DIR="${NEXA_BACKUP_DIR:-$(first_existing_path "$NEXA_ROOT/.nexa/backups" "$NEXA_ROOT/backups")}"
+NEXA_LOG_DIR="${NEXA_LOG_DIR:-$(first_existing_path "$NEXA_ROOT/logs" "$NEXA_ROOT/.nexa/logs")}"
+NEXA_DATA_DIR="${NEXA_DATA_DIR:-$(first_existing_path "$NEXA_ROOT/data" "$NEXA_ROOT/.nexa/data")}"
+NEXA_VAULT_DIR="${NEXA_VAULT_DIR:-$(first_existing_path "$NEXA_ROOT/core/vault" "$NEXA_ROOT/vault")}"
+NEXA_DOCS_INBOX_DIR="${NEXA_DOCS_INBOX_DIR:-$(first_existing_path "$NEXA_ROOT/core/vault/docs_inbox" "$NEXA_ROOT/vault/docs_inbox")}"
 
 # Dynamic paths (same env names as gateway / session_store where applicable)
-TELEMETRY_FILE="${AURA_TELEMETRY_FILE:-$(first_existing_path "$AURA_DATA_DIR/telemetry_visits.json" "$AURA_ROOT/.aura/data/telemetry_visits.json")}"
-LEADS_FILE="${AURA_LEADS_FILE:-$(first_existing_path "$AURA_ROOT/core/wealth/leads.json" "$AURA_ROOT/ai_agency_wealth/leads.json" "$AURA_DATA_DIR/leads.json")}"
-ORG_REGISTRY_FILE="${AURA_ORG_REGISTRY:-$(first_existing_path "$AURA_VAULT_DIR/org-registry.json" "$AURA_ROOT/core/vault/org-registry.json" "$AURA_ROOT/vault/org-registry.json")}"
-GATEWAY_SESSIONS_FILE="${AURA_GATEWAY_SESSIONS:-}"
+TELEMETRY_FILE="${NEXA_TELEMETRY_FILE:-$(first_existing_path "$NEXA_DATA_DIR/telemetry_visits.json" "$NEXA_ROOT/.nexa/data/telemetry_visits.json")}"
+LEADS_FILE="${NEXA_LEADS_FILE:-$(first_existing_path "$NEXA_ROOT/core/wealth/leads.json" "$NEXA_ROOT/ai_agency_wealth/leads.json" "$NEXA_DATA_DIR/leads.json")}"
+ORG_REGISTRY_FILE="${NEXA_ORG_REGISTRY:-$(first_existing_path "$NEXA_VAULT_DIR/org-registry.json" "$NEXA_ROOT/core/vault/org-registry.json" "$NEXA_ROOT/vault/org-registry.json")}"
+GATEWAY_SESSIONS_FILE="${NEXA_GATEWAY_SESSIONS:-}"
 if [[ -z "$GATEWAY_SESSIONS_FILE" ]]; then
-  GATEWAY_SESSIONS_FILE="$(first_existing_path "$AURA_ROOT/.aura/gateway_sessions.json" "$AURA_DATA_DIR/gateway_sessions.json")"
+  GATEWAY_SESSIONS_FILE="$(first_existing_path "$NEXA_ROOT/.nexa/gateway_sessions.json" "$NEXA_DATA_DIR/gateway_sessions.json")"
 fi
-EXPORT_FILE="${AURA_EXPORT_FILE:-$(first_existing_path "$AURA_ROOT/.aura/exports/Aura_Full_Documentation_Export.txt" "$AURA_ROOT/Aura_Full_Documentation_Export.txt")}"
-AURA_BACKUP_NODES_FILE="${AURA_BACKUP_NODES_FILE:-$(first_existing_path "$AURA_VAULT_DIR/backup-nodes.json" "$AURA_ROOT/core/vault/backup-nodes.json" "$AURA_ROOT/vault/backup-nodes.json")}"
+EXPORT_FILE="${NEXA_EXPORT_FILE:-$(first_existing_path "$NEXA_ROOT/.nexa/exports/Nexa_Full_Documentation_Export.txt" "$NEXA_ROOT/Nexa_Full_Documentation_Export.txt")}"
+NEXA_BACKUP_NODES_FILE="${NEXA_BACKUP_NODES_FILE:-$(first_existing_path "$NEXA_VAULT_DIR/backup-nodes.json" "$NEXA_ROOT/core/vault/backup-nodes.json" "$NEXA_ROOT/vault/backup-nodes.json")}"
 
 STAMP=$(date -u +%Y-%m-%d_%H%M%S)
-BACKUP_SUBDIR="$AURA_BACKUP_DIR/$STAMP"
+BACKUP_SUBDIR="$NEXA_BACKUP_DIR/$STAMP"
 mkdir -p "$BACKUP_SUBDIR"
 
-echo "[backup-dynamic] AURA_ROOT=$AURA_ROOT"
+echo "[backup-dynamic] NEXA_ROOT=$NEXA_ROOT"
 echo "[backup-dynamic] Backup to $BACKUP_SUBDIR"
 
 # --- Backup helpers ---
@@ -71,7 +71,7 @@ backup_file() {
   if [[ -e "$src" ]]; then
     local base; base=$(basename "$src")
     local dir; dir=$(dirname "$src")
-    local rel="${dir#$AURA_ROOT/}"
+    local rel="${dir#$NEXA_ROOT/}"
     [[ "$rel" == "$dir" ]] && rel="$base"
     mkdir -p "$BACKUP_SUBDIR/files/$(dirname "$rel")"
     cp -a "$src" "$BACKUP_SUBDIR/files/$rel" 2>/dev/null || cp "$src" "$BACKUP_SUBDIR/files/$rel"
@@ -110,16 +110,16 @@ delete_or_truncate_log() {
 }
 
 # --- 1. Log directory: backup all *.log and any json/md, then truncate logs (so process can keep writing) or delete ---
-if [[ -d "$AURA_LOG_DIR" ]]; then
+if [[ -d "$NEXA_LOG_DIR" ]]; then
   mkdir -p "$BACKUP_SUBDIR/logs"
   shopt -s nullglob 2>/dev/null || true
-  for f in "$AURA_LOG_DIR"/*.log "$AURA_LOG_DIR"/*.json "$AURA_LOG_DIR"/*.md; do
+  for f in "$NEXA_LOG_DIR"/*.log "$NEXA_LOG_DIR"/*.json "$NEXA_LOG_DIR"/*.md; do
     [[ -e "$f" ]] || continue
     cp -a "$f" "$BACKUP_SUBDIR/logs/" 2>/dev/null || cp "$f" "$BACKUP_SUBDIR/logs/"
     echo "  backed up: $f"
   done
   if ! "$BACKUP_ONLY"; then
-    for f in "$AURA_LOG_DIR"/*.log; do
+    for f in "$NEXA_LOG_DIR"/*.log; do
       [[ -e "$f" ]] && { : > "$f"; echo "  truncated: $f"; }
     done
   fi
@@ -134,25 +134,27 @@ for path in "$TELEMETRY_FILE" "$LEADS_FILE" "$ORG_REGISTRY_FILE" "$GATEWAY_SESSI
   fi
 done
 
-# --- 3. .aura runtime dirs: logs, voice, any json/md ---
-for sub in "logs" "voice" "gateway_sessions.json"; do
-  p="$AURA_ROOT/.aura/$sub"
-  if [[ -f "$p" ]]; then
-    backup_file "$p" || true
-    if ! "$BACKUP_ONLY"; then delete_file "$p"; fi
-  fi
-  if [[ -d "$p" ]]; then
-    backup_dir_contents "$p" || true
-    if ! "$BACKUP_ONLY"; then
-      for f in "$p"/*; do [[ -e "$f" ]] && { : > "$f" 2>/dev/null || rm -f "$f"; } done
+# --- 3. Runtime dirs under .nexa ---
+for runtime_root in "$NEXA_ROOT/.nexa"; do
+  for sub in "logs" "voice" "gateway_sessions.json"; do
+    p="$runtime_root/$sub"
+    if [[ -f "$p" ]]; then
+      backup_file "$p" || true
+      if ! "$BACKUP_ONLY"; then delete_file "$p"; fi
     fi
-  fi
+    if [[ -d "$p" ]]; then
+      backup_dir_contents "$p" || true
+      if ! "$BACKUP_ONLY"; then
+        for f in "$p"/*; do [[ -e "$f" ]] && { : > "$f" 2>/dev/null || rm -f "$f"; } done
+      fi
+    fi
+  done
 done
 
 # --- 4. Data dir: any json/md (e.g. telemetry already done; catch other dynamic files) ---
-if [[ -d "$AURA_DATA_DIR" ]]; then
+if [[ -d "$NEXA_DATA_DIR" ]]; then
   shopt -s nullglob 2>/dev/null || true
-  for f in "$AURA_DATA_DIR"/*.json "$AURA_DATA_DIR"/*.md; do
+  for f in "$NEXA_DATA_DIR"/*.json "$NEXA_DATA_DIR"/*.md; do
     [[ -e "$f" ]] || continue
     backup_file "$f" || true
     if ! "$BACKUP_ONLY"; then delete_file "$f"; fi
@@ -161,8 +163,8 @@ if [[ -d "$AURA_DATA_DIR" ]]; then
 fi
 
 # --- 5. Vault docs_inbox: dynamic markdown/json ---
-if [[ -d "$AURA_DOCS_INBOX_DIR" ]]; then
-  find "$AURA_DOCS_INBOX_DIR" -maxdepth 6 -type f \( -name "*.json" -o -name "*.md" \) ! -path "*/.git/*" 2>/dev/null | while read -r f; do
+if [[ -d "$NEXA_DOCS_INBOX_DIR" ]]; then
+  find "$NEXA_DOCS_INBOX_DIR" -maxdepth 6 -type f \( -name "*.json" -o -name "*.md" \) ! -path "*/.git/*" 2>/dev/null | while read -r f; do
     [[ -f "$f" ]] || continue
     backup_file "$f" || true
     if ! "$BACKUP_ONLY"; then delete_file "$f"; fi
@@ -174,20 +176,20 @@ MANIFEST="$BACKUP_SUBDIR/manifest.txt"
 MANIFEST_JSON="$BACKUP_SUBDIR/manifest.json"
 {
   echo "backup_dynamic $STAMP"
-  echo "AURA_ROOT=$AURA_ROOT"
+  echo "NEXA_ROOT=$NEXA_ROOT"
   echo "BACKUP_ONLY=$BACKUP_ONLY"
   date -u +"%Y-%m-%dT%H:%M:%SZ"
 } > "$MANIFEST"
-python3 - "$STAMP" "$AURA_ROOT" "$BACKUP_ONLY" "$BACKUP_SUBDIR" "$AURA_LOG_DIR" "$AURA_DATA_DIR" "$AURA_VAULT_DIR" "$AURA_DOCS_INBOX_DIR" "$MANIFEST_JSON" <<'PY'
+python3 - "$STAMP" "$NEXA_ROOT" "$BACKUP_ONLY" "$BACKUP_SUBDIR" "$NEXA_LOG_DIR" "$NEXA_DATA_DIR" "$NEXA_VAULT_DIR" "$NEXA_DOCS_INBOX_DIR" "$MANIFEST_JSON" <<'PY'
 import json
 import sys
 
-stamp, aura_root, backup_only, backup_subdir, log_dir, data_dir, vault_dir, docs_inbox_dir, manifest_json = sys.argv[1:]
+stamp, nexa_root, backup_only, backup_subdir, log_dir, data_dir, vault_dir, docs_inbox_dir, manifest_json = sys.argv[1:]
 with open(manifest_json, "w", encoding="utf-8") as handle:
     json.dump(
         {
             "stamp": stamp,
-            "aura_root": aura_root,
+            "nexa_root": nexa_root,
             "backup_only": backup_only.lower() == "true",
             "backup_subdir": backup_subdir,
             "resolved_paths": {
@@ -201,7 +203,7 @@ with open(manifest_json, "w", encoding="utf-8") as handle:
         indent=2,
     )
 PY
-ln -sfn "$BACKUP_SUBDIR" "$AURA_BACKUP_DIR/latest"
+ln -sfn "$BACKUP_SUBDIR" "$NEXA_BACKUP_DIR/latest"
 
 # --- Route backup to org node with largest free storage ---
 route_backup_to_largest_node() {
@@ -256,11 +258,11 @@ for n in nodes:
       echo "[backup-dynamic] rsync to $winner_host failed; backup remains at $BACKUP_SUBDIR"
     fi
   else
-    echo "[backup-dynamic] No org nodes reachable or no AURA_BACKUP_NODES_FILE; backup only local."
+    echo "[backup-dynamic] No org nodes reachable or no NEXA_BACKUP_NODES_FILE; backup only local."
   fi
 }
 
-route_backup_to_largest_node "$AURA_BACKUP_NODES_FILE"
+route_backup_to_largest_node "$NEXA_BACKUP_NODES_FILE"
 
 echo "[backup-dynamic] Done. Backup at $BACKUP_SUBDIR"
 if ! "$BACKUP_ONLY"; then

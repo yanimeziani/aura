@@ -3,19 +3,19 @@ set -euo pipefail
 
 REAL_SCRIPT="$(python3 -c 'import os,sys; print(os.path.realpath(sys.argv[1]))' "$0")"
 SCRIPT_DIR="$(cd "$(dirname "$REAL_SCRIPT")" && pwd)"
-AURA_ROOT="${AURA_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
-REPO_ROOT="${REPO_ROOT:-$AURA_ROOT}"
+NEXA_ROOT="${NEXA_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
+REPO_ROOT="${REPO_ROOT:-$NEXA_ROOT}"
 
-BUNDLE_PATH="${AURA_DOCS_BUNDLE_OUT:-$AURA_ROOT/nexa-docs-notebooklm.txt}"
-EXPORTS_DIR="${AURA_NOTEBOOKLM_EXPORT_DIR:-$AURA_ROOT/.aura/exports}"
-MANIFEST_PATH="${AURA_NOTEBOOKLM_MANIFEST:-$EXPORTS_DIR/notebooklm-manifest.json}"
-LATEST_PATH="${AURA_NOTEBOOKLM_LATEST:-$EXPORTS_DIR/notebooklm/latest.txt}"
-SOURCE_URL="${AURA_NOTEBOOKLM_SOURCE_URL:-${AURA_PUBLIC_BASE_URL:-http://127.0.0.1:${AURA_GATEWAY_PORT:-8765}}/docs/nexa}"
+BUNDLE_PATH="${NEXA_DOCS_BUNDLE_OUT:-$NEXA_ROOT/nexa-docs-notebooklm.txt}"
+EXPORTS_DIR="${NEXA_NOTEBOOKLM_EXPORT_DIR:-$NEXA_ROOT/.nexa/exports}"
+MANIFEST_PATH="${NEXA_NOTEBOOKLM_MANIFEST:-$EXPORTS_DIR/notebooklm-manifest.json}"
+LATEST_PATH="${NEXA_NOTEBOOKLM_LATEST:-$EXPORTS_DIR/notebooklm/latest.txt}"
+SOURCE_URL="${NEXA_NOTEBOOKLM_SOURCE_URL:-${NEXA_PUBLIC_BASE_URL:-http://127.0.0.1:${NEXA_GATEWAY_PORT:-8765}}/docs/nexa}"
 
 mkdir -p "$EXPORTS_DIR" "$(dirname "$LATEST_PATH")"
 
-REPO_ROOT="$REPO_ROOT" AURA_ROOT="$AURA_ROOT" AURA_DOCS_BUNDLE_OUT="$BUNDLE_PATH" \
-  python3 "$AURA_ROOT/ops/scripts/build-aura-docs-bundle.py"
+REPO_ROOT="$REPO_ROOT" NEXA_ROOT="$NEXA_ROOT" NEXA_DOCS_BUNDLE_OUT="$BUNDLE_PATH" \
+  python3 "$NEXA_ROOT/ops/scripts/build-nexa-docs-bundle.py"
 
 if [[ ! -s "$BUNDLE_PATH" ]]; then
   echo "Bundle was not created or is empty: $BUNDLE_PATH" >&2
@@ -28,14 +28,14 @@ STAMP="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 
 IPFS_CID=""
 IPFS_GATEWAY_URL=""
-if [[ "${AURA_NOTEBOOKLM_IPFS_PUBLISH:-0}" == "1" ]]; then
-  GATEWAY_URL="${AURA_GATEWAY_URL:-http://127.0.0.1:${AURA_GATEWAY_PORT:-8765}}"
-  if [[ -z "${AURA_VAULT_TOKEN:-}" ]]; then
-    echo "AURA_VAULT_TOKEN is required when AURA_NOTEBOOKLM_IPFS_PUBLISH=1" >&2
+if [[ "${NEXA_NOTEBOOKLM_IPFS_PUBLISH:-0}" == "1" ]]; then
+  GATEWAY_URL="${NEXA_GATEWAY_URL:-http://127.0.0.1:${NEXA_GATEWAY_PORT:-8765}}"
+  if [[ -z "${NEXA_VAULT_TOKEN:-}" ]]; then
+    echo "NEXA_VAULT_TOKEN is required when NEXA_NOTEBOOKLM_IPFS_PUBLISH=1" >&2
     exit 1
   fi
   RESP="$(
-    python3 - "$BUNDLE_PATH" "$GATEWAY_URL" "$AURA_VAULT_TOKEN" <<'PY'
+    python3 - "$BUNDLE_PATH" "$GATEWAY_URL" "$NEXA_VAULT_TOKEN" <<'PY'
 import json
 import sys
 import urllib.request

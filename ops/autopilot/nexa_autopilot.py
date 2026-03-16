@@ -22,11 +22,12 @@ def utc_now() -> str:
 
 
 def root_dir() -> Path:
-    return Path(os.environ.get("NEXA_ROOT", os.environ.get("AURA_ROOT", Path(__file__).resolve().parents[2])))
+    return Path(os.environ.get("NEXA_ROOT", Path(__file__).resolve().parents[2]))
 
 
 def state_dir() -> Path:
-    path = root_dir() / ".aura" / "autopilot"
+    root = root_dir()
+    path = root / ".nexa" / "autopilot"
     path.mkdir(parents=True, exist_ok=True)
     return path
 
@@ -51,7 +52,7 @@ def save_state(payload: dict) -> None:
 
 
 def port() -> str:
-    return os.environ.get("NEXA_GATEWAY_PORT", os.environ.get("AURA_GATEWAY_PORT", "9080"))
+    return os.environ.get("NEXA_GATEWAY_PORT", "9080")
 
 
 def gateway_url() -> str:

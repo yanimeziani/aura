@@ -6,7 +6,7 @@ Wants=network-online.target
 [Service]
 Type=simple
 WorkingDirectory=/root
-Environment=AURA_ROOT=/root
+Environment=NEXA_ROOT=/root
 Environment=NEXA_GATEWAY_PORT=9080
 Environment=NEXA_DOCS_INTERVAL_SEC=1800
 Environment=NEXA_OPS_CAST_INTERVAL_SEC=3600
