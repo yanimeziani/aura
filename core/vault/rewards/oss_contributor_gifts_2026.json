@@ -1,0 +1,55 @@
+{
+  "event": "OSS Contributor Genesis Gift",
+  "date": "2026-03-17",
+  "rationale": "Authorised for the good of all. A one-time monetary gift distributed based on the weight of commits in the core GitHub vault to honor the equanimity and labor of the Open Source Collective.",
+  "currency": "USDC/CAD",
+  "distribution_pool_value": 100000,
+  "contributors": [
+    {
+      "name": "Yani Meziani",
+      "aliases": ["yanimeziani", "Yani Meziani"],
+      "commits": 900,
+      "weight_percentage": 89.55,
+      "gift_allocation": 89550,
+      "status": "QUEUED"
+    },
+    {
+      "name": "Open Organisation Infrastructure (System Actors)",
+      "aliases": ["root", "Nexa Automation"],
+      "commits": 60,
+      "weight_percentage": 5.97,
+      "gift_allocation": 5970,
+      "note": "System actor funds redirected to the Open Organisation Treasury for server maintenance.",
+      "status": "REDIRECTED_TO_TREASURY"
+    },
+    {
+      "name": "Amghar Bot",
+      "aliases": ["Amghar Bot"],
+      "commits": 33,
+      "weight_percentage": 3.28,
+      "gift_allocation": 3280,
+      "note": "AI agent funds redirected to the Open Organisation Treasury for compute overhead.",
+      "status": "REDIRECTED_TO_TREASURY"
+    },
+    {
+      "name": "OpenClaw Assistant",
+      "aliases": ["OpenClaw Assistant", "OpenClaw"],
+      "commits": 11,
+      "weight_percentage": 1.09,
+      "gift_allocation": 1090,
+      "note": "Legacy AI agent funds redirected to the Open Organisation Treasury.",
+      "status": "REDIRECTED_TO_TREASURY"
+    },
+    {
+      "name": "Qwen3 32B via Crush",
+      "aliases": ["Qwen3 32B via Crush"],
+      "commits": 1,
+      "weight_percentage": 0.10,
+      "gift_allocation": 100,
+      "note": "Model inference overhead funds redirected to node operators.",
+      "status": "REDIRECTED_TO_TREASURY"
+    }
+  ],
+  "hitl_approval_required": true,
+  "execution_status": "PENDING_CONSENSUS"
+}
