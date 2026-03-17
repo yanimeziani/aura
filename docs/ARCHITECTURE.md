@@ -134,9 +134,10 @@ This layer translates abstract trust into vital services for all biological bein
 - Age-specific pedagogy: **Montessori-only** (under 15) for foundations; **Technical Mastery** (15+) for Nexa stack specialization.
 - Refer to [Open Organisation Education Fundamentals](./OPEN_EDUCATION_FUNDA.md).
 
-### Resource Sovereignty (Distillation & Credits)
-- **Lynx Distillation:** High-performance extraction of "essence" from noise using the Zig-based distillation engine.
-- **Crypto Credits:** Sovereign resource management and pipeline for vital service funding.
+### Resource Sovereignty (Commerce & Generation)
+- **Sovereign Commerce:** Autonomous B2B automation to generate collective wealth without venture capital extraction.
+- **Crypto Credits:** Frictionless payment gateways for the reinvestment into the Treasury, directly funding physical and cognitive mesh operations.
+- Refer to [Open Organisation Commerce Fundamentals](./OPEN_COMMERCE_FUNDA.md).
 
 ## Layer 6: Operator Interfaces
 
