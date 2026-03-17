@@ -16,12 +16,11 @@ The implementation should prefer those specs for runtime validation and client/t
 
 ## Actors
 
-- `Operator`: final authority; approves, revokes, recovers
-- `Agent`: bounded executor acting through delegated capabilities
-- `Node`: runtime host participating in routing, sync, or execution
-- `Device`: operator access surface such as phone, laptop, terminal
-- `Organisation`: external or internal entity with attestable trust state
-- `Gateway`: mediation surface for transport, sync, capability enforcement, and provider routing
+- **Operator:** Any authorised biological being or community node fulfilling the role of a final authority. The operator role is collective, not individual, and is bound by the mandate of acting for the good of all biological beings.
+- **Agent:** Bounded executor acting through capabilities delegated by the collective of operators.
+- **Node:** Runtime host participating in the mesh; nodes can act as independent observers or consensus participants.
+- **Organisation:** An external or internal collective with a trust state verifiable through the mesh.
+- **Gateway:** Coordination surface for transport, sync, and the enforcement of collective trust policies.
 
 ## Core Objects
 

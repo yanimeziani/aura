@@ -1,14 +1,14 @@
 {
-    "owner": "meziani.ai",
+    "owner": "the-open-organisation",
     "primary_objectives": [
         "Securing resilient and accessible housing for all biological beings via the Open Organisation's fundamentals.",
         "Ensuring the sovereign and open transmission of education and knowledge for all biological beings.",
-        "Strategic penetration of the Canadian SMB and Enterprise market.",
-        "Full digitalisation and automation for Algerian and Canadian SMBs.",
-        "Maximising long-term growth and yield in Wealthsimple/USD (Tax-efficient for Canada).",
-        "Maintaining a 100% sovereign, redundant infrastructure (Aura).",
-        "Building a custom Zig-based network stack (Aura Edge) to replace Cloudflare, Next.js, and standard cryptography.",
-        "Freedom of time: minimising reactive work, maximising deep work for Canadian founders."
+        "Maintaining a 100% sovereign, redundant, and collective infrastructure (Aura).",
+        "Strategic and professional outreach to SMBs and Enterprises globally.",
+        "Full digitalisation and automation for local communities and organisations.",
+        "Maximising collective resource growth for reinvestment in vital services.",
+        "Building a custom Zig-based network stack (Aura Edge) for decentralized, secure connectivity.",
+        "Freedom of time for all: minimising reactive work through advanced autonomous coordination."
     ],
     "high_signal_entities": [
         "Stripe Canada", "Wealthsimple", "Spaceship", "Resend", "DPD Group", "Meziani AI Labs", "CRA (Compliance only)"

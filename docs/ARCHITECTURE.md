@@ -2,12 +2,12 @@
 
 ## Purpose
 
-Nexa is a collaboration and deployment stack for humans and AI systems operating across hostile, unstable, or vendor-controlled environments. The architecture is designed around five constraints:
+Nexa is a collective collaboration and deployment protocol for humans and AI systems operating across hostile, unstable, or vendor-controlled environments. The architecture is designed to prioritize **vital services for all biological beings** under five constraints:
 
 - device loss is normal
 - networks are hostile
-- operators retain final authority
-- agents need bounded autonomy
+- the collective of operators retains final authority
+- agents need bounded and ethical autonomy
 - recovery must be fast, portable, and deterministic
 
 The project should be evaluated as protocol infrastructure, not as a generic application monorepo.
