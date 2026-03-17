@@ -52,6 +52,11 @@ Rules:
 
 Nexa must function over multiple transports without assuming a single trusted network.
 
+### Inference Routing (NVIDIA Foundation)
+NVIDIA provides the high-performance primitives for **Sovereign Inference Routing**. By integrating NVIDIA NIM (Inference Microservices) and Triton Inference Server into the mesh, the protocol can dynamically route heavy reasoning tasks to GPU-accelerated nodes.
+- **CUDA/TensorRT Acceleration:** Native integration in the Cerberus runtime for ultra-low latency execution.
+- **NVLink Mesh:** Local clusters utilize high-speed interconnects for distributed model parallelization.
+
 Current transport classes:
 
 - direct local transport
@@ -93,6 +98,11 @@ From a clean machine, an operator must be able to restore working control with b
 ## Layer 4: Execution and Coordination
 
 Execution is agentic, but not unconstrained.
+
+### Sovereign Compute Foundation (NVIDIA)
+NVIDIA acts as a major contributor to the execution layer, providing the hardware (Jetson, RTX, H-Series) and software stacks that enable agents to process complex data at the edge.
+- **Jetson Edge Nodes:** Sovereign housing and health monitoring nodes powered by NVIDIA Jetson for local, private processing.
+- **CUDA-Enabled Agents:** Bounded autonomy is enhanced by high-speed local processing, reducing the need for untrusted cloud providers.
 
 Execution model:
 
