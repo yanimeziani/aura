@@ -1,37 +1,28 @@
+import { getTranslations } from "next-intl/server";
+import { setRequestLocale } from "next-intl/server";
 import Link from "next/link";
-
 import styles from "../docs.module.css";
-import { getDocsIndex, type DocEntry } from "../../lib/docs";
 
 const LOCALE_LABELS: Record<string, string> = {
-  "en-CA": "EN (CA)",
-  "en-US": "EN (US)",
-  "en-AU": "EN (AU)",
-  "fr-CA": "FR (CA)",
-  "ar-DZ": "AR (DZ)",
+  en: "EN",
+  es: "ES",
+  zh: "ZH",
+  hi: "HI",
+  ar: "AR",
+  pt: "PT",
+  fr: "FR",
+  ru: "RU",
 };
 
-const FEATURED = new Set(["QUICKSTART", "ARCHITECTURE", "PROTOCOL", "TRUST_MODEL"]);
-
-function groupDocs(entries: DocEntry[]) {
-  return entries.reduce<Record<string, DocEntry[]>>((acc, entry) => {
-    const key = entry.section;
-    acc[key] ??= [];
-    acc[key].push(entry);
-    return acc;
-  }, {});
-}
-
-export default async function LocaleDocsIndex({
+export default async function LandingPage({
   params,
 }: {
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  const docs = getDocsIndex();
-  const grouped = groupDocs(docs);
-  const featured = docs.filter((entry) => FEATURED.has(entry.basename)).slice(0, 4);
-  const isRtl = locale.startsWith("ar");
+  setRequestLocale(locale);
+  const t = await getTranslations();
+  const isRtl = locale === "ar";
 
   return (
     <main className={styles.pageShell} dir={isRtl ? "rtl" : "ltr"}>
@@ -45,9 +36,9 @@ export default async function LocaleDocsIndex({
         </div>
 
         <nav className={styles.nav}>
-          <a href="#featured">Featured</a>
-          <a href="#catalog">Catalog</a>
-          <a href="/gw/docs/nexa">Live bundle</a>
+          <a href="#protocol">{t("navSystem")}</a>
+          <a href="#safety">{t("navSafety")}</a>
+          <a href="#brief">{t("navBrief")}</a>
         </nav>
 
         <div className={styles.segmentToggle} aria-label="Locale">
@@ -68,92 +59,89 @@ export default async function LocaleDocsIndex({
       <section className={styles.docsHero}>
         <div className={styles.heroCopy}>
           <div className={styles.eyebrowRow}>
-            <span className={styles.eyebrowChip}>Public Documentation</span>
-            <span className={styles.eyebrowChip}>Static Export</span>
-            <span className={styles.eyebrowChip}>Hostinger VPS</span>
+            <span className={styles.eyebrowChip}>{t("heroEyebrow")}</span>
+            <span className={styles.eyebrowChip}>{t("funnelTag")}</span>
           </div>
-          <h1 className={styles.heroTitle}>Nexa documentation from the repository source tree.</h1>
-          <p className={styles.heroLead}>
-            This frontend is built directly from the repository <code>docs/</code> folder and
-            exported as a static site for <code>nexa.meziani.ai</code>. Pushes to <code>main</code>
-            rebuild and deploy it through the mesh workflow.
-          </p>
+          <h1 className={styles.heroTitle}>{t("heroTitle")}</h1>
+          <p className={styles.heroLead}>{t("heroLead")}</p>
           <div className={styles.heroActions}>
-            <a className={styles.primaryButton} href="#featured">
-              Read featured docs
+            <a className={styles.primaryButton} href="#brief">
+              {t("primaryCta")}
             </a>
-            <a className={styles.secondaryButton} href="/gw/docs/nexa">
-              Open live bundle
+            <a className={styles.secondaryButton} href="/docs">
+              {t("secondaryCta")}
             </a>
           </div>
         </div>
 
         <aside className={styles.statusPanel}>
-          <div className={styles.panelLabel}>Source of truth</div>
-          <h2>Repository-backed docs frontend</h2>
+          <div className={styles.panelLabel}>{t("operatingPremise")}</div>
+          <h2>{t("phasesHeadline")}</h2>
           <ul className={styles.metricList}>
             <li>
-              <span>{docs.length}</span>
-              <strong>documents indexed</strong>
+              <span>1.0</span>
+              <strong>{t("metricControl")}</strong>
             </li>
             <li>
-              <span>{Object.keys(grouped).length}</span>
-              <strong>sections available</strong>
+              <span>48h</span>
+              <strong>{t("metricTurnaround")}</strong>
             </li>
             <li>
-              <span>CI/CD</span>
-              <strong>push to main deploys Hostinger VPS</strong>
+              <span>0%</span>
+              <strong>{t("metricLockin")}</strong>
             </li>
           </ul>
         </aside>
       </section>
 
-      <section id="featured" className={styles.sectionBlock}>
+      <section id="protocol" className={styles.sectionBlock}>
         <div className={styles.sectionHeader}>
-          <span className={styles.sectionTag}>Featured</span>
-          <h2>Core references</h2>
+          <span className={styles.sectionTag}>{t("sectionSystem")}</span>
+          <h2>{t("systemTitle")}</h2>
         </div>
         <div className={styles.cardGrid}>
-          {featured.map((entry) => (
-            <Link key={entry.href} href={`/${locale}${entry.href}`} className={styles.docCard}>
-              <span className={styles.docMeta}>{entry.sectionLabel}</span>
-              <h3>{entry.title}</h3>
-              <p>{entry.summary}</p>
-            </Link>
+          {(t.raw("systemCards") as any[]).map((card, idx) => (
+            <div key={idx} className={styles.docCard}>
+              <h3>{card.title}</h3>
+              <p>{card.body}</p>
+            </div>
           ))}
         </div>
       </section>
 
-      <section id="catalog" className={styles.sectionBlock}>
+      <section id="mesh" className={styles.sectionBlock}>
         <div className={styles.sectionHeader}>
-          <span className={styles.sectionTag}>Catalog</span>
-          <h2>Documentation index</h2>
+          <span className={styles.sectionTag}>{t("sectionDelivery")}</span>
+          <h2>{t("deliveryTitle")}</h2>
         </div>
-        <div className={styles.sectionGrid}>
-          {Object.entries(grouped)
-            .sort(([a], [b]) => a.localeCompare(b))
-            .map(([section, entries]) => (
-              <section key={section} className={styles.catalogSection}>
-                <div className={styles.catalogHeader}>
-                  <h3>{entries[0]?.sectionLabel ?? section}</h3>
-                  <span>{entries.length} docs</span>
-                </div>
-                <div className={styles.catalogList}>
-                  {entries.map((entry) => (
-                    <Link
-                      key={entry.href}
-                      href={`/${locale}${entry.href}`}
-                      className={styles.catalogItem}
-                    >
-                      <strong>{entry.title}</strong>
-                      <span>{entry.summary}</span>
-                    </Link>
-                  ))}
-                </div>
-              </section>
-            ))}
+        <div className={styles.catalogList}>
+          {(t.raw("deliverySteps") as any[]).map((step, idx) => (
+            <div key={idx} className={styles.catalogItem}>
+              <strong>{step.step} · {step.title}</strong>
+              <span>{step.body}</span>
+            </div>
+          ))}
         </div>
       </section>
+
+      <section id="safety" className={styles.sectionBlock}>
+        <div className={styles.sectionHeader}>
+          <span className={styles.sectionTag}>{t("sectionSafety")}</span>
+          <h2>{t("railsTitle")}</h2>
+        </div>
+        <ul className={styles.metricList} style={{ display: "grid", gap: "1rem" }}>
+          {(t.raw("rails") as string[]).map((rail, idx) => (
+            <li key={idx} style={{ textAlign: isRtl ? "right" : "left" }}>
+              <strong>{rail}</strong>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <footer className={styles.topbar} style={{ marginTop: "4rem", borderTop: "1px solid var(--border-subtle)", paddingTop: "2rem" }}>
+         <p style={{ opacity: 0.6 }}>{t("footerNote")}</p>
+         <p style={{ opacity: 0.4, fontSize: "0.8rem" }}>{t("formFootnote")}</p>
+      </footer>
     </main>
   );
 }
