@@ -6,15 +6,12 @@ import subprocess
 from pathlib import Path
 
 def get_ip():
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    try:
-        s.connect(("8.8.8.8", 80))
-        ip = s.getsockname()[0]
-    except Exception:
-        ip = "127.0.0.1"
-    finally:
-        s.close()
-    return ip
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+        try:
+            s.connect(("8.8.8.8", 80))
+            return s.getsockname()[0]
+        except OSError:
+            return "127.0.0.1"
 
 def main():
     config_path = Path.home() / ".cerberus" / "config.json"
@@ -28,7 +25,10 @@ def main():
     # Use Groq API key (or fall back to vault token)
     token = config.get("models", {}).get("providers", {}).get("groq", {}).get("api_key")
     if not token or "${" in token:
-        token = "nexo2026" # Default/Fallback
+        token = os.environ.get("NEXA_ACTIVATION_TOKEN", "")
+    if not token:
+        print("Warning: No API key found. Set NEXA_ACTIVATION_TOKEN or configure groq.api_key.")
+        return 1
     
     ip = get_ip()
     port = config.get("gateway", {}).get("port", 3004)

@@ -93,15 +93,16 @@ def start_gateway() -> tuple[bool, str]:
     gateway_bin = root_dir() / "core" / "nexa-gateway" / "zig-out" / "bin" / "nexa-gateway"
     if not gateway_bin.exists():
         return False, "gateway binary missing"
-    log_file = gateway_log_path().open("a", encoding="utf-8")
+    log_fd = os.open(str(gateway_log_path()), os.O_WRONLY | os.O_CREAT | os.O_APPEND)
     subprocess.Popen(
         [str(gateway_bin)],
         cwd=str(gateway_bin.parent.parent.parent),
         env={**os.environ, "NEXA_GATEWAY_PORT": port()},
-        stdout=log_file,
+        stdout=log_fd,
         stderr=subprocess.STDOUT,
         start_new_session=True,
     )
+    os.close(log_fd)
     for _ in range(20):
         time.sleep(0.5)
         if health_ok():

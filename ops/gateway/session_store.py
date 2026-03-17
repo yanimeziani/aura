@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+import tempfile
 from pathlib import Path
 from typing import Any, Optional
 
@@ -40,12 +41,15 @@ def _load_all() -> dict[str, Any]:
 def _save_all(data: dict[str, Any]) -> None:
     p = _sessions_path()
     p.parent.mkdir(parents=True, exist_ok=True)
-    with open(p, "w") as f:
-        json.dump(data, f, indent=2)
+    fd, tmp = tempfile.mkstemp(dir=str(p.parent), suffix=".tmp")
     try:
-        os.chmod(p, 0o600)
-    except OSError:
-        pass
+        with os.fdopen(fd, "w") as f:
+            json.dump(data, f, indent=2)
+        os.chmod(tmp, 0o600)
+        os.replace(tmp, str(p))
+    except BaseException:
+        os.unlink(tmp)
+        raise
 
 
 def get_session(workspace_id: str) -> Optional[dict[str, Any]]:
