@@ -1,19 +1,30 @@
 {
   "default_temperature": 0.7,
+  "default_cloud_gateway": "groq",
   "models": {
     "providers": {
       "openrouter": {
         "api_key": "${OPENROUTER_API_KEY}"
+      },
+      "groq": {
+        "api_key": "${GROQ_API_KEY}"
       }
     }
   },
   "agents": {
     "list": [
       {
+        "id": "nexo-board-agent",
+        "name": "Nexo Board Agent",
+        "provider": "groq",
+        "model": "llama3-70b-8192",
+        "config_file": "/root/core/cerberus/configs/nexo-board-agent.json"
+      },
+      {
         "id": "career-twin",
         "name": "Career Digital Twin",
-        "provider": "openrouter",
-        "model": "anthropic/claude-sonnet-4",
+        "provider": "groq",
+        "model": "llama3-70b-8192",
         "system_prompt_file": "/opt/configs/career_twin_prompt.txt",
         "memory_path": "/root/.cerberus/memory/career_twin",
         "tools": ["web_fetch", "calendar", "email_draft", "document_search"]
@@ -21,8 +32,8 @@
       {
         "id": "sdr-agent",
         "name": "SDR Agent",
-        "provider": "openrouter",
-        "model": "anthropic/claude-sonnet-4",
+        "provider": "groq",
+        "model": "llama3-70b-8192",
         "system_prompt_file": "/opt/configs/sdr_agent_prompt.txt",
         "memory_path": "/root/.cerberus/memory/sdr",
         "tools": ["web_fetch", "email_draft", "research"]
@@ -30,8 +41,8 @@
       {
         "id": "vocal-digestion",
         "name": "Vocal Digestion Agent",
-        "provider": "openrouter",
-        "model": "anthropic/claude-sonnet-4",
+        "provider": "groq",
+        "model": "llama3-7b-8192",
         "system_prompt_file": "/opt/configs/vocal_digestion_prompt.txt",
         "memory_path": "/root/.cerberus/memory/digestion",
         "tools": ["ffmpeg_extract", "whisper_transcribe", "openai_tts", "web_fetch"],

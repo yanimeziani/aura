@@ -69,6 +69,7 @@ def cmd_help() -> None:
     print("  smoke-test    Smoke-test deployed mesh")
     print("  demo          Instant demo: in-house Zig gateway locally")
     print("  autopilot     Run the unified automation control loop")
+    print("  board         Consult the NEXO Board (Groq-powered advisory)")
     print("")
     print("Commands:")
     print("  gateway     Start syncing gateway (port 8765)")
@@ -213,6 +214,16 @@ def cmd_autopilot(root: Path) -> int:
     return _run([_python(), str(root / "ops" / "autopilot" / "nexa_autopilot.py"), subcmd] + extra, cwd=root)
 
 
+def cmd_board(root: Path) -> int:
+    cerberus_bin = root / "core" / "cerberus" / "runtime" / "cerberus-core" / "zig-out" / "bin" / "aarch64" / "bin" / "cerberus"
+    if not cerberus_bin.exists():
+        # Fallback to current architecture
+        cerberus_bin = root / "core" / "cerberus" / "runtime" / "cerberus-core" / "zig-out" / "bin" / "cerberus"
+    
+    # Run the default agent (Board)
+    return subprocess.run([str(cerberus_bin), "agent"], cwd=str(root)).returncode
+
+
 def main() -> int:
     root = _root()
     os.environ["NEXA_ROOT"] = str(root)
@@ -222,6 +233,8 @@ def main() -> int:
     if cmd in ("help", "-h", "--help"):
         cmd_help()
         return 0
+    if cmd == "board":
+        return cmd_board(root)
     if cmd == "deploy-mesh":
         return cmd_deploy_mesh(root)
     if cmd == "backup":

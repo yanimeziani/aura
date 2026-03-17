@@ -82,12 +82,12 @@ fn handleConnection(conn: net.Server.Connection) !void {
     }
     if (std.mem.eql(u8, method, "GET") and std.mem.eql(u8, path, "/providers")) {
         return writeResponse(conn, 200, "application/json; charset=utf-8",
-            \\{"providers":[{"id":"local-oss","enabled":true,"openai_compatible":false},{"id":"mesh","enabled":true,"openai_compatible":false}]}
+            \\{"providers":[{"id":"groq","enabled":true,"openai_compatible":true},{"id":"local-oss","enabled":true,"openai_compatible":false},{"id":"mesh","enabled":true,"openai_compatible":false}]}
         );
     }
     if (std.mem.eql(u8, method, "GET") and std.mem.eql(u8, path, "/v1/models")) {
         return writeResponse(conn, 200, "application/json; charset=utf-8",
-            \\{"data":[{"id":"nexa-ops-local","source":"embedded"},{"id":"qwen2.5:14b-instruct","source":"ollama"},{"id":"deterministic-local","source":"builtin"}]}
+            \\{"data":[{"id":"llama3-70b-8192","source":"groq"},{"id":"llama3-8b-8192","source":"groq"},{"id":"mixtral-8x7b-32768","source":"groq"},{"id":"nexa-ops-local","source":"embedded"},{"id":"qwen2.5:14b-instruct","source":"ollama"}]}
         );
     }
     if (std.mem.eql(u8, method, "GET") and std.mem.eql(u8, path, "/telemetry/regions")) {
