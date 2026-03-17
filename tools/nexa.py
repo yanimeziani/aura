@@ -70,6 +70,7 @@ def cmd_help() -> None:
     print("  demo          Instant demo: in-house Zig gateway locally")
     print("  autopilot     Run the unified automation control loop")
     print("  board         Consult the NEXO Board (Groq-powered advisory)")
+    print("  qr            Generate Level -1 operator activation QR code")
     print("")
     print("Commands:")
     print("  gateway     Start syncing gateway (port 8765)")
@@ -224,6 +225,10 @@ def cmd_board(root: Path) -> int:
     return subprocess.run([str(cerberus_bin), "agent"], cwd=str(root)).returncode
 
 
+def cmd_qr(root: Path) -> int:
+    return subprocess.run([sys.executable, str(root / "tools" / "nexa_qr.py")], cwd=str(root)).returncode
+
+
 def main() -> int:
     root = _root()
     os.environ["NEXA_ROOT"] = str(root)
@@ -235,6 +240,8 @@ def main() -> int:
         return 0
     if cmd == "board":
         return cmd_board(root)
+    if cmd == "qr":
+        return cmd_qr(root)
     if cmd == "deploy-mesh":
         return cmd_deploy_mesh(root)
     if cmd == "backup":
