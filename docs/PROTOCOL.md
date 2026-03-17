@@ -4,7 +4,7 @@
 
 This document defines the protocol-level primitives that Nexa should expose regardless of implementation language or client surface.
 
-Nexa is a protocol for secure collaboration between operators, agents, nodes, and organisations across unstable networks. For an applied example of how these trust primitives secure vital physical infrastructure, refer to the [Open Organisation Housing Fundamentals](./OPEN_HOUSING_FUNDA.md).
+Nexa is a protocol for secure collaboration between operators, agents, nodes, and organisations across unstable networks. For applied examples of how these trust primitives secure vital physical and cognitive infrastructure, refer to the [Open Organisation Housing Fundamentals](./OPEN_HOUSING_FUNDA.md) and [Open Organisation Education Fundamentals](./OPEN_EDUCATION_FUNDA.md).
 
 Machine-readable counterparts live in:
 
