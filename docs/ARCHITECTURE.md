@@ -14,13 +14,14 @@ The project should be evaluated as protocol infrastructure, not as a generic app
 
 ## System Model
 
-Nexa is composed of five layers:
+Nexa is composed of six layers:
 
 1. Identity and trust
 2. Transport and routing
 3. State and recovery
 4. Execution and coordination
-5. Operator interfaces
+5. Applied Sovereignty (The Open Organisation)
+6. Operator interfaces
 
 Each layer must degrade safely when another layer is impaired.
 
@@ -109,7 +110,25 @@ Model routing requirements:
 
 The gateway is not merely an API proxy. It is the coordination membrane between operator intent, transport policy, shared state, and execution.
 
-## Layer 5: Operator Interfaces
+## Layer 5: Applied Sovereignty (The Open Organisation)
+
+This layer translates abstract trust into vital services for all biological beings.
+
+### Physical Sovereignty (Housing)
+- Secure, accessible housing as a biological foundation.
+- Shelter nodes within the mesh decouple living spaces from predatory financial infrastructure.
+- Refer to [Open Organisation Housing Fundamentals](./OPEN_HOUSING_FUNDA.md).
+
+### Cognitive Sovereignty (Education)
+- Decentralized knowledge transmission through sovereign nodes.
+- Age-specific pedagogy: **Montessori-only** (under 15) for foundations; **Technical Mastery** (15+) for Nexa stack specialization.
+- Refer to [Open Organisation Education Fundamentals](./OPEN_EDUCATION_FUNDA.md).
+
+### Resource Sovereignty (Distillation & Credits)
+- **Lynx Distillation:** High-performance extraction of "essence" from noise using the Zig-based distillation engine.
+- **Crypto Credits:** Sovereign resource management and pipeline for vital service funding.
+
+## Layer 6: Operator Interfaces
 
 Interfaces are replaceable clients over the same protocol surfaces.
 
