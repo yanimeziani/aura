@@ -76,6 +76,7 @@ def cmd_help() -> None:
     print("  gateway     Start syncing gateway (port 8765)")
     print("  vault       Manage API keys and secrets")
     print("  status      System health")
+    print("  lynx        Zig text browser (lynx <url> [--distill])")
     print("  help        This message")
     print("")
     print("Requires: Python 3.8+ for CLI helpers. Runtime surface is Zig + embedded assets.")
@@ -194,6 +195,22 @@ def cmd_smoke_test(root: Path) -> int:
     return _run_bash(script, env_extra=env_extra)
 
 
+def cmd_lynx(root: Path) -> int:
+    if len(sys.argv) < 2:
+        print("Usage: nexa lynx <url> [--distill]")
+        return 1
+    
+    url_and_args = sys.argv[2:]
+    lynx_dir = root / "core" / "aura-lynx"
+    lynx_bin = lynx_dir / "zig-out" / "bin" / "aura-lynx"
+    
+    if not lynx_bin.exists():
+        print("⚙️ Building aura-lynx...")
+        _run(["zig", "build"], cwd=lynx_dir)
+    
+    return _run([str(lynx_bin)] + url_and_args, cwd=lynx_dir)
+
+
 def cmd_status(root: Path) -> int:
     print("Nexa root:", root)
     print("Platform:", platform.system(), platform.release())
@@ -263,6 +280,8 @@ def main() -> int:
     if cmd == "status":
         cmd_status(root)
         return 0
+    if cmd == "lynx":
+        return cmd_lynx(root)
     if cmd == "autopilot":
         return cmd_autopilot(root)
 

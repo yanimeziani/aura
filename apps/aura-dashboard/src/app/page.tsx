@@ -10,6 +10,7 @@ import MeshStatus from "@/components/MeshStatus";
 import AgentTerminal from "@/components/AgentTerminal";
 import QuickActions from "@/components/QuickActions";
 import RegionClusters from "@/components/RegionClusters";
+import LynxDistiller from "@/components/LynxDistiller";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -143,28 +144,7 @@ export default function DashboardPage() {
           <RegionClusters />
         </div>
         <div className="md:col-span-4">
-          <div className="border-4 border-white p-0">
-            <div className="bg-white text-black p-2 px-4 font-bold uppercase text-xs tracking-widest">
-              Session Sync
-            </div>
-            <div className="p-6 space-y-3">
-              <div className="flex justify-between text-sm">
-                <span className="opacity-50 uppercase text-xs">Active Workspaces</span>
-                <span className="text-terminal">STANDBY</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="opacity-50 uppercase text-xs">Last Sync</span>
-                <span className="tabular-nums">{new Date().toLocaleDateString()}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="opacity-50 uppercase text-xs">Gateway</span>
-                <span className="text-terminal break-all text-right">{gatewayLabel}</span>
-              </div>
-              <div className="border-t-2 border-white/10 pt-3 mt-3 text-[10px] opacity-30 uppercase text-center">
-                IDE / TUI / CLI shared context
-              </div>
-            </div>
-          </div>
+          <LynxDistiller />
         </div>
       </div>
 

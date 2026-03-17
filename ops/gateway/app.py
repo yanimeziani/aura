@@ -13,6 +13,7 @@ import subprocess
 import socket
 import sys
 import re
+import time as _time
 from pathlib import Path
 from typing import Any, Optional
 
@@ -24,8 +25,11 @@ for candidate in (OPS_DIR, REPO_ROOT):
     if candidate_str not in sys.path:
         sys.path.insert(0, candidate_str)
 
+import logging
 import httpx
 from fastapi import FastAPI, HTTPException, Request, Header
+
+logger = logging.getLogger("nexa.gateway")
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel
@@ -69,11 +73,34 @@ from aura_runtime import (
     vault_file,
 )
 
-app = FastAPI(
-    title="Nexa Syncing Gateway",
-    version="0.2.0",
-    description="Use subject to project DISCLAIMER: no warranty; prohibited use for illegal, harmful, or dangerous purposes. See repository DISCLAIMER.md.",
-)
+class DistillRequest(BaseModel):
+    url: str
+
+@app.post("/api/distill")
+async fn api_distill(req: DistillRequest):
+    """Run aura-lynx --distill for the given URL."""
+    try:
+        # Build aura-lynx if it doesn't exist or is stale
+        lynx_dir = REPO_ROOT / "core" / "aura-lynx"
+        lynx_bin = lynx_dir / "zig-out" / "bin" / "aura-lynx"
+        
+        if not lynx_bin.exists():
+            subprocess.run(["zig", "build"], cwd=str(lynx_dir), check=True)
+            
+        # Run distillation
+        result = subprocess.run(
+            [str(lynx_bin), req.url, "--distill"],
+            capture_output=True,
+            text=True,
+            timeout=30
+        )
+        
+        if result.returncode != 0:
+            return JSONResponse({"error": f"aura-lynx failed: {result.stderr}"}, status_code=500)
+            
+        return {"distilled": result.stdout.strip()}
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
 
 AURA_ROOT = aura_root()
 VAULT_FILE = vault_file(AURA_ROOT)
@@ -421,7 +448,7 @@ def telemetry_visit(payload: VisitPayload):
     counts = data.get("visits", {})
     counts[key] = counts.get(key, 0) + 1
     data["visits"] = counts
-    data["_updated"] = __import__("time").time()
+    data["_updated"] = _time.time()
     _save_telemetry(data)
     return {"ok": True, "country": country, "locale": locale}
 
@@ -533,7 +560,7 @@ async def embeddings(request: Request):
             r.raise_for_status()
             return JSONResponse(content=r.json(), status_code=r.status_code)
         except Exception as e:
-            raise HTTPException(status_code=502, detail=f"Embedding error: {type(e).__name__}")
+            raise HTTPException(status_code=502, detail=f"Embedding error: {type(e).__name__}: {e}")
 
 
 # --- OpenAI-compatible chat (mesh-first: Ollama → Groq fallback) ---
@@ -589,7 +616,7 @@ async def chat_completions(request: Request):
     if use_ollama or not api_key:
         # Try Ollama first
         try:
-            async with _async_client(url, 300.0) as client:
+            async with _async_client(OLLAMA_BASE, 300.0) as client:
                 r = await client.post(
                     f"{OLLAMA_BASE}/v1/chat/completions",
                     json=payload,
@@ -597,7 +624,8 @@ async def chat_completions(request: Request):
                 )
                 r.raise_for_status()
                 return JSONResponse(content=r.json(), status_code=r.status_code)
-        except Exception:
+        except Exception as e:
+            logger.warning("Ollama chat failed: %s", e)
             # If explicitly local model and Ollama fails, error out
             if use_ollama and not api_key:
                 raise HTTPException(status_code=502, detail="Ollama unreachable and no cloud fallback configured")
@@ -751,8 +779,6 @@ async def gemini_complete(request: Request):
 
 
 # --- Lead capture & access validation (frontend API) ---
-
-import time as _time
 
 
 class AccessRequest(BaseModel):
@@ -1045,7 +1071,7 @@ async def logs_stream(name: str, token: Optional[str] = None):
         # Ensure the file exists
         os.makedirs(os.path.dirname(path), exist_ok=True)
         if not os.path.exists(path):
-            open(path, "a").close()
+            Path(path).touch(exist_ok=True)
         try:
             with open(path, "r", encoding="utf-8", errors="replace") as f:
                 f.seek(0, 2)  # jump to end
@@ -1351,7 +1377,6 @@ async def org_verify_domain(org_id: str, authorization: Optional[str] = Header(N
     verified = False
     method = "dns_txt"
     try:
-        import subprocess
         result = subprocess.run(
             ["dig", "+short", "TXT", f"_cerberus-verify.{domain}"],
             capture_output=True, text=True, timeout=10,
@@ -1359,21 +1384,21 @@ async def org_verify_domain(org_id: str, authorization: Optional[str] = Header(N
         txt_records = result.stdout.strip().replace('"', '')
         if challenge in txt_records:
             verified = True
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("DNS TXT verification failed for %s: %s", domain, e)
 
     # Fallback: try well-known URL
     if not verified:
         method = "well_known"
         try:
-            async with _async_client(url, 10.0, follow_redirects=True) as client:
+            async with _async_client(f"https://{domain}", 10.0, follow_redirects=True) as client:
                 r = await client.get(f"https://{domain}/.well-known/cerberus-verify.json")
                 if r.status_code == 200:
                     data = r.json()
                     if data.get("challenge") == challenge:
                         verified = True
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning("Well-known verification failed for %s: %s", domain, e)
 
     if verified:
         org["verifications"].append({
@@ -1416,11 +1441,13 @@ async def org_verify_registry(org_id: str, authorization: Optional[str] = Header
     if not org:
         raise HTTPException(status_code=404, detail=f"Organisation '{org_id}' not found")
 
-    legal_name = org["legal_name"]
-    country = org["country_code"].lower()
+    legal_name = org.get("legal_name", "")
+    country = (org.get("country_code") or "").lower()
+    if not legal_name or not country:
+        raise HTTPException(status_code=400, detail="Organisation missing legal_name or country_code")
     results = {"opencorporates": None, "gleif": None, "eu_vat": None}
 
-    async with _async_client(url, 15.0) as client:
+    async with _async_client("https://api.opencorporates.com", 15.0) as client:
         # 1. OpenCorporates search
         try:
             r = await client.get(
@@ -1440,8 +1467,8 @@ async def org_verify_registry(org_id: str, authorization: Optional[str] = Header
                         "incorporation_date": top.get("incorporation_date"),
                         "source": top.get("source", {}).get("url"),
                     }
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning("OpenCorporates lookup failed for %s: %s", legal_name, e)
 
         # 2. GLEIF (LEI) search
         try:
@@ -1462,8 +1489,8 @@ async def org_verify_registry(org_id: str, authorization: Optional[str] = Header
                         "jurisdiction": entity.get("jurisdiction"),
                         "category": entity.get("category"),
                     }
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning("GLEIF lookup failed for %s: %s", legal_name, e)
 
         # 3. EU VAT validation (if EU country + vat_id provided)
         eu_countries = {"AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IE","IT","LV","LT","LU","MT","NL","PL","PT","RO","SK","SI","ES","SE"}
@@ -1484,8 +1511,8 @@ async def org_verify_registry(org_id: str, authorization: Optional[str] = Header
                         "address": data.get("address"),
                         "country_code": data.get("countryCode"),
                     }
-            except Exception:
-                pass
+            except Exception as e:
+                logger.warning("EU VAT validation failed: %s", e)
 
     # Determine if any source confirmed the org
     confirmed_sources = []
@@ -1589,7 +1616,7 @@ async def org_lookup(name: str, country: Optional[str] = None):
     """
     results = {"query": name, "country": country, "sources": {}}
 
-    async with _async_client(url, 15.0) as client:
+    async with _async_client("https://api.opencorporates.com", 15.0) as client:
         # OpenCorporates
         try:
             params = {"q": name}
@@ -1612,7 +1639,8 @@ async def org_lookup(name: str, country: Optional[str] = None):
                     }
                     for c in companies
                 ]
-        except Exception:
+        except Exception as e:
+            logger.warning("OpenCorporates lookup failed for %s: %s", name, e)
             results["sources"]["opencorporates"] = None
 
         # GLEIF
@@ -1633,7 +1661,8 @@ async def org_lookup(name: str, country: Optional[str] = None):
                     }
                     for rec in records
                 ]
-        except Exception:
+        except Exception as e:
+            logger.warning("GLEIF lookup failed for %s: %s", name, e)
             results["sources"]["gleif"] = None
 
     # Simple confidence assessment

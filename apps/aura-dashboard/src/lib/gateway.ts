@@ -171,6 +171,25 @@ export async function fetchServiceHealth(): Promise<{
   return res.json();
 }
 
+export async function fetchDistill(
+  url: string,
+  token: string | null = null
+): Promise<{ distilled?: string; error?: string }> {
+  const res = await fetch(`${getGatewayUrl()}/api/distill`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify({ url }),
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    return { error: err.error || `HTTP ${res.status}` };
+  }
+  return res.json();
+}
+
 export async function fetchRegionClusters(): Promise<{
   clusters: Array<{ country: string; locale: string; visits: number }>;
 }> {
