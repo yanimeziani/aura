@@ -118,6 +118,7 @@ TOR_CONTROL_PASSWORD = os.environ.get("AURA_TOR_CONTROL_PASSWORD", "")
 IPFS_API_URL = os.environ.get("AURA_IPFS_API_URL", "http://127.0.0.1:5001").rstrip("/")
 IPFS_GATEWAY_URL = os.environ.get("AURA_IPFS_GATEWAY_URL", "http://127.0.0.1:8080").rstrip("/")
 ROUTE_CLOUD_THROUGH_TOR = os.environ.get("AURA_ROUTE_CLOUD_THROUGH_TOR", "0").lower() in {"1", "true", "yes", "on"}
+AURA_ISOLATE_CLUSTER = os.environ.get("AURA_ISOLATE_CLUSTER", "0").lower() in {"1", "true", "yes", "on"}
 IPFS_MAX_CONTENT_BYTES = int(os.environ.get("AURA_IPFS_MAX_CONTENT_BYTES", str(512 * 1024)))
 _CID_RE = re.compile(r"^[A-Za-z0-9]+$")
 _AURA_ROOT = AURA_ROOT
@@ -439,6 +440,8 @@ class VisitPayload(BaseModel):
 @app.post("/telemetry/visit")
 def telemetry_visit(payload: VisitPayload):
     """Record a landing page visit by locale/country for region cluster view."""
+    if AURA_ISOLATE_CLUSTER:
+        return {"ok": False, "error": "Telemetry disabled: Local cluster isolated for sandboxed R&D."}
     locale = (payload.locale or "").strip() or "en-CA"
     country = (payload.country or "").strip().upper() or _default_country_from_locale(locale)
     if len(country) != 2:
@@ -472,6 +475,12 @@ def telemetry_regions():
 @app.get("/providers")
 def providers():
     v = load_vault()
+    if AURA_ISOLATE_CLUSTER:
+        return {
+            "providers": [
+                {"id": "ollama", "enabled": True, "openai_compatible": True, "mesh": True},
+            ]
+        }
     return {
         "providers": [
             {"id": "ollama", "enabled": True, "openai_compatible": True, "mesh": True},
@@ -607,6 +616,12 @@ async def chat_completions(request: Request):
     # Mesh-first: always try Ollama first for local models, or as primary path
     use_ollama = _is_local_model(model)
     api_key = _groq_key(vault)
+
+    # SANDBOXED R&D MODE: No cloud fallbacks allowed
+    if AURA_ISOLATE_CLUSTER:
+        if not use_ollama:
+             raise HTTPException(status_code=403, detail="Cloud provider blocked: Local cluster isolated for sandboxed R&D.")
+        api_key = None # Explicitly disable Groq fallback
 
     if model == "edge-default":
         model = _default_edge_model(vault)

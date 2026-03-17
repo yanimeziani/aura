@@ -47,12 +47,19 @@ Rules:
 - device trust is replaceable
 - identity must survive hardware replacement
 - high-impact actions require explicit HITL confirmation
-
 ## Layer 2: Transport and Routing
 
 Nexa must function over multiple transports without assuming a single trusted network.
 
+### Isolated Sandboxed R&D Mode
+To secure local research and development, the Nexa mesh can be placed into **Isolated Mode** (via `AURA_ISOLATE_CLUSTER=1`). In this state, the protocol enforces:
+- **Zero Egress:** All cloud provider fallbacks (Groq, Gemini, etc.) are explicitly blocked.
+- **Local Mesh Only:** Communication is restricted to local-mesh nodes (Ollama, IPFS local, Aura Edge).
+- **Telemetry Silence:** All landing visits and usage metrics are dropped to ensure no data leaves the air-gapped or LAN environment.
+
 ### Inference Routing (NVIDIA Foundation)
+...
+
 NVIDIA provides the high-performance primitives for **Sovereign Inference Routing**. By integrating NVIDIA NIM (Inference Microservices) and Triton Inference Server into the mesh, the protocol can dynamically route heavy reasoning tasks to GPU-accelerated nodes.
 - **CUDA/TensorRT Acceleration:** Native integration in the Cerberus runtime for ultra-low latency execution.
 - **NVLink Mesh:** Local clusters utilize high-speed interconnects for distributed model parallelization.
