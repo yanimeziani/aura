@@ -91,9 +91,6 @@ const LOCAL_DEFAULT_EMBEDDING_MODEL = 'nomic-embed-text';
 
 /**
  * Embeddings for RAG.
- * - local: uses LOCAL_API_BASE_URL + LOCAL_EMBEDDING_MODEL if set (e.g. nomic-embed-text, 768 dims).
- * - groq: no embeddings; when OPENAI_API_KEY is set uses OpenAI with 768 dimensions.
- * Otherwise returns null (RAG skips vector context).
  */
 export async function generateEmbedding(text: string): Promise<number[] | null> {
   if (PROVIDER === 'local') {
@@ -113,8 +110,27 @@ export async function generateEmbedding(text: string): Promise<number[] | null> 
     }
   }
 
+  // Check OpenRouter first if using it as provider
+  const orKey = process.env.OPENROUTER_API_KEY?.trim();
+  if (PROVIDER === 'openrouter' && orKey) {
+    try {
+      const openrouter = createOpenAI({ apiKey: orKey, baseURL: 'https://openrouter.ai/api/v1' });
+      const { embedding } = await embed({
+        model: openrouter.embedding('google/text-embedding-004'),
+        value: text,
+      });
+      return embedding;
+    } catch (e) {
+      console.error('OpenRouter embedding failed:', e);
+    }
+  }
+
   const key = process.env.OPENAI_API_KEY?.trim();
-  if (!key) return null;
+  if (!key) {
+    // Mock embedding for Pilot/Demo when no key is present to prevent crashes
+    console.warn('⚠️ No embedding key found. Using zero-vector mock for RAG.');
+    return new Array(EMBEDDING_DIMENSIONS).fill(0);
+  }
 
   try {
     const openai = createOpenAI({ apiKey: key });

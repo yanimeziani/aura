@@ -3,35 +3,80 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nexa Legacy Notice</title>
+<title>Aura Launch Documents</title>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0b0f14; color: #e8edf2; min-height: 100vh; display: grid; place-items: center; padding: 32px; }
-.card { max-width: 760px; width: 100%; background: #121821; border: 1px solid #233041; border-radius: 16px; padding: 32px; }
-h1 { font-size: 2rem; margin-bottom: 12px; }
-p { color: #a7b3c2; line-height: 1.6; margin-bottom: 16px; }
-.eyebrow { color: #60a5fa; font-size: 0.8rem; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 14px; }
-.link { display: inline-block; margin-top: 8px; color: #93c5fd; text-decoration: none; }
-.link:hover { text-decoration: underline; }
-.note { margin-top: 20px; padding-top: 20px; border-top: 1px solid #233041; font-size: 0.95rem; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; }
+.container { max-width: 800px; margin: 0 auto; padding: 60px 20px; }
+h1 { font-size: 2.5rem; color: #fff; margin-bottom: 8px; }
+.subtitle { color: #888; font-size: 1.1rem; margin-bottom: 48px; }
+.quote { color: #667; font-style: italic; margin-bottom: 40px; font-size: 0.95rem; }
+.doc-list { list-style: none; }
+.doc-item { background: #12121a; border: 1px solid #222; border-radius: 12px; padding: 24px; margin-bottom: 16px; transition: border-color 0.2s; }
+.doc-item:hover { border-color: #0066cc; }
+.doc-item a { text-decoration: none; color: inherit; display: block; }
+.doc-title { font-size: 1.2rem; color: #fff; margin-bottom: 6px; font-weight: 600; }
+.doc-desc { color: #888; font-size: 0.9rem; line-height: 1.5; }
+.doc-meta { color: #555; font-size: 0.8rem; margin-top: 8px; }
+.badge { display: inline-block; background: #0066cc22; color: #4499ff; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; margin-right: 6px; }
+footer { margin-top: 60px; padding-top: 20px; border-top: 1px solid #222; color: #555; font-size: 0.85rem; text-align: center; }
+footer a { color: #4499ff; text-decoration: none; }
 </style>
 </head>
 <body>
-  <main class="card">
-    <div class="eyebrow">Legacy Surface Retired</div>
-    <h1>Nexa Launch Documents moved</h1>
-    <p>
-      This `apps/web` launch surface is legacy and is no longer the canonical public documentation entrypoint.
-      The active Nexa launch and brand assets live under the maintained landing workspace.
-    </p>
-    <p>
-      Use the current launch surface and source corpus instead of the retired Aura-era assets that previously lived here.
-    </p>
-    <a class="link" href="/docs/nexa">Open the canonical Nexa docs bundle</a>
-    <p class="note">
-      For NotebookLM and downstream media generation, use the canonical bundle at <code>/docs/nexa</code> or the generated
-      <code>nexa-docs-notebooklm.txt</code> artifact.
-    </p>
-  </main>
+<div class="container">
+<h1>Aura Launch Documents</h1>
+<p class="subtitle">Sovereign Agentic Monorepo &mdash; Public Documentation</p>
+<p class="quote">"Hardware is ephemeral. Sovereignty is persistent."</p>
+
+<ul class="doc-list">
+
+<li class="doc-item">
+<a href="Aura_Sovereignty_Manifesto.pdf">
+<div class="doc-title">The Sovereignty Manifesto</div>
+<div class="doc-desc">The vision, philosophy, and architecture of Aura. Why sovereign AI matters, the Ephemeral Hardware Manifesto, and the ten-minute recovery protocol.</div>
+<div class="doc-meta"><span class="badge">Vision</span><span class="badge">Philosophy</span> For journalists, investors, researchers</div>
+</a>
+</li>
+
+<li class="doc-item">
+<a href="Aura_Technical_Architecture.pdf">
+<div class="doc-title">Technical Architecture</div>
+<div class="doc-desc">Deep dive into system design: Cerberus runtime, Zig edge layer, WireGuard mesh VPN, webhook engine, deployment architecture, and security model.</div>
+<div class="doc-meta"><span class="badge">Engineering</span><span class="badge">Security</span> For engineers and technical press</div>
+</a>
+</li>
+
+<li class="doc-item">
+<a href="Aura_Agent_Architecture.pdf">
+<div class="doc-title">Autonomous Agent Architecture</div>
+<div class="doc-desc">Career-Twin, SDR, and the HITL framework. How Aura agents operate autonomously while maintaining human oversight, cost discipline, and full accountability.</div>
+<div class="doc-meta"><span class="badge">AI Agents</span><span class="badge">Product</span> For AI practitioners and product teams</div>
+</a>
+</li>
+
+<li class="doc-item">
+<a href="Meziani_AI_Audit_Protocol.pdf">
+<div class="doc-title">The Meziani AI Audit Protocol</div>
+<div class="doc-desc">Commercial audit framework for transitioning organizations from vendor-locked AI to sovereign operations. Three-phase protocol with Dragun implementation.</div>
+<div class="doc-meta"><span class="badge">Commercial</span><span class="badge">Consulting</span> For organizations and decision-makers</div>
+</a>
+</li>
+
+<li class="doc-item">
+<a href="Aura_Research_Paper.pdf">
+<div class="doc-title">Research Paper</div>
+<div class="doc-desc">Academic treatment of the Aura architecture, building on Akasha 2 (arXiv:2601.06212). WireGuard in Zig, HITL frameworks, and the 10-minute sovereignty protocol.</div>
+<div class="doc-meta"><span class="badge">Academic</span><span class="badge">arXiv</span> For researchers and universities</div>
+</a>
+</li>
+
+</ul>
+
+<footer>
+<p>Yani Meziani &bull; <a href="https://aura.meziani.org">aura.meziani.org</a> &bull; ORCID: 0009-0007-4348-8711</p>
+<p style="margin-top:8px;">MIT License &bull; March 19, 2026</p>
+</footer>
+</div>
 </body>
 </html>

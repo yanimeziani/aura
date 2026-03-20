@@ -46,95 +46,23 @@ pub const Delta = struct {
     }
 };
 
-pub const Skill = struct {
-    id: []const u8,
-    name: []const u8,
-    category: []const u8, // "Carpentry", "Coding", "Electronics", etc.
-    difficulty: u8,
-    steps_count: u32,
-
-    pub fn format(self: Skill, comptime fmt: []const u8, options: std.fmt.FormatOptions, writer: anytype) !void {
-        _ = fmt; _ = options;
-        try writer.print(
-            \\{{"id":"{s}","name":"{s}","category":"{s}","difficulty":{d},"steps":{d}}}
-        , .{ self.id, self.name, self.category, self.difficulty, self.steps_count });
-    }
-};
-
-pub const CognitiveShield = struct {
-    is_active: bool,
-    manipulation_threshold: f32, // Seuil de détection de manipulation
-    protection_level: u8, // 0-100
-
-    pub fn checkContent(self: CognitiveShield, content_impact: f32) bool {
-        if (!self.is_active) return true;
-        return content_impact < self.manipulation_threshold;
-    }
-};
-
-pub const ContributionRole = enum {
-    Apprentice,
-    Journeyman,
-    Master,
-    Guardian, // Reserved for validated Elders (Gardiens du Savoir)
-    Architect, // Reserved for Yani Meziani and designated leads
-};
-
-pub const Contributor = struct {
-    id: []const u8,
-    role: ContributionRole,
-    verified_skills: u32, 
-    reputation_score: f32, 
-    cognitive_stability: f32, // Score d'intégrité mentale (0.0 - 1.0)
-
-    pub fn canLead(self: Contributor) bool {
-        // Le pouvoir exige une stabilité supérieure à 0.8
-        const has_integrity = self.cognitive_stability > 0.8;
-        return has_integrity and (self.role == .Master or self.role == .Guardian or self.role == .Architect);
-    }
-
-    pub fn format(self: Contributor, comptime fmt: []const u8, options: std.fmt.FormatOptions, writer: anytype) !void {
-        _ = fmt; _ = options;
-        try writer.print(
-            \\{{"id":"{s}","role":"{s}","skills":{d},"reputation":{d:.2},"stability":{d:.2}}}
-        , .{ self.id, @tagName(self.role), self.verified_skills, self.reputation_score, self.cognitive_stability });
-    }
-};
-
-pub const LearningState = struct {
-    student_id: []const u8,
-    skill_id: []const u8,
-    current_step: u32,
-    is_hands_on_verified: bool,
-    safety_rating: f32, 
-    cognitive_load: f32,
-    bio_stress_level: f32, // Surveiller l'impact physique (EMF/Fatigue)
-
-    pub fn format(self: LearningState, comptime fmt: []const u8, options: std.fmt.FormatOptions, writer: anytype) !void {
-        _ = fmt; _ = options;
-        try writer.print(
-            \\{{"student":"{s}","skill":"{s}","step":{d},"verified":{s},"safety":{d:.2},"mental_load":{d:.2},"bio_stress":{d:.2}}}
-        , .{ self.student_id, self.skill_id, self.current_step, if (self.is_hands_on_verified) "true" else "false", self.safety_rating, self.cognitive_load, self.bio_stress_level });
-    }
-};
-
 pub const WorldState = struct {
     allocator: std.mem.Allocator,
     regions: std.StringHashMap(Region),
-    skills: std.StringHashMap(Skill),
-    learning_progress: std.StringHashMap(LearningState),
     mutex: std.Thread.Mutex,
-    subscribers: std.ArrayList(std.net.Stream),
+    subscribers: [10]?std.net.Stream, // Simple fixed array for demo
 
     pub fn init(allocator: std.mem.Allocator) WorldState {
-        return .{
+        var self = WorldState{
             .allocator = allocator,
             .regions = std.StringHashMap(Region).init(allocator),
-            .skills = std.StringHashMap(Skill).init(allocator),
-            .learning_progress = std.StringHashMap(LearningState).init(allocator),
             .mutex = .{},
-            .subscribers = std.ArrayList(std.net.Stream).init(allocator),
+            .subscribers = undefined,
         };
+        for (&self.subscribers) |*sub| {
+            sub.* = null;
+        }
+        return self;
     }
 
     pub fn deinit(self: *WorldState) void {
@@ -144,49 +72,54 @@ pub const WorldState = struct {
             self.allocator.free(entry.value_ptr.owner_id);
         }
         self.regions.deinit();
-        self.subscribers.deinit();
     }
 
     pub fn subscribe(self: *WorldState, stream: std.net.Stream) !void {
         self.mutex.lock();
         defer self.mutex.unlock();
-        try self.subscribers.append(stream);
+        for (&self.subscribers) |*sub| {
+            if (sub.* == null) {
+                sub.* = stream;
+                return;
+            }
+        }
     }
 
     pub fn broadcast(self: *WorldState, delta: Delta) void {
         self.mutex.lock();
         defer self.mutex.unlock();
 
-        var i: usize = 0;
-        while (i < self.subscribers.items.len) {
-            const stream = self.subscribers.items[i];
-            var buf: [512]u8 = undefined;
-            const data = std.fmt.bufPrint(&buf, "data: {any}\n\n", .{delta}) catch {
-                _ = self.subscribers.swapRemove(i);
-                continue;
-            };
-            
-            stream.writeAll(data) catch {
-                _ = self.subscribers.swapRemove(i);
-                continue;
-            };
-            i += 1;
+        for (&self.subscribers) |*sub| {
+            if (sub.*) |stream| {
+                var buf: [512]u8 = undefined;
+                const data = std.fmt.bufPrint(&buf, "data: {any}\n\n", .{delta}) catch {
+                    sub.* = null;
+                    continue;
+                };
+                
+                stream.writeAll(data) catch {
+                    sub.* = null;
+                    continue;
+                };
+            }
         }
     }
 
-    pub fn serialize(self: *WorldState, writer: anytype) !void {
+    pub fn serialize(self: *WorldState, stream: std.net.Stream) !void {
         self.mutex.lock();
         defer self.mutex.unlock();
 
-        try writer.writeAll("{\"regions\":[");
+        try stream.writeAll("{\"regions\":[");
         var it = self.regions.iterator();
         var first = true;
         while (it.next()) |entry| {
-            if (!first) try writer.writeAll(",");
-            try writer.print("{any}", .{entry.value_ptr.*});
+            if (!first) try stream.writeAll(",");
+            var buf: [512]u8 = undefined;
+            const region_json = try std.fmt.bufPrint(&buf, "{any}", .{entry.value_ptr.*});
+            try stream.writeAll(region_json);
             first = false;
         }
-        try writer.writeAll("]}");
+        try stream.writeAll("]}");
     }
 
     pub fn seed(self: *WorldState) !void {

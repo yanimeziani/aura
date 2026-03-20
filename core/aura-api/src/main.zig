@@ -62,9 +62,9 @@ fn handleConnection(allocator: std.mem.Allocator, conn: net.Server.Connection) v
     } else if (std.mem.eql(u8, path, "/world/update")) {
         handleWorldUpdate(conn, request) catch return;
     } else if (std.mem.eql(u8, path, "/mesh")) {
-        handleMesh(allocator, conn) catch return;
+        handleMesh(conn) catch return;
     } else if (std.mem.eql(u8, path, "/providers")) {
-        handleProviders(allocator, conn) catch return;
+        handleProviders(conn) catch return;
     } else if (std.mem.startsWith(u8, path, "/sync/session")) {
         handleSession(allocator, conn, request, path, method) catch return;
     } else {
@@ -76,7 +76,7 @@ fn handleConnection(allocator: std.mem.Allocator, conn: net.Server.Connection) v
 
 fn handleWorldState(conn: net.Server.Connection) !void {
     try conn.stream.writeAll("HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nConnection: close\r\n\r\n");
-    try world_state.serialize(conn.stream.writer());
+    try world_state.serialize(conn.stream);
 }
 
 fn handleWorldStream(conn: net.Server.Connection) !void {
@@ -85,7 +85,7 @@ fn handleWorldStream(conn: net.Server.Connection) !void {
 
     while (true) {
         std.time.sleep(std.time.ns_per_s * 30);
-        sse.writeComment(conn.stream.writer(), "keep-alive") catch break;
+        sse.writeComment(conn.stream, "keep-alive") catch break;
     }
 }
 
@@ -106,7 +106,7 @@ fn handleWorldUpdate(conn: net.Server.Connection, request: []const u8) !void {
 
 // ── Existing Handlers (Ported) ────────────────────────────────────────────────
 
-fn handleMesh(allocator: std.mem.Allocator, conn: net.Server.Connection) !void {
+fn handleMesh(conn: net.Server.Connection) !void {
     const state = std.posix.getenv("AURA_MESH_STATE") orelse "stopped";
     const peers_str = std.posix.getenv("AURA_MESH_PEERS") orelse "0";
     const peers = std.fmt.parseInt(u32, peers_str, 10) catch 0;
@@ -118,8 +118,7 @@ fn handleMesh(allocator: std.mem.Allocator, conn: net.Server.Connection) !void {
     return writeJson(conn, 200, body);
 }
 
-fn handleProviders(allocator: std.mem.Allocator, conn: net.Server.Connection) !void {
-    _ = allocator;
+fn handleProviders(conn: net.Server.Connection) !void {
     const has_groq = std.posix.getenv("GROQ_API_KEY") != null;
     const has_gemini = std.posix.getenv("GEMINI_API_KEY") != null;
 

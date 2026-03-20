@@ -15,10 +15,13 @@ pub fn main() !void {
 
     var url: ?[]const u8 = null;
     var distill_mode = false;
+    var sync_mode = false;
 
     for (args[1..]) |arg| {
         if (std.mem.eql(u8, arg, "-d") or std.mem.eql(u8, arg, "--distill")) {
             distill_mode = true;
+        } else if (std.mem.eql(u8, arg, "-s") or std.mem.eql(u8, arg, "--sync")) {
+            sync_mode = true;
         } else if (url == null) {
             url = arg;
         }
@@ -29,7 +32,8 @@ pub fn main() !void {
         std.debug.print("Usage: aura-lynx <URL> [options]\n", .{});
         std.debug.print("Options:\n", .{});
         std.debug.print("  -d, --distill    Summarize content using Nexa Gateway\n", .{});
-        std.debug.print("Example: aura-lynx http://example.com --distill\n", .{});
+        std.debug.print("  -s, --sync       Sync distilled output to docs_inbox\n", .{});
+        std.debug.print("Example: aura-lynx http://example.com --distill --sync\n", .{});
         return;
     }
 
@@ -53,6 +57,20 @@ pub fn main() !void {
         };
         defer allocator.free(distilled);
         std.debug.print("\n=== DISTILLED CONTENT ===\n{s}\n", .{distilled});
+
+        if (sync_mode) {
+            const timestamp = std.time.timestamp();
+            const filename = std.fmt.allocPrint(allocator, "core/vault/docs_inbox/distilled_{d}.md", .{timestamp}) catch "distilled.md";
+            defer allocator.free(filename);
+            
+            if (std.fs.cwd().createFile(filename, .{})) |file| {
+                defer file.close();
+                file.writeAll(distilled) catch {};
+                std.debug.print("\n[Synced distilled content to {s}]\n", .{filename});
+            } else |err| {
+                std.debug.print("\n[Failed to sync to docs_inbox: {}]\n", .{err});
+            }
+        }
     } else {
         std.debug.print("\n{s}\n", .{text});
     }

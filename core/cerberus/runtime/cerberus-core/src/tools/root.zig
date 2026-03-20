@@ -94,6 +94,7 @@ pub const i2c = @import("i2c.zig");
 pub const spi = @import("spi.zig");
 pub const path_security = @import("path_security.zig");
 pub const process_util = @import("process_util.zig");
+pub const sentiment = @import("sentiment.zig");
 
 // ── Core types ──────────────────────────────────────────────────────
 
@@ -332,6 +333,10 @@ pub fn allTools(
     try list.append(allocator, gt.tool());
 
     // Tools without workspace_dir
+    const sem = try allocator.create(sentiment.SentimentTool);
+    sem.* = .{};
+    try list.append(allocator, sem.tool());
+
     const it = try allocator.create(image.ImageInfoTool);
     it.* = .{};
     try list.append(allocator, it.tool());

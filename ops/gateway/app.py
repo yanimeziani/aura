@@ -73,11 +73,13 @@ from aura_runtime import (
     vault_file,
 )
 
+app = FastAPI(title="Nexa Gateway")
+
 class DistillRequest(BaseModel):
     url: str
 
 @app.post("/api/distill")
-async fn api_distill(req: DistillRequest):
+async def api_distill(req: DistillRequest):
     """Run aura-lynx --distill for the given URL."""
     try:
         # Build aura-lynx if it doesn't exist or is stale
