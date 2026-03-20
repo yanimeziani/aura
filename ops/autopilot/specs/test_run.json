@@ -1,0 +1,19 @@
+{
+  "name": "Test Run",
+  "version": "1.0.0",
+  "duration_hours": 0.1,
+  "methodology": "BMAD (Build, Measure, Analyze, Decide)",
+  "targets": [
+    {
+      "id": "test-target",
+      "path": ".",
+      "build_command": "echo 'Building...'",
+      "measure_commands": [
+        "echo 'Measuring...'",
+        "date"
+      ],
+      "metrics": ["time"]
+    }
+  ],
+  "parallel_workers": 2
+}

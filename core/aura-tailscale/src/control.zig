@@ -77,7 +77,7 @@ pub const ControlClient = struct {
     /// Generates a new KeyPair and (ideally) updates control plane.
     pub fn rotateKey(self: *ControlClient) void {
         self.node_key = wireguard.KeyPair.generate();
-        std.log.info("Key rotated. New pubkey: {s}", .{std.fmt.fmtSliceHexLower(&self.node_key.public)});
+        std.log.info("Key rotated. New pubkey: {x}", .{self.node_key.public});
     }
 };
 

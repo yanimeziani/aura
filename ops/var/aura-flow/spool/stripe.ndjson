@@ -1,3 +1,0 @@
-{"event_id":"evt_test","event_type":"test"}
-{"event_id":"evt_1","event_type":"checkout.session.completed"}
-{"event_type":"payment_intent.succeeded","event_id":"pi_123"}

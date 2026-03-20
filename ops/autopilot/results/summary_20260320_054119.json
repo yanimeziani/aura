@@ -1,0 +1,53 @@
+{
+  "spec": "Test Run",
+  "timestamp": "2026-03-20T05:41:19.926843+00:00",
+  "results": [
+    {
+      "id": "test-target",
+      "path": ".",
+      "status": "completed",
+      "phases": {
+        "build": {
+          "rc": 0,
+          "stdout": "Building...\n",
+          "stderr": "",
+          "duration": 0.016833066940307617,
+          "success": true
+        },
+        "measure": {
+          "success": true,
+          "results": [
+            {
+              "command": "echo 'Measuring...'",
+              "result": {
+                "rc": 0,
+                "stdout": "Measuring...\n",
+                "stderr": "",
+                "duration": 0.015811681747436523,
+                "success": true
+              }
+            },
+            {
+              "command": "date",
+              "result": {
+                "rc": 0,
+                "stdout": "Fri Mar 20 05:41:19 AM UTC 2026\n",
+                "stderr": "",
+                "duration": 0.03101038932800293,
+                "success": true
+              }
+            }
+          ]
+        },
+        "analyze": {
+          "timestamp": "2026-03-20T05:41:19.922692+00:00",
+          "findings": []
+        },
+        "decide": {
+          "decision": "PASS: Ready for deployment/integration"
+        }
+      },
+      "metrics": {}
+    }
+  ]
+}

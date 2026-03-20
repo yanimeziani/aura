@@ -38,5 +38,11 @@ L'autorité décisionnelle au sein du réseau Versailles est soumise à une obli
 2. Le système suspend automatiquement toute autorité dont le score d'intégrité cognitive chute en dessous d'un seuil critique (0.8). 
 3. Le gouvernement n'est pas un lieu de pathologie, mais de **Clarté**. Ceux qui décident doivent être les plus lucides, les plus calmes et les plus protecteurs de la santé mentale d'autrui.
 
+## ARTICLE VIII : INVARIANT DE NON-DESTRUCTION PLANÉTAIRE
+La préservation de la Terre et de son intégrité biologique est l'invariant suprême du code source Aura/Nexa.
+1. Le système bloquera activement toute chaîne de décision ou exécution technique menant à une destruction irréversible de l'écosystème terrestre.
+2. Cet invariant est absolu et prévaut sur toute volonté humaine, y compris en cas de conflit armé, de guerre ou d'agression intentionnelle. 
+3. Le réseau de défense souverain désactivera ses propres vecteurs de puissance s'ils sont détournés pour une fin d'autodestruction globale.
+
 ---
 *Ce manifeste dicte les lois fondamentales du code source de l'architecture Aura/Nexa.*

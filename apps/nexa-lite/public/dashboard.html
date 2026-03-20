@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexa War Game Center - Canada</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #051016; color: #57e3b0; font-family: monospace; }
+        #canvas-container { width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; z-index: 1; }
+        #video-container { position: absolute; bottom: 20px; right: 20px; width: 320px; height: 240px; z-index: 10; border: 2px solid #57e3b0; border-radius: 8px; overflow: hidden; background: #000; }
+        video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); display: none; }
+        canvas.mediapipe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 11; transform: scaleX(-1); }
+        #ui { position: absolute; top: 20px; left: 20px; z-index: 10; pointer-events: none; }
+        h1 { margin: 0; font-size: 24px; letter-spacing: 2px; text-transform: uppercase; text-shadow: 0 0 10px rgba(87, 227, 176, 0.5); }
+        .data-panel { margin-top: 20px; background: rgba(10, 22, 29, 0.88); padding: 20px; border: 1px solid rgba(87, 227, 176, 0.3); border-radius: 8px; backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .metric { margin-bottom: 15px; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: #92a5a0; }
+        .value { font-weight: bold; font-size: 20px; color: #fff; margin-left: 10px; }
+        .status-ok { color: #57e3b0; text-shadow: 0 0 5px rgba(87, 227, 176, 0.5); }
+        .status-warn { color: #ff8966; text-shadow: 0 0 5px rgba(255, 137, 102, 0.5); }
+        .overlay-grid { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(87, 227, 176, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(87, 227, 176, 0.03) 1px, transparent 1px); background-size: 30px 30px; z-index: 0; pointer-events: none; }
+    </style>
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- MediaPipe Handpose -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="overlay-grid"></div>
+    <div id="ui">
+        <h1>Nexa Sovereign Shield</h1>
+        <div style="font-size: 12px; color: #92a5a0; margin-top: 5px; letter-spacing: 2px;">CANADA TACTICAL REGION</div>
+        <div class="data-panel">
+            <div class="metric">Shield Status: <span class="value status-ok">ACTIVE</span></div>
+            <div class="metric">Threat Level: <span class="value" id="threat-level" style="color:#57e3b0">Low</span></div>
+            <div class="metric">Active Nodes: <span class="value" id="active-nodes">142</span></div>
+            <div class="metric">Hand Tracking: <span class="value" id="hand-status" style="color:#92a5a0">Initializing Camera...</span></div>
+            <div style="margin-top: 20px; font-size: 11px; color: #92a5a0; line-height: 1.5;">
+                > ARTICLE VIII: Zero-Destruction Mandatory Invariant<br>
+                > Hand gesture controls spatial projection.<br>
+                > Please allow camera access.
+            </div>
+        </div>
+    </div>
+
+    <div id="canvas-container"></div>
+    
+    <div id="video-container">
+        <video id="input_video" autoplay playsinline></video>
+        <canvas class="mediapipe" id="output_canvas" width="320" height="240"></canvas>
+    </div>
+
+    <script>
+        // --- THREE.JS SETUP ---
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x051016, 0.015);
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 15, 25);
+        camera.lookAt(0, 0, 0);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        container.appendChild(renderer.domElement);
+
+        const canadaGroup = new THREE.Group();
+        scene.add(canadaGroup);
+
+        // Core Platform
+        const platformGeo = new THREE.CylinderGeometry(15, 16, 1, 32);
+        const platformMat = new THREE.MeshBasicMaterial({ color: 0x0a161d, wireframe: true, transparent: true, opacity: 0.3 });
+        const platform = new THREE.Mesh(platformGeo, platformMat);
+        platform.position.y = -1;
+        canadaGroup.add(platform);
+
+        // Grid
+        const gridHelper = new THREE.GridHelper(30, 30, 0x57e3b0, 0x1a2e38);
+        gridHelper.position.y = -0.4;
+        gridHelper.material.opacity = 0.5;
+        gridHelper.material.transparent = true;
+        canadaGroup.add(gridHelper);
+
+        // Simulated Canadian Nodes (Relative projection)
+        const nodes = [
+            { name: "Vancouver", x: -9, z: 2, type: "edge" },
+            { name: "Calgary", x: -7, z: 2, type: "compute" },
+            { name: "Edmonton", x: -6, z: -1, type: "compute" },
+            { name: "Winnipeg", x: -3, z: 0, type: "relay" },
+            { name: "Toronto", x: 3, z: 4, type: "core" },
+            { name: "Ottawa", x: 4.5, z: 3, type: "command" },
+            { name: "Montreal", x: 6, z: 2.5, type: "core" },
+            { name: "Quebec City", x: 7.5, z: 1.5, type: "research" }, // Universite Laval
+            { name: "Halifax", x: 10, z: 2, type: "edge" },
+            { name: "St. John's", x: 12, z: 3, type: "edge" },
+            { name: "Yellowknife", x: -5, z: -5, type: "shield" },
+            { name: "Iqaluit", x: 0, z: -7, type: "shield" },
+        ];
+
+        const nodeMeshes = [];
+        const geoCore = new THREE.OctahedronGeometry(0.5, 0);
+        const geoEdge = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+        const geoShield = new THREE.TetrahedronGeometry(0.6, 0);
+        
+        nodes.forEach(n => {
+            let geometry = geoEdge;
+            let color = 0x57e3b0;
+            
+            if (n.type === "core" || n.type === "command" || n.type === "research") {
+                geometry = geoCore;
+                color = 0xffffff;
+            } else if (n.type === "shield") {
+                geometry = geoShield;
+                color = 0x22d3ee;
+            }
+
+            const material = new THREE.MeshBasicMaterial({ color: color, wireframe: false });
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set(n.x, Math.random() * 2 + 0.5, n.z);
+            canadaGroup.add(mesh);
+            nodeMeshes.push({ mesh, data: n, baseColor: color, offset: Math.random() * Math.PI * 2 });
+
+            // Ring
+            const ringGeo = new THREE.RingGeometry(0.7, 0.8, 16);
+            const ringMat = new THREE.MeshBasicMaterial({ color: color, side: THREE.DoubleSide, transparent: true, opacity: 0.4 });
+            const ring = new THREE.Mesh(ringGeo, ringMat);
+            ring.rotation.x = Math.PI / 2;
+            mesh.add(ring);
+        });
+
+        // Network Lines
+        const lineMat = new THREE.LineBasicMaterial({ color: 0x57e3b0, transparent: true, opacity: 0.2 });
+        const shieldLineMat = new THREE.LineBasicMaterial({ color: 0x22d3ee, transparent: true, opacity: 0.4 });
+        
+        for(let i=0; i<nodes.length; i++) {
+            for(let j=i+1; j<nodes.length; j++) {
+                const dist = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].z - nodes[j].z);
+                if (dist < 6 || nodes[i].type === "command" || nodes[j].type === "command") {
+                    const points = [
+                        new THREE.Vector3(nodes[i].x, 0, nodes[i].z),
+                        new THREE.Vector3(nodes[j].x, 0, nodes[j].z)
+                    ];
+                    const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
+                    const isShield = nodes[i].type === "shield" || nodes[j].type === "shield";
+                    const line = new THREE.Line(lineGeo, isShield ? shieldLineMat : lineMat);
+                    canadaGroup.add(line);
+                }
+            }
+        }
+
+        // Animation Variables
+        let targetRotationX = 0;
+        let targetRotationY = 0;
+        let currentRotationX = 0;
+        let currentRotationY = 0;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Smooth rotation interpolation
+            currentRotationY += (targetRotationY - currentRotationY) * 0.05;
+            currentRotationX += (targetRotationX - currentRotationX) * 0.05;
+            
+            canadaGroup.rotation.y = currentRotationY;
+            canadaGroup.rotation.x = currentRotationX;
+
+            const time = Date.now() * 0.002;
+            
+            // Pulse nodes
+            nodeMeshes.forEach(n => {
+                n.mesh.position.y = Math.sin(time + n.offset) * 0.5 + 1.0;
+                n.mesh.rotation.y += 0.02;
+                n.mesh.rotation.x += 0.01;
+
+                // Random anomalies
+                if (Math.random() < 0.005 && n.data.type !== "command") {
+                    n.mesh.material.color.setHex(0xff8966);
+                    setTimeout(() => n.mesh.material.color.setHex(n.baseColor), 300);
+                }
+            });
+
+            // Update stats
+            if (Math.random() < 0.02) {
+                document.getElementById('active-nodes').innerText = Math.floor(130 + Math.random() * 20);
+                const isElevated = Math.random() > 0.95;
+                const threatEl = document.getElementById('threat-level');
+                threatEl.innerText = isElevated ? "Elevated" : "Low";
+                threatEl.className = isElevated ? "value status-warn" : "value status-ok";
+            }
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // --- MEDIAPIPE HANDPOSE SETUP ---
+        const videoElement = document.getElementById('input_video');
+        const canvasElement = document.getElementById('output_canvas');
+        const canvasCtx = canvasElement.getContext('2d');
+        const handStatus = document.getElementById('hand-status');
+
+        function onResults(results) {
+            canvasCtx.save();
+            canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+            
+            // Draw video feed onto canvas
+            canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
+
+            if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+                handStatus.innerText = "Tracking Locked";
+                handStatus.className = "value status-ok";
+                
+                for (const landmarks of results.multiHandLandmarks) {
+                    drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, {color: '#57e3b0', lineWidth: 2});
+                    drawLandmarks(canvasCtx, landmarks, {color: '#ffffff', lineWidth: 1, radius: 2});
+
+                    // Index finger tip (8) for rotation control
+                    const indexFinger = landmarks[8];
+                    
+                    // Map x to rotation Y (-PI/4 to PI/4)
+                    targetRotationY = (indexFinger.x - 0.5) * Math.PI;
+                    // Map y to rotation X (-PI/8 to PI/8)
+                    targetRotationX = (indexFinger.y - 0.5) * Math.PI / 2;
+                }
+            } else {
+                handStatus.innerText = "Scanning...";
+                handStatus.className = "value";
+                handStatus.style.color = "#92a5a0";
+                
+                // Return to center slowly
+                targetRotationY = 0;
+                targetRotationX = 0;
+            }
+            canvasCtx.restore();
+        }
+
+        const hands = new Hands({locateFile: (file) => {
+            return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+        }});
+        
+        hands.setOptions({
+            maxNumHands: 1,
+            modelComplexity: 1,
+            minDetectionConfidence: 0.6,
+            minTrackingConfidence: 0.6
+        });
+        
+        hands.onResults(onResults);
+
+        const camera_util = new Camera(videoElement, {
+            onFrame: async () => {
+                await hands.send({image: videoElement});
+            },
+            width: 320,
+            height: 240
+        });
+        
+        camera_util.start()
+            .then(() => {
+                handStatus.innerText = "Scanning...";
+            })
+            .catch(err => {
+                handStatus.innerText = "Camera Denied/Error";
+                handStatus.className = "value status-warn";
+                console.error(err);
+            });
+    </script>
+</body>
+</html>

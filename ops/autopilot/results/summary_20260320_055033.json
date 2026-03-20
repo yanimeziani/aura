@@ -1,0 +1,89 @@
+{
+  "spec": null,
+  "timestamp": "2026-03-20T05:50:33.002323+00:00",
+  "results": [
+    {
+      "id": "zig-sister-repo",
+      "path": "/root/.local/zig-aarch64-linux-0.15.2",
+      "status": "completed",
+      "phases": {
+        "build": {
+          "rc": 0,
+          "stdout": "0.15.2\n",
+          "stderr": "",
+          "duration": 0.014516592025756836,
+          "success": true
+        },
+        "measure": {
+          "success": true,
+          "results": [
+            {
+              "command": "zig zen",
+              "result": {
+                "rc": 0,
+                "stdout": "\n * Communicate intent precisely.\n * Edge cases matter.\n * Favor reading code over writing code.\n * Only one obvious way to do things.\n * Runtime crashes are better than bugs.\n * Compile errors are better than runtime crashes.\n * Incremental improvements.\n * Avoid local maximums.\n * Reduce the amount one must remember.\n * Focus on code rather than style.\n * Resource allocation may fail; resource deallocation must succeed.\n * Memory is a resource.\n * Together we serve the users.\n\n",
+                "stderr": "",
+                "duration": 0.0170135498046875,
+                "success": true
+              }
+            }
+          ]
+        },
+        "analyze": {
+          "timestamp": "2026-03-20T05:50:32.943228+00:00",
+          "findings": [
+            "Potential issues found in command: zig zen"
+          ]
+        },
+        "decide": {
+          "decision": "PASS: Ready for deployment/integration"
+        }
+      },
+      "metrics": {}
+    },
+    {
+      "id": "cerberus-core",
+      "path": "/root/core/cerberus",
+      "status": "completed",
+      "phases": {
+        "build": {
+          "rc": 1,
+          "stdout": "",
+          "stderr": "info: initialize build.zig template file with 'zig init'\ninfo: see 'zig --help' for more options\nerror: no build.zig file found, in the current directory or any parent directories\n",
+          "duration": 0.046884775161743164,
+          "success": false
+        },
+        "analyze": {
+          "timestamp": "2026-03-20T05:50:32.991089+00:00",
+          "findings": []
+        },
+        "decide": {
+          "decision": "FAIL: Build failure requires immediate attention"
+        }
+      },
+      "metrics": {}
+    },
+    {
+      "id": "pegasus-mobile",
+      "path": "/root/apps/pegasus-mobile",
+      "status": "completed",
+      "phases": {
+        "build": {
+          "rc": 127,
+          "stdout": "",
+          "stderr": "/bin/sh: 1: ./gradlew: not found\n",
+          "duration": 0.009042024612426758,
+          "success": false
+        },
+        "analyze": {
+          "timestamp": "2026-03-20T05:50:33.000977+00:00",
+          "findings": []
+        },
+        "decide": {
+          "decision": "FAIL: Build failure requires immediate attention"
+        }
+      },
+      "metrics": {}
+    }
+  ]
+}

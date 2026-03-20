@@ -12,21 +12,62 @@
   --radius: 18px;
   --font-ui: "IBM Plex Sans", "Segoe UI", sans-serif;
   --font-mono: "IBM Plex Mono", "SFMono-Regular", monospace;
+  --liquid-silver: linear-gradient(135deg, #cfd9df 0%, #e2ebf0 100%);
 }
 
 * {
   box-sizing: border-box;
 }
 
+@keyframes liquid-flow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.metallic-liquid {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  z-index: -1;
+  background: linear-gradient(-45deg, #07131a, #0e2028, #1a2e38, #07131a);
+  background-size: 400% 400%;
+  animation: liquid-flow 15s ease infinite;
+  opacity: 0.6;
+}
+
+.metallic-overlay {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  z-index: -1;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3%3Cfilter id='noiseFilter'%3%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3%3C/filter%3%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3%3C/svg%3e");
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+}
+
 html, body {
   margin: 0;
   min-height: 100%;
-  background:
-    radial-gradient(circle at top left, rgba(87, 227, 176, 0.18), transparent 28%),
-    radial-gradient(circle at bottom right, rgba(134, 255, 208, 0.12), transparent 24%),
-    linear-gradient(180deg, #051016 0%, #08161d 45%, #061117 100%);
+  background: #051016;
   color: var(--text);
   font-family: var(--font-ui);
+  overflow-x: hidden;
+}
+
+#canvas-container {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #000;
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+#aura-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 body {

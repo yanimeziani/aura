@@ -1,0 +1,48 @@
+{
+  "run_name": "Global Parity Audit",
+  "targets": [
+    {
+      "id": "zig-sister-repo",
+      "name": "zig-sister-repo",
+      "path": "/root/.local/zig-aarch64-linux-0.15.2",
+      "build_command": "zig version",
+      "measure_commands": [
+        "zig zen"
+      ],
+      "analysis_rules": [
+        "version_check >= 0.15.2"
+      ]
+    },
+    {
+      "id": "cerberus-core",
+      "name": "cerberus-core",
+      "path": "/root/core/cerberus",
+      "build_command": "zig build",
+      "measure_commands": [
+        "zig build test"
+      ],
+      "analysis_rules": [
+        "coverage > 80",
+        "no_todo"
+      ]
+    },
+    {
+      "id": "pegasus-mobile",
+      "name": "pegasus-mobile",
+      "path": "/root/apps/pegasus-mobile",
+      "build_command": "./gradlew assembleDebug",
+      "measure_commands": [
+        "./gradlew test"
+      ],
+      "analysis_rules": [
+        "biometric_enforcement == true",
+        "nord_theme_active == true"
+      ]
+    }
+  ],
+  "global_metrics": {
+    "duration_target_seconds": 14400,
+    "parallel_workers": 4,
+    "sanitization_check": true
+  }
+}

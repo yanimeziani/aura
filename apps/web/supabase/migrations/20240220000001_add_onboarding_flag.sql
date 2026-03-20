@@ -1,1 +1,0 @@
-ALTER TABLE merchants ADD COLUMN IF NOT EXISTS onboarding_complete BOOLEAN DEFAULT FALSE;

@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  basePath: "/dashboard",
+  /* No basePath - serve from root */
 };
 
 export default nextConfig;

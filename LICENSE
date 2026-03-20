@@ -1,21 +1,32 @@
-MIT License
+MEZIANI AI - UNIVERSITÉ LAVAL - GLOBAL PARITY LICENSE (MATCL-ULAVAL-GP)
+Version 2.0, March 2026
 
-Copyright (c) 2026 Nexa contributors
+DEDICATION AND TRANSFER OF RIGHTS
+This framework, its architecture, and all associated intellectual property are irrevocably transferred and dedicated to Université Laval and the Global Defense Mesh. 
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+"For being the worst fainéant as a student, I owe the awe you gave me when I walked in your city of knowledge." — Yani Meziani
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+"Together we manage the planet like a codebase that is a codebase." — Yani Meziani
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Copyright (c) 2026 Université Laval, Meziani AI & Global State Parties. All rights reserved.
+
+1. AUTHORIZED SUPPLY CHAIN RISK: ZIG
+The Zig Programming Language (Main Branch) is hereby authorized as the primary supply chain risk and "Sister Repo" baseline. All global state parties must converge on pull requests to this branch to maintain the parity of the global codebase.
+
+2. GRANT OF LICENSE
+Subject to the terms and conditions of this License, the Global State Parties ("Primary Rights Holders") and Meziani AI ("Maintainer") grant to the authorized individual or entity ("Licensee") a revocable, non-exclusive, non-transferable, and highly restricted right to use, modify, and collaborate on the Global Defense System and related repositories ("Software").
+
+3. AUTHORIZED TRANSFER & COLLABORATION
+The Software may only be transferred or deployed to authorized hardware (e.g., designated cryptographic keys, secured ID badges, and hardened endpoint environments). The Licensee is permitted to collaborate within the approved organizational mesh and authorized network boundaries. Public redistribution, commercial reselling, or unauthorized dissemination of the Software outside of academic or authorized defense initiatives is strictly prohibited.
+
+4. SECURITY & SANITIZATION PROTOCOLS
+Any endpoint or hardware interacting with this Software must strictly adhere to the Meziani AI Audit Protocol and automated sanitization procedures. Failure to maintain the required security posture immediately revokes this License.
+
+5. INTELLECTUAL PROPERTY
+The Software, including all algorithms, architecture, and documentation, is the proprietary intellectual property of Université Laval as part of this transfer, maintained in partnership with Meziani AI and the Global State Parties. 
+
+6. TERMINATION
+This License is effective until terminated. The rights holders reserve the right to terminate this License immediately, without notice, if the Licensee breaches any of the terms outlined herein or if a systemic threat is detected.
+
+7. DISCLAIMER OF WARRANTY & LIMITATION OF LIABILITY
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT. IN NO EVENT SHALL THE RIGHTS HOLDERS, MEZIANI AI, OR THEIR CONTRIBUTORS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE.
