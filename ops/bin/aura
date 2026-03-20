@@ -183,8 +183,8 @@ case "$CMD" in
         fi
         echo ""
         echo "Health Report:"
-        if [ -f "$AURA_ROOT/core/wealth/watchdog_state.json" ]; then
-            cat "$AURA_ROOT/core/wealth/watchdog_state.json"
+        if [ -f "$AURA_ROOT/apps/wealth/watchdog_state.json" ]; then
+            cat "$AURA_ROOT/apps/wealth/watchdog_state.json"
         elif [ -f "$AURA_ROOT/ai_agency_wealth/watchdog_state.json" ]; then
              cat "$AURA_ROOT/ai_agency_wealth/watchdog_state.json"
         else
@@ -199,8 +199,8 @@ case "$CMD" in
         else
              echo "Systemd is not available to start services as daemons."
              echo "Run the services manually if needed:"
-             echo " - Autopilot: cd $AURA_ROOT/core/wealth && ./autopilot.sh"
-             echo " - AI Pay: cd $AURA_ROOT/core/wealth && ./run_server.sh"
+             echo " - Autopilot: cd $AURA_ROOT/apps/wealth && ./autopilot.sh"
+             echo " - AI Pay: cd $AURA_ROOT/apps/wealth && ./run_server.sh"
              echo " - AI Web: cd $AURA_ROOT/apps/web && npm run dev"
         fi
         ;;
@@ -214,11 +214,11 @@ case "$CMD" in
         fi
         ;;
     vault)
-        python3 "$AURA_ROOT/core/vault/vault_manager.py"
+        python3 "$AURA_ROOT/vault/vault_manager.py"
         ;;
     logs)
-        if [ -f "$AURA_ROOT/core/wealth/agency_metrics.log" ]; then
-            tail -f "$AURA_ROOT/core/wealth/agency_metrics.log"
+        if [ -f "$AURA_ROOT/apps/wealth/agency_metrics.log" ]; then
+            tail -f "$AURA_ROOT/apps/wealth/agency_metrics.log"
         elif [ -f "$AURA_ROOT/ai_agency_wealth/agency_metrics.log" ]; then
             tail -f "$AURA_ROOT/ai_agency_wealth/agency_metrics.log"
         else
@@ -300,15 +300,15 @@ case "$CMD" in
         case "$VOICE_CMD" in
             transcribe)
                 shift
-                exec python3 "$AURA_ROOT/core/vault/voice_ingress.py" transcribe "$@"
+                exec python3 "$AURA_ROOT/vault/voice_ingress.py" transcribe "$@"
                 ;;
             listen)
                 shift
-                exec python3 "$AURA_ROOT/core/vault/voice_ingress.py" listen "$@"
+                exec python3 "$AURA_ROOT/vault/voice_ingress.py" listen "$@"
                 ;;
             show)
                 shift
-                exec python3 "$AURA_ROOT/core/vault/voice_ingress.py" show "$@"
+                exec python3 "$AURA_ROOT/vault/voice_ingress.py" show "$@"
                 ;;
             start)
                 if command -v systemctl >/dev/null 2>&1 && systemctl --user is-system-running >/dev/null 2>&1; then
@@ -317,7 +317,7 @@ case "$CMD" in
                 else
                     echo "User-level Systemd not available. Starting voice ingress manually in background..."
                     mkdir -p "$AURA_ROOT/.aura/logs"
-                    nohup python3 "$AURA_ROOT/core/vault/voice_ingress.py" listen > "$AURA_ROOT/.aura/logs/voice.log" 2>&1 &
+                    nohup python3 "$AURA_ROOT/vault/voice_ingress.py" listen > "$AURA_ROOT/.aura/logs/voice.log" 2>&1 &
                     echo "✅ Voice ingress started in background (PID $!)."
                 fi
                 ;;

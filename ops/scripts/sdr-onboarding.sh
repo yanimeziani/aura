@@ -36,7 +36,7 @@ echo "✅ Campaign file created at $CAMP_FILE"
 echo ""
 
 echo "Step 2: Connecting the SMTP Gateway (Resend)"
-if grep -q "RESEND_API_KEY" /root/core/vault/vault_manager.py; then
+if grep -q "RESEND_API_KEY" /root/vault/vault_manager.py; then
     echo "✅ Resend integration detected in vault."
 else
     echo "⚠️ Warning: Please configure RESEND_API_KEY in the vault."

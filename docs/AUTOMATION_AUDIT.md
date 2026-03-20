@@ -70,9 +70,9 @@ Concrete measures:
 | Concern | Location |
 |---------|----------|
 | Deploy mesh | `ops/scripts/deploy-mesh.sh`, `.github/workflows/deploy-mesh.yml` |
-| Backup + route to largest node | `ops/scripts/backup-dynamic-then-delete.sh`, `core/vault/backup-nodes.json` |
+| Backup + route to largest node | `ops/scripts/backup-dynamic-then-delete.sh`, `vault/backup-nodes.json` |
 | Gateway APIs | `ops/gateway/app.py` |
 | Operator UI | `apps/aura-dashboard/src/` |
-| Vault + token rotation | `core/vault/vault_manager.py` |
+| Vault + token rotation | `vault/vault_manager.py` |
 | Catch-up (phone back) | `GET /sync/catch-up`, dashboard visibility handler |
 | Backup nodes API | `GET /api/backup/nodes` |

@@ -5,7 +5,7 @@ include_dirs = [
     "docs",
     "core/cerberus/specs",
     "core/cerberus/runbooks",
-    "core/vault",
+    "vault",
     "apps/web",
     "apps/mobile",
     "apps/aura-landing-next",

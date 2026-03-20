@@ -1,0 +1,25 @@
+{
+  "last_update": "2026-03-19T22:45:28.402743",
+  "nodes": {
+    "vps-primary": {
+      "ip": "127.0.0.1",
+      "status": "offline",
+      "last_seen": "N/A"
+    },
+    "z-fold-5": {
+      "ip": "100.64.0.5",
+      "status": "offline",
+      "last_seen": "N/A"
+    },
+    "jetson-edge": {
+      "ip": "100.64.0.10",
+      "status": "offline",
+      "last_seen": "N/A"
+    },
+    "rtx-server": {
+      "ip": "100.64.0.20",
+      "status": "offline",
+      "last_seen": "N/A"
+    }
+  }
+}

@@ -44,19 +44,19 @@ NEXA_ROOT="${NEXA_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 NEXA_BACKUP_DIR="${NEXA_BACKUP_DIR:-$(first_existing_path "$NEXA_ROOT/.nexa/backups" "$NEXA_ROOT/backups")}"
 NEXA_LOG_DIR="${NEXA_LOG_DIR:-$(first_existing_path "$NEXA_ROOT/logs" "$NEXA_ROOT/.nexa/logs")}"
 NEXA_DATA_DIR="${NEXA_DATA_DIR:-$(first_existing_path "$NEXA_ROOT/data" "$NEXA_ROOT/.nexa/data")}"
-NEXA_VAULT_DIR="${NEXA_VAULT_DIR:-$(first_existing_path "$NEXA_ROOT/core/vault" "$NEXA_ROOT/vault")}"
-NEXA_DOCS_INBOX_DIR="${NEXA_DOCS_INBOX_DIR:-$(first_existing_path "$NEXA_ROOT/core/vault/docs_inbox" "$NEXA_ROOT/vault/docs_inbox")}"
+NEXA_VAULT_DIR="${NEXA_VAULT_DIR:-$(first_existing_path "$NEXA_ROOT/vault" "$NEXA_ROOT/vault")}"
+NEXA_DOCS_INBOX_DIR="${NEXA_DOCS_INBOX_DIR:-$(first_existing_path "$NEXA_ROOT/vault/docs_inbox" "$NEXA_ROOT/vault/docs_inbox")}"
 
 # Dynamic paths (same env names as gateway / session_store where applicable)
 TELEMETRY_FILE="${NEXA_TELEMETRY_FILE:-$(first_existing_path "$NEXA_DATA_DIR/telemetry_visits.json" "$NEXA_ROOT/.nexa/data/telemetry_visits.json")}"
-LEADS_FILE="${NEXA_LEADS_FILE:-$(first_existing_path "$NEXA_ROOT/core/wealth/leads.json" "$NEXA_ROOT/ai_agency_wealth/leads.json" "$NEXA_DATA_DIR/leads.json")}"
-ORG_REGISTRY_FILE="${NEXA_ORG_REGISTRY:-$(first_existing_path "$NEXA_VAULT_DIR/org-registry.json" "$NEXA_ROOT/core/vault/org-registry.json" "$NEXA_ROOT/vault/org-registry.json")}"
+LEADS_FILE="${NEXA_LEADS_FILE:-$(first_existing_path "$NEXA_ROOT/apps/wealth/leads.json" "$NEXA_ROOT/ai_agency_wealth/leads.json" "$NEXA_DATA_DIR/leads.json")}"
+ORG_REGISTRY_FILE="${NEXA_ORG_REGISTRY:-$(first_existing_path "$NEXA_VAULT_DIR/org-registry.json" "$NEXA_ROOT/vault/org-registry.json" "$NEXA_ROOT/vault/org-registry.json")}"
 GATEWAY_SESSIONS_FILE="${NEXA_GATEWAY_SESSIONS:-}"
 if [[ -z "$GATEWAY_SESSIONS_FILE" ]]; then
   GATEWAY_SESSIONS_FILE="$(first_existing_path "$NEXA_ROOT/.nexa/gateway_sessions.json" "$NEXA_DATA_DIR/gateway_sessions.json")"
 fi
 EXPORT_FILE="${NEXA_EXPORT_FILE:-$(first_existing_path "$NEXA_ROOT/.nexa/exports/Nexa_Full_Documentation_Export.txt" "$NEXA_ROOT/Nexa_Full_Documentation_Export.txt")}"
-NEXA_BACKUP_NODES_FILE="${NEXA_BACKUP_NODES_FILE:-$(first_existing_path "$NEXA_VAULT_DIR/backup-nodes.json" "$NEXA_ROOT/core/vault/backup-nodes.json" "$NEXA_ROOT/vault/backup-nodes.json")}"
+NEXA_BACKUP_NODES_FILE="${NEXA_BACKUP_NODES_FILE:-$(first_existing_path "$NEXA_VAULT_DIR/backup-nodes.json" "$NEXA_ROOT/vault/backup-nodes.json" "$NEXA_ROOT/vault/backup-nodes.json")}"
 
 STAMP=$(date -u +%Y-%m-%d_%H%M%S)
 BACKUP_SUBDIR="$NEXA_BACKUP_DIR/$STAMP"

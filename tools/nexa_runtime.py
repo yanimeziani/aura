@@ -46,8 +46,8 @@ def vault_dir(root: str | Path | None = None) -> Path:
     return resolve_path(
         env_name="NEXA_VAULT_DIR",
         root=root,
-        candidates=("core/vault", "vault"),
-        default="core/vault",
+        candidates=("vault", "vault"),
+        default="vault",
     )
 
 
@@ -109,7 +109,7 @@ def leads_file(root: str | Path | None = None) -> Path:
         env_name="NEXA_LEADS_FILE",
         root=root_path,
         candidates=(
-            "core/wealth/leads.json",
+            "apps/wealth/leads.json",
             "ai_agency_wealth/leads.json",
             "data/leads.json",
         ),
@@ -122,8 +122,8 @@ def org_registry_file(root: str | Path | None = None) -> Path:
     return resolve_path(
         env_name="NEXA_ORG_REGISTRY",
         root=root_path,
-        candidates=("core/vault/org-registry.json", "vault/org-registry.json"),
-        default="core/vault/org-registry.json",
+        candidates=("vault/org-registry.json", "vault/org-registry.json"),
+        default="vault/org-registry.json",
     )
 
 
@@ -132,8 +132,8 @@ def backup_nodes_file(root: str | Path | None = None) -> Path:
     return resolve_path(
         env_name="NEXA_BACKUP_NODES_FILE",
         root=root_path,
-        candidates=("core/vault/backup-nodes.json", "vault/backup-nodes.json"),
-        default="core/vault/backup-nodes.json",
+        candidates=("vault/backup-nodes.json", "vault/backup-nodes.json"),
+        default="vault/backup-nodes.json",
     )
 
 
@@ -142,8 +142,8 @@ def docs_inbox_dir(root: str | Path | None = None) -> Path:
     return resolve_path(
         env_name="NEXA_DOCS_INBOX_DIR",
         root=root_path,
-        candidates=("core/vault/docs_inbox", "vault/docs_inbox"),
-        default="core/vault/docs_inbox",
+        candidates=("vault/docs_inbox", "vault/docs_inbox"),
+        default="vault/docs_inbox",
     )
 
 

@@ -60,7 +60,7 @@ pub fn main() !void {
 
         if (sync_mode) {
             const timestamp = std.time.timestamp();
-            const filename = std.fmt.allocPrint(allocator, "core/vault/docs_inbox/distilled_{d}.md", .{timestamp}) catch "distilled.md";
+            const filename = std.fmt.allocPrint(allocator, "vault/docs_inbox/distilled_{d}.md", .{timestamp}) catch "distilled.md";
             defer allocator.free(filename);
             
             if (std.fs.cwd().createFile(filename, .{})) |file| {

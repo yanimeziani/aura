@@ -31,8 +31,8 @@ __pycache__/
 *.pyc
 
 # Vault secrets (NEVER commit)
-core/vault/aura-vault.json
-core/vault/nexa-vault.json
+vault/aura-vault.json
+vault/nexa-vault.json
 
 # Android/Kotlin (Pegasus)
 .gradle/

@@ -3,7 +3,7 @@ set -e
 echo "🛡️ Securing System Vault to SanDisk USB"
 echo "----------------------------------------"
 
-PROFILE_FILE="/root/core/vault/aura_owner_profile.json"
+PROFILE_FILE="/root/vault/aura_owner_profile.json"
 if [ ! -f "$PROFILE_FILE" ]; then
     echo "❌ Profile not found at $PROFILE_FILE"
     exit 1

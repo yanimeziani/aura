@@ -191,7 +191,7 @@ No core user flow should be specified in a way that only works on a single platf
 ### 10.6 Citizen Portal Scaffold
 
 - The scaffold must reserve a citizen portal entry point in backend and client routing.
-- Citizen features may remain disabled in the MVP, but the API and navigation surface must exist.
+- The Citizen Portal must be a **World Model AR Experience UI/UX**, providing an immersive, spatial view of the Mesh's state and biological safety invariants.
 - Future public services must be able to reuse the same identity, provenance, and policy layers.
 
 ### 10.7 Content Experience

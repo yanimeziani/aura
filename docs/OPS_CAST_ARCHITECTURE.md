@@ -30,7 +30,7 @@ operator UI, dashboards, and human review. Operators can listen, inspect the san
 
 Use two different knowledge feeds:
 
-- Ops telemetry feed: sanitized hourly packets from `core/vault/ops_cast.py`
+- Ops telemetry feed: sanitized hourly packets from `vault/ops_cast.py`
 - Project-state RAG feed: curated docs only, such as `README.md`, `docs/QUICKSTART.md`, `docs/AGENTS.md`, and `docs/updates/*.md`
 
 Do not mix raw logs into the same index as public or shareable documentation. Raw logs are transient and secret-prone. Curated docs are durable and safe for NotebookLM-style retrieval.
@@ -47,7 +47,7 @@ Do not mix raw logs into the same index as public or shareable documentation. Ra
 Example:
 
 ```bash
-python3 core/vault/ops_cast.py \
+python3 vault/ops_cast.py \
   --source agency_metrics \
   --provider ollama \
   --model qwen2.5:14b-instruct \
@@ -71,9 +71,9 @@ Run that from a systemd timer every hour in the generation zone, not on the prod
 
 ## What exists now
 
-- `core/vault/log2notebooklm.py`: deterministic log packetization
-- `core/vault/log_radio.py`: short radio bulletin generation
-- `core/vault/ops_cast.py`: sanitized two-host episode packaging with safe-doc RAG and optional local Ollama generation
+- `vault/log2notebooklm.py`: deterministic log packetization
+- `vault/log_radio.py`: short radio bulletin generation
+- `vault/ops_cast.py`: sanitized two-host episode packaging with safe-doc RAG and optional local Ollama generation
 
 The remaining production work is operational:
 
