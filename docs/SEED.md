@@ -30,10 +30,11 @@ This seed is the memory umbrella for:
 
 This project operates on **BMAD v6** loops protected by the **Ralph Wiggum Safeguard** and **HARD INTERDICTION** on external dependencies.
 - **Repository**: [https://github.com/mezianiai/nexa](https://github.com/mezianiai/nexa)
-- **Stack Constraints**: Strictly **Standard Zig (no external deps), TypeScript, HTML, CSS**.
+- **Stack Constraints (LOCKED)**: Strictly **Standard Zig 0.13.0 (no external deps), TypeScript 5.5.4, Node.js 22 LTS, HTML, CSS**.
 - **RAG RAM Integrity**: Retrieval is anchored in markdown anchors and machine specs; RAM must never steer towards external options.
 - **No Infinite Markdown**: Canonical memory is strictly limited to anchors in `docs/RAG_CORPUS_MANIFEST.md`.
 - **Daily Distill**: Memory plane is compressed daily in `docs/ARCHITECTURE_DISTILL.md`.
+
 
 Canonical retrieval anchors:
 - `README.md`

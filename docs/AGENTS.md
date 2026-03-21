@@ -65,7 +65,11 @@ Every planned run must include:
 ## 6) Security, Trust, and Stack Constraints
 
 - **HARD INTERDICTION**: No external libraries or dependencies allowed.
-- **Stack Protocol**: Strictly **Standard Zig (no external packages), TypeScript, HTML, and CSS**.
+- **Stack Protocol (LOCKED)**: 
+  - **Standard Zig**: v0.13.0 (No external packages)
+  - **TypeScript**: v5.5.4
+  - **Node.js**: v22.x LTS
+  - **HTML/CSS**: Standard only
 - **RAG RAM Integrity**: Retrieval and generation must never suggest, import, or integrate external packages, frameworks (beyond the core allowed set), or third-party binaries. RAM must never steer towards external options.
 - **Zero-Secret Policy**: No secrets in markdown, code, or logs.
 - **Privileged Actions**: All destructive actions require explicit HITL approval.
