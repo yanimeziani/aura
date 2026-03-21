@@ -20,6 +20,6 @@ See [SECURITY.md](/root/SECURITY.md).
 ## Before Opening an Issue
 
 - read [README.md](/root/README.md)
-- check [docs/QUICKSTART.md](/root/docs/QUICKSTART.md)
-- check [docs/ARCHITECTURE.md](/root/docs/ARCHITECTURE.md)
+- check [docs/SEED.md](/root/docs/SEED.md)
+- check [docs/ARCHITECTURE_DISTILL.md](/root/docs/ARCHITECTURE_DISTILL.md)
 - include concrete steps, environment details, and observed behavior

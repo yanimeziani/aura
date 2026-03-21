@@ -26,20 +26,20 @@ def create_export(filename, files, dirs):
 
 # 1. Vision & Manifesto
 create_export("Aura_Vision_Manifesto.txt", 
-    ["README.md", "docs/reference/GEMINI.md", "docs/PRD.md", "docs/AURAMANIFESTO.md", "docs/Notebook.lm.md", "research/aura-manifesto/main.tex"], 
+    ["README.md", "PRD.md", "docs/SEED.md", "docs/AGENTS.md"], 
     [])
 
 # 2. Technical Architecture
 create_export("Aura_Technical_Architecture.txt", 
-    ["docs/reference/GEMINI.md", "docs/SYSTEM_CAPABILITIES.md", "docs/PROJECT_SOURCE_TRUTH.md"], 
-    ["core/cerberus/specs", "apps/web/supabase/migrations"])
+    ["docs/ARCHITECTURE_DISTILL.md", "docs/MESH_WORLD_MODEL.md", "docs/RAG_CORPUS_MANIFEST.md"], 
+    ["specs"])
 
 # 3. Agents (Career-Twin & SDR)
 create_export("Aura_Agents_Product.txt", 
-    ["docs/README_AGENTS.md"], 
+    ["docs/AGENTS.md"], 
     ["core/cerberus/configs", "core/cerberus/runtime/cerberus-core/prompts", "core/cerberus/scripts"])
 
 # 4. Ops (Deploy & Recovery)
 create_export("Aura_Ops_Runbook.txt", 
-    ["docs/DEPLOYMENT_GUIDE.md", "docs/VPS_DEPLOYMENT.md", "docs/VPS_READY.md", "apps/mobile/RELEASE_APK.md"], 
+    ["README.md", "TASKS.md", "SECURITY.md"], 
     ["ops/scripts"])

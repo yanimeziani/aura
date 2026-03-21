@@ -1,164 +1,155 @@
 # SEED.md
 
-Status: Canonical Layer-0 Seed for agentic exploration, RAG bootstrapping, and system truth synchronization.
+Status: Canonical Layer-0 seed memory for a strict, minimal docs corpus.
 
-## 1) Mission
+## 1) Mission and Operating Stance
 
-Nexa is structured as a neurodiverse programmer and researcher friendly system:
-- low-friction navigation
-- explicit architecture memory
-- deterministic source-of-truth files
-- collaboration-ready agent protocols
+Nexa is run as a protocol-first, security-critical collaboration system.
 
-SEED is the umbrella memory over:
+Primary mission:
+- build and operate a sovereign mesh with world-class trust, resilience, and execution velocity
+- enable long-horizon agent runs with deterministic memory, specs, and writeback
+- keep human governance and veto authority explicit for high-impact actions
+
+This seed is the memory umbrella for:
 - `PRD.md`
 - `STACK.md`
 - `MARKETING.md`
 - `ICP.md`
 - `SECURITY.md`
 - `LEGAL.md`
+- `docs/AGENTS.md`
+- `docs/FORGE_24H_PLAN.md`
+- `docs/MESH_WORLD_MODEL.md`
+- `docs/ARCHITECTURE_DISTILL.md`
+- `docs/RAG_CORPUS_MANIFEST.md`
+- `LICENSE.md`
+- `ARCHITECHTURE.md`
 
-This file must evolve with the codebase and stay synchronized with all six documents above.
+## 2) Layer-0 Spec-RAG Contract
 
-## 2) Layer-0 Agentic RAG Contract
+Layer-0 RAG in this repository follows hard rules:
+- retrieval starts from canonical markdown anchors and machine specs
+- planning is versioned as forge packets before execution
+- implementation must map to explicit packet acceptance criteria
+- all outcomes must write back to markdown working memory
+- diagrams and text memory must stay synchronized
 
-Layer-0 RAG in this repository means:
-- retrieval begins from canonical docs and specs before ad hoc interpretation
-- architecture memory is always available in both ASCII and Mermaid form
-- edits to key files must trigger seed refresh tasks
-- agent outputs must cite repository paths and upstream OSS sources when relevant
-- Electro Spatial RAG topology is defined in `docs/ELECTRO_SPATIAL_RAG.md`
-
-Primary retrieval anchors:
+Canonical retrieval anchors:
 - `README.md`
+- `docs/SEED.md`
+- `docs/AGENTS.md`
+- `docs/FORGE_24H_PLAN.md`
+- `docs/MESH_WORLD_MODEL.md`
+- `docs/ARCHITECTURE_DISTILL.md`
+- `docs/RAG_CORPUS_MANIFEST.md`
 - `PRD.md`
 - `STACK.md`
 - `MARKETING.md`
 - `ICP.md`
 - `SECURITY.md`
 - `LEGAL.md`
-- `docs/ELECTRO_SPATIAL_RAG.md`
-- `docs/ARCHITECTURE.md`
-- `docs/PROTOCOL.md`
-- `docs/TRUST_MODEL.md`
-- `docs/THREAT_MODEL.md`
 - `specs/protocol.json`
 - `specs/trust.json`
 - `specs/recovery.json`
+- `LICENSE.md`
+- `ARCHITECHTURE.md`
 - `LICENSE`
 
-## 3) ASCII Visual Memory (Architecture Snapshot)
+Corpus rule:
+- only the canonical files listed in `docs/RAG_CORPUS_MANIFEST.md` are allowed in `docs/`
+- any other docs markdown is out-of-bounds and must be removed
+
+## 3) Architecture Memory (ASCII)
 
 ```text
-NEXA
+NEXA LAYER-0 MEMORY PLANE
 |
-+-- Apps Layer
-|   +-- apps/aura-dashboard      (operator UI)
-|   +-- apps/aura-landing-next   (landing + intake)
-|   +-- apps/web                 (web workspace/components)
++-- Governance and Operating Memory
+|   +-- docs/SEED.md
+|   +-- docs/AGENTS.md
+|   +-- docs/FORGE_24H_PLAN.md
+|   +-- docs/MESH_WORLD_MODEL.md
+|   +-- TASKS.md
+|   +-- ARCHITECHTURE.md (Mermaid)
 |
-+-- Core Runtime Layer
-|   +-- core/cerberus            (agent/runtime engine, zig)
-|   +-- core/aura-api            (native API services)
-|   +-- core/nexa-gateway        (gateway/runtime components)
-|   +-- core/tui                 (terminal UI components)
++-- Product and Protocol Truth
+|   +-- PRD.md
+|   +-- docs/ARCHITECTURE_DISTILL.md
+|   +-- specs/protocol.json
+|   +-- specs/trust.json
+|   +-- specs/recovery.json
 |
-+-- Ops and Deployment Layer
-|   +-- ops/gateway              (fastapi gateway)
-|   +-- ops/scripts              (automation/deploy scripts)
-|   +-- ops/sovereign-stack      (deployment stack)
++-- Runtime and Delivery
+|   +-- apps/ (operator/public surfaces)
+|   +-- core/ (runtime and native control plane)
+|   +-- ops/ (deployment, recovery, automation)
+|   +-- tools/ (cli and support scripts)
 |
-+-- Knowledge and Spec Layer
-|   +-- docs/                    (governance, architecture, runbooks)
-|   +-- specs/                   (machine-readable protocol/trust/recovery)
-|   +-- research/                (research notes and references)
-|
-+-- Tooling and Interfaces
-|   +-- tools/                   (cli/helpers)
-|   +-- nexa / nexa.py           (entrypoint CLIs)
-|
-+-- State and Vault Surface
-    +-- vault/                   (operator state, logs, generated artifacts)
++-- Legal and Public Interface
+    +-- LICENSE
+    +-- LICENSE.md
+    +-- LEGAL.md
+    +-- MARKETING.md
+    +-- ICP.md
 ```
 
-## 4) Mermaid System Map
+## 4) 24-Hour Forge Rhythm
 
-```mermaid
-flowchart TD
-  U[Operators / Researchers] --> A[Apps Layer]
-  A --> G[Gateway Layer]
-  G --> C[Core Runtime]
-  C --> S[Specs and Protocol Contracts]
-  C --> V[Vault State Surface]
-  O[Ops Automation] --> G
-  O --> C
-  D[Documentation Corpus] --> R[Layer-0 RAG Retrieval]
-  S --> R
-  P[PRD and Governance] --> R
-  R --> AG[Agent Collaboration Loop]
-  AG --> D
-  AG --> C
-```
+Execution cadence is defined in `docs/FORGE_24H_PLAN.md`.
 
-## 5) Stack Baseline
+Invariant:
+- every 24-hour cycle must produce a plan, evidence, and memory refresh in markdown
+- each cycle must be provider-agnostic and runnable with fallback providers
 
-- Runtime: Zig, Python, Bash, Node.js
-- Web/UI: Next.js, React, TypeScript
-- Gateway/API: FastAPI (Python)
-- Validation/Contracts: JSON specs, schema-driven checks, typed interfaces
-- Security posture: trust boundaries, HITL gates, explicit policy docs
-- License baseline: MIT (`LICENSE`)
-- Canonical stack registry: `STACK.md`
+## 5) Versioned Forge Coding Standard
 
-## 6) Go-To-Market and User Fit Baseline
+All significant work runs through versioned packets:
+- packet id format: `forge-YYYYMMDD-HH-<slug>`
+- packet includes scope, provider routing, constraints, checks, rollback
+- packet outcome records pass/fail and drift notes
+- packet references changed files and follow-up tasks
 
-- Canonical marketing narrative: `MARKETING.md`
-- Canonical ideal collaborator profile: `ICP.md`
-- These files are required memory anchors for planning and roadmap decisions.
+Packets live in `TASKS.md` or linked markdown docs.
+
+## 6) Security and Trust Baseline
+
+- trust model and policy constraints are mandatory inputs, not optional context
+- privileged actions must pass HITL governance controls
+- secret handling must remain outside markdown/code unless encrypted and policy-approved
+- all identity/auth decisions must favor hardware-backed, phishing-resistant controls
+- post-quantum transition planning is part of protocol lifecycle
+
+Authoritative files:
+- `SECURITY.md`
+- `docs/ARCHITECTURE_DISTILL.md`
+- `specs/trust.json`
+- `specs/recovery.json`
 
 ## 7) Change-Trigger Protocol (Mandatory)
 
-Any meaningful repository edit triggers a SEED sync pass.
+A SEED sync is required whenever any of these change:
+- architecture boundaries, runtime topology, or deployment path
+- trust/security/legal assumptions
+- core stack/runtime dependencies
+- collaboration policy, planning structure, or provider strategy
+- world-model mapping domains (legal/social/political/economic/physical/PR)
 
-Trigger matrix:
-- Product requirements changed -> update `PRD.md` and refresh SEED sections 1, 2, 5, 6
-- Architecture or service boundaries changed -> update ASCII + Mermaid sections
-- Runtime/tooling stack changed -> update `STACK.md` and Stack Baseline section
-- Messaging/distribution changed -> update `MARKETING.md` and section 6
-- Target audience/fit changed -> update `ICP.md` and section 6
-- Work planning changed -> update `TASKS.md` and reflect status in SEED section 7
-- Security policy changed -> update `SECURITY.md` and SEED section 8
-- Licensing/legal attribution changed -> update `LICENSE`, `LEGAL.md`, and SEED section 8
-- Transfer/compliance changes -> update `docs/transfer/*` and note in SEED section 9
-- Electro Spatial RAG architecture changes -> update `docs/ELECTRO_SPATIAL_RAG.md` and this SEED file
+If architecture changed and `docs/MESH_WORLD_MODEL.md` was not updated, the change is incomplete.
 
-## 8) Security, Legal, and OSS Source Rule
+## 8) Source and Attribution Rule
 
-- Security policy source: `SECURITY.md`
-- Legal policy source: `LEGAL.md`
-- License of this repository: MIT (`LICENSE`)
-- External OSS influences must be recorded in:
-  - `docs/transfer/OSS_SOURCE_REGISTER.md`
-- Agents must avoid undocumented borrowing; attribution is required.
+- legal posture comes from:
+  - `LEGAL.md`
+  - `LICENSE`
+  - `LICENSE.md`
+- undocumented copying or hidden dependency borrowing is not allowed
 
-## 9) Task Synchronization Link
+## 9) Seed Maintenance Ritual
 
-`TASKS.md` is the short-horizon execution board.
-SEED stores high-level memory and architecture invariants.
-If task scope changes architecture, update both files in the same change set.
-
-## 10) Neurodiverse-Friendly Authoring Rules
-
-- Prefer short sections, explicit headings, and plain language.
-- Keep architecture diagrams mirrored in text and graph form.
-- Avoid hidden assumptions and unstated context jumps.
-- Use stable file names for anchor docs to improve retrieval memory.
-
-## 11) Seed Maintenance Ritual
-
-On each significant merge or architecture edit:
-1. refresh ASCII memory tree
-2. refresh Mermaid map
-3. verify anchors and stack section
-4. cross-check `PRD.md`, `STACK.md`, `MARKETING.md`, `ICP.md`, `SECURITY.md`, `LEGAL.md`, `TASKS.md`, `LICENSE`
-5. confirm no stale references
+On each substantial merge or protocol update:
+1. refresh `docs/FORGE_24H_PLAN.md` if cycle logic changed
+2. refresh `docs/MESH_WORLD_MODEL.md` if structure/power/relations changed
+3. verify spec links and retrieval anchors
+4. verify legal/security/trust consistency
+5. record drift and next actions in `TASKS.md`

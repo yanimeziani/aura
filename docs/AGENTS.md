@@ -1,88 +1,93 @@
 # AGENTS.md
 
-Status: Multi-agent collaboration center for this repository.
+Status: Canonical collaboration protocol for all agents and providers in this repository.
 
-## 1) Purpose
+## 1) Directive
 
-This file coordinates human + agent collaboration for architecture exploration, implementation, review, and maintenance.
+Nexa uses a documentation-first, spec-RAG, versioned forge workflow for multi-agent and multi-provider execution.
 
-Key rule:
-- Use open repository standards only (`AGENTS.md`, `SEED.md`, `TASKS.md`).
-- Do not rely on proprietary agent-instruction markdown conventions as source-of-truth.
+Canonical memory is markdown only and anchored in this set:
+- `docs/SEED.md`
+- `docs/AGENTS.md`
+- `docs/FORGE_24H_PLAN.md`
+- `docs/MESH_WORLD_MODEL.md`
+- `docs/RAG_CORPUS_MANIFEST.md`
+- `LICENSE.md`
+- `TASKS.md`
 
-## 2) Canonical Collaboration Files
+All agents must treat those files as the operational memory plane.
+All markdown files under `docs/` are canonical corpus inputs as enumerated in `docs/RAG_CORPUS_MANIFEST.md`.
 
-- `docs/SEED.md` -> Layer-0 system prompt memory and RAG anchor
-- `docs/AGENTS.md` -> this collaboration protocol
-- `TASKS.md` -> active workboard and execution status
-- `PRD.md` -> product requirements and scope intent
-- `STACK.md` -> technical stack source-of-truth
-- `MARKETING.md` -> messaging source-of-truth
-- `ICP.md` -> ideal collaborator profile source-of-truth
-- `SECURITY.md` -> security policy source-of-truth
-- `LEGAL.md` -> legal policy source-of-truth
-- `docs/ELECTRO_SPATIAL_RAG.md` -> Electro Spatial RAG architecture distill
-- `LICENSE` -> legal baseline
-- `docs/transfer/OSS_SOURCE_REGISTER.md` -> open-source attribution registry
+## 2) Non-Proprietary Instruction Rule
 
-## 3) Multi-Agent Roles
+Open protocol rule:
+- authoritative agent instructions must live in `docs/AGENTS.md`
+- provider-specific instruction files are non-authoritative
+- if a conflict appears, this file wins
+- planning, execution, and post-run reports must be written back in markdown
 
-- Architect Agent
-  - maintains architecture maps, interfaces, boundaries, and invariants
-- Builder Agent
-  - implements scoped changes with testable outcomes
-- Reviewer Agent
-  - checks regressions, trust/security impact, and docs drift
-- Research Agent
-  - expands evidence and source citations for design decisions
-- Release Agent
-  - verifies readiness gates and handover integrity
+## 3) Multi-Agent / Multi-Provider Model
 
-## 4) Layer-0 RAG Workflow
+Supported execution pattern:
+- planner agent: turns objective into versioned plan with acceptance checks
+- researcher agent: gathers evidence and source references
+- builder agents: implement scoped tasks per spec packet
+- reviewer agent: validates behavior, security, and drift
+- release agent: verifies gates and readiness
 
-Every agent cycle should follow:
-1. retrieve from canonical anchors (`SEED.md`, `PRD.md`, core docs/specs)
-2. validate intent against active tasks in `TASKS.md`
-3. implement or propose bounded change
-4. refresh memory artifacts when structure changed
-5. cite repository paths and OSS sources
+Provider neutrality rule:
+- tasks are expressed as capability contracts, not provider-specific prompts
+- each task packet must declare inputs, outputs, constraints, and verification
+- packet format is invariant across Gemini, OSS, and any future provider
 
-## 5) Mandatory Update Triggers
+## 4) Spec-RAG Forge Lifecycle
 
-When these files change, refresh `docs/SEED.md` in the same change set:
+Each forge cycle follows this exact order:
+1. ingest canonical memory (`SEED`, `AGENTS`, `FORGE_24H_PLAN`, relevant specs)
+2. select or create a versioned forge packet in `TASKS.md`
+3. execute bounded work against declared specs
+4. run verification checks and capture evidence
+5. write outcomes and drift notes back to markdown memory
 
-- `PRD.md` -> update mission, goals, and phase memory
-- stack/runtime configs (`package.json`, build/runtime files) -> update stack baseline
-- `STACK.md` -> update SEED stack section and related architecture memory if boundaries changed
-- `MARKETING.md` and `ICP.md` -> update SEED product/audience memory
-- architecture files in `docs/` or `specs/` -> update ASCII + Mermaid memory
-- `docs/ELECTRO_SPATIAL_RAG.md` -> update when retrieval topology, subsystem graph, or context routing changes
-- `TASKS.md` -> update task synchronization status in SEED
-- `SECURITY.md` -> update SEED security/legal section
-- `LEGAL.md` -> update SEED security/legal section
-- `LICENSE` -> update license and attribution section in SEED
+Any cycle without memory writeback is incomplete.
 
-If an edit changes architecture and SEED is not updated, the change is incomplete.
+## 5) Task Packet Contract (Required)
 
-## 6) Neurodiverse-Friendly Engineering Rules
+Every planned run must include:
+- objective and business/security importance
+- scope paths and out-of-scope paths
+- required specs/docs
+- provider assignment and fallback provider
+- execution budget (time/token/compute)
+- checks and exit criteria
+- rollback path and incident owner
 
-- Keep docs chunked with short, explicit sections.
-- Keep terms consistent across files.
-- Prefer deterministic names and avoid hidden abbreviations.
-- Include both text and diagram representations for architecture.
-- Avoid context switching by linking every task to exact file paths.
+## 6) Security and Trust Constraints
 
-## 7) Minimum Quality Gate for Agent Changes
+- no secrets in markdown, code, or logs
+- no undocumented key use or hidden credentials
+- all privileged or destructive actions require explicit HITL approval
+- protocol and trust constraints are sourced from:
+  - `docs/ARCHITECTURE_DISTILL.md`
+  - `docs/MESH_WORLD_MODEL.md`
+  - `specs/protocol.json`
+  - `specs/trust.json`
+  - `specs/recovery.json`
 
-- scope is explicit
-- tests/checks are documented or executed
-- architecture memory is refreshed when needed
-- attribution is updated for external OSS influences
-- no secrets or private credentials included
+## 7) Quality Gate
 
-## 8) Conflict Resolution
+Minimum gate for accepted agent output:
+- requirements traceable to a task packet
+- implementation and docs remain synchronized
+- verification evidence is recorded
+- architecture memory reflects structural changes
+- legal and attribution obligations are preserved
+
+## 8) Conflict Resolution and Veto Awareness
 
 When agents disagree:
-1. defer to `PRD.md` for product intent
-2. defer to `docs/PROTOCOL.md`, `docs/TRUST_MODEL.md`, `docs/THREAT_MODEL.md` for safety/trust constraints
-3. log unresolved decision in `TASKS.md` with owner and due date
+1. defer to `PRD.md` and `docs/SEED.md`
+2. apply canonical protocol/trust/safety constraints from the remaining docs set
+3. escalate unresolved conflicts to HITL with options and risk deltas
+
+High-impact decisions should include explicit veto checkpoint references in `TASKS.md`.

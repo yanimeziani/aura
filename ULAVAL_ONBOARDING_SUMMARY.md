@@ -8,7 +8,7 @@ Le protocole Versailles est une architecture logicielle de résilience humaine. 
 
 ## 2. Dossier de Transfert
 Les éléments suivants ont été déposés sur la branche `main` et sont prêts pour audit institutionnel :
-*   **Le Manifeste Éthique :** `SOVEREIGN_SHIELD_MANIFESTO.md`
+*   **Le Manifeste Éthique :** `PRD.md`
 *   **Le Moteur d'État Zig :** `core/aura-api/src/world.zig`
 *   **Le Guide de Collaboration :** `COLLABORATORS.md`
 *   **L'Interface World Map :** `apps/web/components/WorldMap.tsx`
