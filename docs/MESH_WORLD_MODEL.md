@@ -42,10 +42,14 @@ flowchart TB
 
   subgraph PHYSICAL["PHYSICAL AND INFRASTRUCTURE DOMAIN"]
     DEVICES["phones, laptops, edge nodes, servers"]
+    SANDISK["fido2 sandisk (smart partitions)"]
+    STAGING["~/tripartite_keys_sync/ staging area"]
     NETWORK["tailscale, vps links, mesh transport"]
     POWER["power, thermal, availability constraints"]
     SUPPLY["hardware and package supply chain"]
     DEVICES --> NETWORK
+    SANDISK --> DEVICES
+    STAGING --> SANDISK
     NETWORK --> POWER
     SUPPLY --> DEVICES
   end
@@ -94,11 +98,13 @@ flowchart TB
     DISTILL["docs/ARCHITECTURE_DISTILL.md"]
     SPECSP["specs/protocol.json"]
     SPECST["specs/trust.json"]
+    TRIPARTITE["tripartite keys: ssh, mlkem, fido2"]
     KEYS["identity, auth, key lifecycle"]
     INCIDENT["detection, response, recovery"]
     DISTILL --> SPECSP
     SPECSP --> SPECST
-    SPECST --> KEYS
+    SPECST --> TRIPARTITE
+    TRIPARTITE --> KEYS
     KEYS --> INCIDENT
   end
 

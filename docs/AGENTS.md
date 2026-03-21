@@ -62,17 +62,13 @@ Every planned run must include:
 - checks and exit criteria
 - rollback path and incident owner
 
-## 6) Security and Trust Constraints
+## 6) Security, Trust, and Stack Constraints
 
-- no secrets in markdown, code, or logs
-- no undocumented key use or hidden credentials
-- all privileged or destructive actions require explicit HITL approval
-- protocol and trust constraints are sourced from:
-  - `docs/ARCHITECTURE_DISTILL.md`
-  - `docs/MESH_WORLD_MODEL.md`
-  - `specs/protocol.json`
-  - `specs/trust.json`
-  - `specs/recovery.json`
+- **HARD INTERDICTION**: No external libraries or dependencies allowed except for **Zig, TypeScript, HTML, and CSS**.
+- **RAG RAM Integrity**: Retrieval and generation must never suggest, import, or integrate external packages, frameworks (beyond the core allowed set), or third-party binaries.
+- **Zero-Secret Policy**: No secrets in markdown, code, or logs.
+- **Privileged Actions**: All destructive actions require explicit HITL approval.
+- **Protocol Truth**: Constraints are strictly sourced from `docs/ARCHITECTURE_DISTILL.md`, `specs/protocol.json`, and `specs/trust.json`.
 
 ## 7) Quality Gate
 
