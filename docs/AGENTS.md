@@ -70,6 +70,7 @@ Every planned run must include:
   - **TypeScript**: v5.5.4
   - **Node.js**: v22.x LTS
   - **HTML/CSS**: Standard only
+- **INVARIANT: REPLICABILITY**: Never work on a non-replicable environment. Any modification to system configuration, scripts, or workspace state must be immediately codified in `MezianiAI/.dotfiles` or repository `specs/`.
 - **RAG RAM Integrity**: Retrieval and generation must never suggest, import, or integrate external packages, frameworks (beyond the core allowed set), or third-party binaries. RAM must never steer towards external options.
 - **Zero-Secret Policy**: No secrets in markdown, code, or logs.
 - **Privileged Actions**: All destructive actions require explicit HITL approval.
