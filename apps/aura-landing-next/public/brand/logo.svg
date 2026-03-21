@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 48" fill="none">
-  <!-- Glyph: stylised M / signal wave -->
-  <path d="M8 36 L16 14 L24 28 L32 14 L40 36" stroke="#3B82F6" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-  <circle cx="40" cy="36" r="2.5" fill="#D4A017"/>
-  <!-- Wordmark -->
-  <text x="52" y="34" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="22" fill="#F9FAFB" letter-spacing="-0.5">meziani</text>
-  <text x="52" y="46" font-family="Inter, system-ui, sans-serif" font-weight="400" font-size="9" fill="#6B7280" letter-spacing="2">SOVEREIGN AI</text>
-</svg>
