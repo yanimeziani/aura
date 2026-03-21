@@ -1,1 +1,0 @@
-ALTER TABLE merchants ADD COLUMN IF NOT EXISTS data_retention_days INTEGER DEFAULT 0;
