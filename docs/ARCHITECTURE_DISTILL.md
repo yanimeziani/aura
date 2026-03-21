@@ -49,6 +49,7 @@ The architecture has been unified under the **Monarch Engine Protocol**:
 - **Lightness**: Memory plane is strictly limited to canonical anchors defined in `docs/RAG_CORPUS_MANIFEST.md`.
 - **Identity**: Centralized SSH (ED25519) for global GitHub ID and SanDisk "Smart Partitions" for tripartite key structure.
 - **Stack Lockdown**: Hard interdiction on external deps. Stack locked to **Zig 0.13.0, TypeScript 5.5.4, and Node.js 22 LTS**.
+- **Supply Chain Purge**: Permanently removed all Node.js/Next.js apps and Python services with external pip dependencies to enforce a zero-CVE, sovereign technical baseline.
 
 ## 5) Canonical Decision
 
