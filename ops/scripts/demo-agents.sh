@@ -79,7 +79,7 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo "  → QUICKSTART.md - Deploy in 5 minutes"
 echo "  → TESTING_GUIDE.md - Test all features"
 echo "  → PROJECT_SUMMARY.md - Architecture & ROI"
-echo "  → README_AGENTS.md - Quick reference"
+echo "  → docs/AGENTS.md - Canonical collaboration protocol"
 echo ""
 
 echo -e "${BLUE}🚀 Quick Start Commands${NC}"

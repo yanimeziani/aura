@@ -1,6 +1,6 @@
 import os
 
-output_file = "nexa-docs-export.md"
+output_file = "docs/exports/nexa-docs-export.md"
 include_dirs = [
     "docs",
     "core/cerberus/specs",
@@ -23,6 +23,8 @@ def is_valid_md(filepath):
     if "node_modules" in filepath or "vendor" in filepath or ".zig-cache" in filepath or ".next" in filepath or ".gradle" in filepath:
         return False
     return filepath.endswith(".md")
+
+os.makedirs(os.path.dirname(output_file), exist_ok=True)
 
 with open(output_file, "w", encoding="utf-8") as outfile:
     outfile.write("# Nexa Monorepo: Full Documentation Export\n\n")
