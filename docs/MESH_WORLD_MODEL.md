@@ -25,9 +25,12 @@ flowchart TB
     TOOLS["tools/* operational helpers"]
     VAULT["vault/* evidence, logs, state"]
     DOCS["docs/* governance and memory"]
+    DOTFILES["MezianiAI/.dotfiles (workspace setup)"]
     APPS --> CORE
     CORE --> OPS
     OPS --> VAULT
+    TOOLS --> DOTFILES
+    DOTFILES --> OPS
     DOCS --> CORE
     TOOLS --> OPS
   end
