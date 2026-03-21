@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Primary Nexa CLI launcher.
+set -e
+NEXA_ROOT="${NEXA_ROOT:-${AURA_ROOT:-$(cd "$(dirname "$0")" && pwd)}}"
+export NEXA_ROOT
+export AURA_ROOT="$NEXA_ROOT"
+exec python3 "$NEXA_ROOT/nexa.py" "$@"

@@ -1,186 +1,93 @@
-# AGENTS.md — Agent Coding Guidelines
+# AGENTS.md
 
-This file provides coding guidelines for agents working in this repository.
+Status: Canonical collaboration protocol for all agents and providers in this repository.
 
-## 1. Project Overview
+## 1) Directive
 
-This repository contains multiple projects:
-- **dragun-app**: Next.js 16/React 19/TypeScript application (main web app)
-- **cerberus**: Zig-based autonomous AI assistant runtime
-- **pegasus**: Kotlin/Android mission control for Cerberus agents
-- **openclaw-config**: [DEPRECATED] Docker/Python configurations (see cerberus/policies/)
-- **openclaw-tui**: [DEPRECATED] Terminal UI (replaced by Pegasus)
+Nexa uses a documentation-first, spec-RAG, versioned forge workflow for multi-agent and multi-provider execution.
 
-## 2. Build, Lint, and Test Commands
+Canonical memory is markdown only and anchored in this set:
+- `docs/SEED.md`
+- `docs/AGENTS.md`
+- `docs/FORGE_24H_PLAN.md`
+- `docs/MESH_WORLD_MODEL.md`
+- `docs/RAG_CORPUS_MANIFEST.md`
+- `LICENSE.md`
+- `TASKS.md`
 
-### dragun-app (Next.js/TypeScript)
+All agents must treat those files as the operational memory plane.
+All markdown files under `docs/` are canonical corpus inputs as enumerated in `docs/RAG_CORPUS_MANIFEST.md`.
 
-```bash
-# Development
-npm run dev                    # Start dev server
+## 2) Non-Proprietary Instruction Rule
 
-# Build
-npm run build                  # Production build
-npm run start                 # Start production server
+Open protocol rule:
+- authoritative agent instructions must live in `docs/AGENTS.md`
+- provider-specific instruction files are non-authoritative
+- if a conflict appears, this file wins
+- planning, execution, and post-run reports must be written back in markdown
 
-# Linting
-npm run lint                   # Run ESLint
+## 3) Multi-Agent / Multi-Provider Model
 
-# Testing
-npm run test:unit              # Run unit tests (tsx)
-npm run test:e2e              # Run Playwright e2e tests
-npm run test:e2e:ui           # Run e2e tests with UI
-npm run test                   # Run all tests (unit + e2e)
+Supported execution pattern:
+- planner agent: turns objective into versioned plan with acceptance checks
+- researcher agent: gathers evidence and source references
+- builder agents: implement scoped tasks per spec packet
+- reviewer agent: validates behavior, security, and drift
+- release agent: verifies gates and readiness
 
-# Run a single test file
-npx playwright test tests/demo.spec.ts
-npx tsx tests/chunking.test.ts
+Provider neutrality rule:
+- tasks are expressed as capability contracts, not provider-specific prompts
+- each task packet must declare inputs, outputs, constraints, and verification
+- packet format is invariant across Gemini, OSS, and any future provider
 
-# Database
-npm run db:check              # Run Supabase migrations and checks
-npm run audit                  # Security audit
-npm run i18n:check            # Check i18n parity
-```
+## 4) Spec-RAG Forge Lifecycle
 
-### cerberus (Zig)
+Each forge cycle follows this exact order:
+1. ingest canonical memory (`SEED`, `AGENTS`, `FORGE_24H_PLAN`, relevant specs)
+2. select or create a versioned forge packet in `TASKS.md`
+3. execute bounded work against declared specs
+4. run verification checks and capture evidence
+5. write outcomes and drift notes back to markdown memory
 
-```bash
-# Build
-zig build                      # Dev build
-zig build -Doptimize=ReleaseSmall  # Release build (<1MB target)
+Any cycle without memory writeback is incomplete.
 
-# Testing
-zig build test --summary all   # Run all tests (3371+ tests)
-```
+## 5) Task Packet Contract (Required)
 
-## 3. Code Style Guidelines
+Every planned run must include:
+- objective and business/security importance
+- scope paths and out-of-scope paths
+- required specs/docs
+- provider assignment and fallback provider
+- execution budget (time/token/compute)
+- checks and exit criteria
+- rollback path and incident owner
 
-### General Principles
+## 6) Security and Trust Constraints
 
-- **KISS**: Keep code simple and readable. Avoid clever tricks.
-- **YAGNI**: Don't add code "just in case". Wait for concrete requirements.
-- **Fail Fast**: Prefer explicit errors over silent failures.
-- **Secure by Default**: Deny access first, grant explicitly.
+- no secrets in markdown, code, or logs
+- no undocumented key use or hidden credentials
+- all privileged or destructive actions require explicit HITL approval
+- protocol and trust constraints are sourced from:
+  - `docs/ARCHITECTURE_DISTILL.md`
+  - `docs/MESH_WORLD_MODEL.md`
+  - `specs/protocol.json`
+  - `specs/trust.json`
+  - `specs/recovery.json`
 
-### TypeScript/JavaScript (dragun-app)
+## 7) Quality Gate
 
-#### Imports
-```typescript
-// Absolute imports for project modules (preferred)
-import { getUser } from '@/lib/user';
-import { Button } from '@/components/ui';
+Minimum gate for accepted agent output:
+- requirements traceable to a task packet
+- implementation and docs remain synchronized
+- verification evidence is recorded
+- architecture memory reflects structural changes
+- legal and attribution obligations are preserved
 
-// Third-party imports first, then local
-import { useState, useEffect } from 'react';
-import { streamText } from 'ai';
-import { supabaseAdmin } from '@/lib/supabase-admin';
-```
+## 8) Conflict Resolution and Veto Awareness
 
-#### Naming Conventions
-- **Files**: `kebab-case.ts` or `PascalCase.tsx` (components)
-- **Components**: `PascalCase` (e.g., `Dashboard.tsx`)
-- **Functions/variables**: `camelCase` (e.g., `getUserById`)
-- **Types/Interfaces**: `PascalCase` (e.g., `DebtorRecord`)
+When agents disagree:
+1. defer to `PRD.md` and `docs/SEED.md`
+2. apply canonical protocol/trust/safety constraints from the remaining docs set
+3. escalate unresolved conflicts to HITL with options and risk deltas
 
-#### TypeScript Best Practices
-- Always use explicit types for function parameters and return values
-- Use `interface` for object shapes, `type` for unions/aliases
-- Avoid `any` — use `unknown` if type is truly unknown
-
-#### Error Handling
-- Throw descriptive errors with context
-- Use try/catch for async operations
-- Log errors with appropriate context (avoid logging secrets)
-
-```typescript
-const { data, error } = await supabase.from('debtors').select('*').eq('id', id).single();
-if (error || !data) {
-  throw new Error(`Failed to fetch debtor: ${error?.message}`);
-}
-```
-
-#### React/Next.js Patterns
-- Use Server Components by default, Client Components only when needed ('use client')
-- Use Next.js App Router conventions (server actions in `actions/`, routes in `app/api/`)
-
-#### Formatting
-- Use Prettier for code formatting
-- 2-space indentation
-- Single quotes for strings (except JSX attributes)
-
-### Zig (cerberus)
-
-See `/root/cerberus/runtime/cerberus-core/AGENTS.md` for detailed Zig conventions.
-
-Key points:
-- **Identifiers**: `snake_case` for functions/variables, `PascalCase` for types
-- **Constants**: `SCREAMING_SNAKE_CASE`
-- Use `std.testing.allocator` in tests (leak-detecting)
-- Target `<1MB` binary size for release builds
-
-### Python (cerberus/deploy/pegasus-compat)
-
-- Follow PEP 8
-- Use type hints
-- 4-space indentation
-- snake_case for functions/variables
-
-## 4. Testing Guidelines
-
-### Unit Tests (dragun-app)
-- Place tests in `tests/` directory
-- Name files as `*.test.ts`
-- Use descriptive test names: `shouldReturnDebtorById`
-
-### E2E Tests (dragun-app)
-- Use Playwright
-- Place specs in `tests/e2e/`
-
-### Running Specific Tests
-```bash
-npx playwright test tests/demo.spec.ts
-npx playwright test tests/demo.spec.ts -g "should login"
-npx tsx tests/chunking.test.ts
-```
-
-## 5. Common Patterns
-
-### Environment Variables (dragun-app)
-- Use `lib/env.ts` for validation
-- Prefix public vars with `NEXT_PUBLIC_`
-- Never log or expose secrets
-
-### Database (Supabase)
-- Use migrations in `supabase/migrations/`
-- RLS policies for row-level security
-- Service role key for admin operations only
-
-### API Routes
-- Place in `app/api/` (Next.js App Router)
-- Return proper status codes
-- Validate input with Zod or similar
-
-## 6. Anti-Patterns to Avoid
-
-- **Never** use `any` type in TypeScript
-- **Never** commit secrets or credentials
-- **Never** skip error handling
-- **Never** make unrelated changes in a PR
-- **Avoid** deep nesting (max 3-4 levels)
-- **Avoid** magic numbers — use named constants
-
-## 4. HITL (Human-in-the-Loop)
-
-- **Destructive or outside-mesh actions** (medium-to-critical, big repercussions) require operator confirmation. The gateway returns 403 until the client sends **`X-HITL-Confirm: <action_id>`**.
-- **Agents must never** send the confirm header without explicit operator approval (e.g. via operator UI). Agents may call the endpoint; if they get 403 with `hitl_required: true`, they must surface the request to the operator and only retry with the header after approval.
-- Gated actions: `delete_session`, `register_org`, `revoke_org`, `attest_org`. See **docs/HITL.md** and **GET /api/hitl/actions**.
-
-## 5. Document for public / NotebookLM (single URL)
-
-- **Always document updates in `docs/updates/`** so they appear in the realtime docs bundle.
-- The single URL **`GET /docs/nexa`** (e.g. `https://<gateway>/gw/docs/nexa`) is built on each request from curated docs + **all `docs/updates/*.md`**. Operators and public use it for NotebookLM, media summarisation, and audio/video assets.
-- Write only core Nexa docs (architecture, runbooks, product updates). **Never** put logs, PII, vault content, or deployment-specific data in `docs/updates/`.
-- Use clear filenames: `YYYY-MM-DD-topic.md` or `topic-update.md`.
-- Treat the docs bundle as a source corpus for NotebookLM and self-supervised review. Write in a technical, neutral style that improves retrieval and synthesis quality rather than pushing a persona.
-- Prefer architecture, interfaces, invariants, failure modes, and recovery procedures over slogans or promotional framing.
-- Follow **[docs/NOTEBOOKLM_SOURCE_GUIDE.md](/root/docs/NOTEBOOKLM_SOURCE_GUIDE.md)** for source-writing rules that keep generated assets well-rounded without biasing tone negatively.
+High-impact decisions should include explicit veto checkpoint references in `TASKS.md`.

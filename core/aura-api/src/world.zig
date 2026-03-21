@@ -20,9 +20,8 @@ pub const Region = struct {
         _ = fmt;
         _ = options;
         try writer.print(
-            "{{\"id\":\"{s}\",\"owner_id\":\"{s}\",\"level\":{d},\"resources\":{d},\"fog_level\":{d},\"last_updated\":{d}}}",
-            .{ self.id, self.owner_id, self.level, self.resources, self.fog_level, self.last_updated },
-        );
+            \\{{"id":"{s}","owner_id":"{s}","level":{d},"resources":{d},"fog_level":{d:.2},"last_updated":{d}}}
+        , .{ self.id, self.owner_id, self.level, self.resources, self.fog_level, self.last_updated });
     }
 };
 

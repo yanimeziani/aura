@@ -1,0 +1,12 @@
+[Unit]
+Description=Meziani AI Labs Payment Gateway
+After=network.target
+
+[Service]
+User=yani
+WorkingDirectory=/home/yani/Aura/ai_agency_wealth
+ExecStart=/bin/bash /home/yani/Aura/ai_agency_wealth/run_server.sh
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

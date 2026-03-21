@@ -1,0 +1,12 @@
+.{
+    .name = .nexa_gateway,
+    .version = "0.1.0",
+    .fingerprint = 0x3027f0e32e56b435,
+    .minimum_zig_version = "0.15.2",
+    .dependencies = .{},
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}

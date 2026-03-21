@@ -1,0 +1,11 @@
+{
+  "title": "NotebookLM Packet \u2014 agency_metrics.log",
+  "source": "/root/ai_agency_wealth/agency_metrics.log",
+  "created_at": "2026-03-20T01:00:04",
+  "window": "tail(1500)",
+  "summary": [
+    "Log file missing or empty."
+  ],
+  "key_events": [],
+  "errors": []
+}

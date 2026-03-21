@@ -3,10 +3,10 @@
 ## Read First
 
 - [README.md](/root/README.md)
-- [docs/ARCHITECTURE.md](/root/docs/ARCHITECTURE.md)
-- [docs/PROTOCOL.md](/root/docs/PROTOCOL.md)
-- [docs/TRUST_MODEL.md](/root/docs/TRUST_MODEL.md)
-- [docs/THREAT_MODEL.md](/root/docs/THREAT_MODEL.md)
+- [docs/ARCHITECTURE_DISTILL.md](/root/docs/ARCHITECTURE_DISTILL.md)
+- [docs/MESH_WORLD_MODEL.md](/root/docs/MESH_WORLD_MODEL.md)
+- [docs/SEED.md](/root/docs/SEED.md)
+- [docs/AGENTS.md](/root/docs/AGENTS.md)
 
 Nexa is protocol-oriented infrastructure. Good contributions strengthen operator control, trust boundaries, transport resilience, recovery paths, or implementation clarity.
 

@@ -1,0 +1,22 @@
+.{
+    .name = .cerberus,
+    .version = "2026.3.1",
+    .fingerprint = 0x871985ae8afeccc0,
+    .minimum_zig_version = "0.15.2",
+    .dependencies = .{
+        .sqlite3 = .{
+            .path = "vendor/sqlite3",
+        },
+        .websocket = .{
+            .url = "git+https://github.com/karlseguin/websocket.zig#97fefafa59cc78ce177cff540b8685cd7f699276",
+            .hash = "websocket-0.1.0-ZPISdRlzAwBB_Bz2UMMqxYqF6YEVTIBoFsbzwPUJTHIc",
+        },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+        "vendor",
+        "LICENSE",
+    },
+}

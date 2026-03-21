@@ -1,0 +1,4 @@
+zig build -Doptimize=ReleaseSmall
+zig-out/bin/cerberus service stop
+zig-out/bin/cerberus service start
+journalctl --user -u cerberus -f

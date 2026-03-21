@@ -1,0 +1,183 @@
+#!/usr/bin/env bash
+# Single entry point for seamless operations inside the repo.
+# Run from repo root: ./run deploy | deploy-remote | start | stop | status | test | logs | monitor
+# Repo root = directory that contains sovereign-stack/ and ai_agency_web/.
+set -euo pipefail
+
+REPO_ROOT="${REPO_ROOT:-}"
+if [ -z "$REPO_ROOT" ]; then
+  # Resolve repo root: this script's dir or parent of sovereign-stack
+  SELF="$(cd "$(dirname "$0")" && pwd)"
+  if [ -d "$SELF/sovereign-stack" ] && [ -d "$SELF/ai_agency_web" ]; then
+    REPO_ROOT="$SELF"
+  elif [ -d "$SELF/../sovereign-stack" ] && [ -d "$SELF/../ai_agency_web" ]; then
+    REPO_ROOT="$(cd "$SELF/.." && pwd)"
+  else
+    echo "run: cannot find repo root (need sovereign-stack/ and ai_agency_web/). Set REPO_ROOT."
+    exit 1
+  fi
+fi
+
+export REPO_ROOT
+export SOVEREIGN_STACK_DIR="${SOVEREIGN_STACK_DIR:-$REPO_ROOT/sovereign-stack}"
+export FRONTEND_SRC="${FRONTEND_SRC:-$REPO_ROOT/ai_agency_web}"
+
+STACK="$SOVEREIGN_STACK_DIR"
+CMD="${1:-}"
+
+# Two-letter aliases (shift so $@ is rest of args)
+case "$CMD" in
+  dp) CMD=deploy; shift ;;
+  dr) CMD=deploy-remote; shift ;;
+  st) CMD=start; shift ;;
+  sp) CMD=stop; shift ;;
+  rs) CMD=restart; shift ;;
+  ss) CMD=status; shift ;;
+  te) CMD=test; shift ;;
+  lo) CMD=logs; shift ;;
+  sm) CMD=stream; shift ;;
+  sr) CMD=stream-remote; shift ;;
+  re) CMD=remote; shift ;;
+  mo) CMD=monitor; shift ;;
+  lp) CMD=launch; shift ;;
+  lr) CMD=launch-remote; shift ;;
+  rx) CMD=remote-exec; shift ;;
+  sy) CMD=sync-repo; shift ;;
+esac
+
+case "$CMD" in
+  deploy)
+    # Always deploy via SSH to VPS (build, rsync, start on VPS). Use deploy-local to run on this machine.
+    exec "$STACK/deploy-remote.sh"
+    ;;
+  deploy-local)
+    exec "$STACK/prod-control.sh" deploy
+    ;;
+  deploy-remote)
+    exec "$STACK/deploy-remote.sh"
+    ;;
+  launch)
+    # Always launch via SSH: deploy-remote then test on VPS. Use launch-local to run on this machine.
+    echo "[launch] deploy-remote..."
+    "$STACK/deploy-remote.sh"
+    echo "[launch] test on VPS..."
+    "$0" remote test
+    echo "[launch] done."
+    ;;
+  launch-local)
+    echo "[launch] deploy..."
+    "$STACK/prod-control.sh" deploy
+    echo "[launch] test..."
+    "$STACK/prod-control.sh" test
+    echo "[launch] done."
+    ;;
+  launch-remote)
+    echo "[launch-remote] deploy-remote..."
+    "$STACK/deploy-remote.sh"
+    echo "[launch-remote] test on VPS..."
+    "$0" remote test
+    echo "[launch-remote] done."
+    ;;
+  sync-repo)
+    exec "$STACK/sync-repo-to-vps.sh"
+    ;;
+  stream-remote)
+    exec "$0" remote stream
+    ;;
+  remote-exec)
+    # Run arbitrary command on VPS via SSH (e.g. ./run rx ip addr, ./run rx df -h)
+    [ $# -ge 1 ] || { echo "run: rex requires a command (e.g. rex ip addr, rex df -h)"; exit 1; }
+    if [ ! -f "$STACK/.env" ]; then
+      echo "run: $STACK/.env missing. Set VPS_HOST, VPS_USER (use Tailscale hostname for VPS_HOST)."
+      exit 1
+    fi
+    set -a
+    # shellcheck source=/dev/null
+    source "$STACK/.env"
+    set +a
+    for v in VPS_HOST VPS_USER; do
+      [ -n "${!v:-}" ] || { echo "run: $v not set in $STACK/.env"; exit 1; }
+    done
+    if [ -n "${SSH_KEY_PATH:-}" ]; then
+      RSH="ssh -i $SSH_KEY_PATH -o StrictHostKeyChecking=accept-new"
+    else
+      RSH="ssh -o StrictHostKeyChecking=accept-new"
+    fi
+    exec $RSH "${VPS_USER}@${VPS_HOST}" "$*"
+    ;;
+  remote)
+    # Run any ./run <cmd> on the VPS from this device (e.g. ./run re stream, ./run re status)
+    [ $# -ge 1 ] || { echo "run: remote requires a command (e.g. re stream, re status, re lo caddy)"; exit 1; }
+    if [ ! -f "$STACK/.env" ]; then
+      echo "run: $STACK/.env missing. Set VPS_HOST, VPS_USER, VPS_REPO_PATH (use Tailscale hostname for VPS_HOST)."
+      exit 1
+    fi
+    set -a
+    # shellcheck source=/dev/null
+    source "$STACK/.env"
+    set +a
+    for v in VPS_HOST VPS_USER VPS_REPO_PATH; do
+      [ -n "${!v:-}" ] || { echo "run: $v not set in $STACK/.env"; exit 1; }
+    done
+    if [ -n "${SSH_KEY_PATH:-}" ]; then
+      RSH="ssh -i $SSH_KEY_PATH -o StrictHostKeyChecking=accept-new"
+    else
+      RSH="ssh -o StrictHostKeyChecking=accept-new"
+    fi
+    REMOTE_CMD="cd ${VPS_REPO_PATH} && ./run $*"
+    exec $RSH "${VPS_USER}@${VPS_HOST}" "$REMOTE_CMD"
+    ;;
+  start|stop|restart|status|test|logs|monitor)
+    exec "$STACK/prod-control.sh" "$CMD" "$@"
+    ;;
+  stream)
+    # Drop-in streaming: deploy.log + compose logs (Ctrl+C exits both)
+    DEPLOY_LOG="$STACK/deploy.log"
+    TAIL_PID=""; COMPOSE_PID=""
+    cleanup() {
+      [ -n "$TAIL_PID" ] && kill "$TAIL_PID" 2>/dev/null || true
+      [ -n "$COMPOSE_PID" ] && kill "$COMPOSE_PID" 2>/dev/null || true
+      exit 0
+    }
+    trap cleanup INT TERM
+    if [ -f "$DEPLOY_LOG" ]; then
+      tail -f "$DEPLOY_LOG" 2>/dev/null | sed 's/^/[deploy] /' &
+      TAIL_PID=$!
+    fi
+    if docker info >/dev/null 2>&1 || sudo docker info >/dev/null 2>&1; then
+      (cd "$STACK" && sudo docker compose logs -f 2>&1) | sed 's/^/[compose] /' &
+      COMPOSE_PID=$!
+    else
+      echo "[stream] Docker not available; streaming deploy.log only (Ctrl+C to exit)."
+    fi
+    wait 2>/dev/null || true
+    cleanup
+    ;;
+  "")
+    echo "usage: ./run <cmd> [args...]"
+    echo ""
+    echo "  Two-letter: dp dr st sp rs ss te lo sm sr re mo lp lr rx sy"
+    echo "  dp  deploy         build, rsync to VPS, restart stack (SSH; needs .env VPS_*)"
+    echo "  dr  deploy-remote same as deploy"
+    echo "  deploy-local      build, copy to stack, start (this machine only)"
+    echo "  lp  launch-local  deploy then test on this machine"
+    echo "  lr  launch        full sequence: deploy (VPS) then test on VPS"
+    echo "  st  start           docker compose up -d"
+    echo "  sp  stop            docker compose down"
+    echo "  rs  restart         docker compose up -d --force-recreate"
+    echo "  ss  status         docker compose ps"
+    echo "  te  test           smoke check Caddy + n8n"
+    echo "  lo  logs [service]  tail stack logs (e.g. lo caddy)"
+    echo "  sm  stream         drop-in: deploy.log + compose logs"
+    echo "  sr  stream-remote  stream from VPS (any Tailscale device)"
+    echo "  re  remote <cmd>    run ./run <cmd> on VPS (e.g. re sm, re ss, re lo)"
+    echo "  rx  remote-exec     run arbitrary command on VPS (e.g. rx ip addr, rx df -h)"
+    echo "  sy  sync-repo       push repo to VPS over SSH (no GitHub key); then run bootstrap on VPS"
+    echo "  mo  monitor        watch status every 5s"
+    exit 0
+    ;;
+  *)
+    echo "run: unknown command '$CMD'"
+    exit 1
+    ;;
+esac

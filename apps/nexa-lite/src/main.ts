@@ -35,23 +35,17 @@ if (!app) {
 }
 
 app.innerHTML = `
-  <div class="metallic-liquid"></div>
-  <div class="metallic-overlay"></div>
   <main class="shell">
     <section class="hero">
-      <div class="eyebrow">Nexa Sovereign Governance</div>
-      <h1>World State Mapped.</h1>
+      <div class="eyebrow">Nexa Lite Control Surface</div>
+      <h1>Reduce supply chain. Keep operator speed.</h1>
       <p>
-        The Zig Motor (\`aura-api\`) handles region transition protocols while the Zig Canvas (\`aura-canvas\`) projects the state.
+        This shell is the replacement target for the current Next.js-heavy surface:
+        lightweight TypeScript, local design system, and API routes served by a Zig gateway.
       </p>
-      
-      <div id="canvas-container">
-        <canvas id="aura-canvas"></canvas>
-      </div>
-
       <div class="button-row">
-        <button class="button primary" id="refresh">Sync World State</button>
-        <button class="button" id="routes">Protocol Inventory</button>
+        <button class="button primary" id="refresh">Refresh Gateway State</button>
+        <button class="button" id="routes">Show Route Inventory</button>
       </div>
     </section>
 
@@ -106,115 +100,6 @@ app.innerHTML = `
     </section>
   </main>
 `;
-
-function initCanvas() {
-  const canvas = document.getElementById("aura-canvas") as HTMLCanvasElement;
-  if (!canvas) return;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return;
-
-  function resize() {
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
-  }
-  window.addEventListener("resize", resize);
-  resize();
-
-  const points: { x: number, y: number, z: number, color: string, label?: string }[] = [];
-  // World Model Nodes
-  const regions = ["Versailles", "Algeria", "Canada", "Australia", "UN Center"];
-  regions.forEach((r, i) => {
-    points.push({
-      x: Math.cos(i * (Math.PI * 2 / regions.length)) * 4,
-      y: Math.sin(i * (Math.PI * 2 / regions.length)) * 4,
-      z: 8,
-      color: "#57e3b0",
-      label: r
-    });
-  });
-
-  // Background Mesh
-  for (let i = 0; i < 150; i++) {
-    points.push({
-      x: (Math.random() - 0.5) * 15,
-      y: (Math.random() - 0.5) * 15,
-      z: Math.random() * 15 + 2,
-      color: "rgba(255, 255, 255, 0.2)"
-    });
-  }
-
-  function project(p: typeof points[0]) {
-    const fov = Math.PI / 2.2;
-    const aspect = canvas.width / canvas.height;
-    const f = 1.0 / Math.tan(fov / 2.0);
-    
-    const px = (p.x * f) / p.z;
-    const py = (p.y * f * aspect) / p.z;
-    
-    const sx = (px + 1.0) * 0.5 * canvas.width;
-    const sy = (py + 1.0) * 0.5 * canvas.height;
-    
-    return { sx, sy };
-  }
-
-  let frame = 0;
-  function draw() {
-    frame++;
-    ctx.fillStyle = "#000";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Dynamic rotation
-    const rotX = Math.sin(frame * 0.005) * 2;
-    const rotY = Math.cos(frame * 0.005) * 2;
-
-    points.forEach(p => {
-      // Simple rotation for the demo
-      const x = p.x * Math.cos(frame * 0.01) - p.z * Math.sin(frame * 0.01);
-      const z = p.x * Math.sin(frame * 0.01) + p.z * Math.cos(frame * 0.01);
-      
-      const { sx, sy } = project({ ...p, x, z: z + 10 });
-      
-      if (sx >= 0 && sx < canvas.width && sy >= 0 && sy < canvas.height) {
-        const size = (1 / (z + 10)) * 25;
-        ctx.fillStyle = p.color;
-        ctx.globalAlpha = Math.min(1, (20 - (z + 10)) / 10);
-        
-        if (p.label) {
-          ctx.beginPath();
-          ctx.arc(sx, sy, size * 1.5, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.font = `${Math.max(10, size * 2)}px var(--font-mono)`;
-          ctx.fillText(p.label, sx + size * 2, sy + 5);
-          
-          // Draw connections to center
-          ctx.strokeStyle = "rgba(87, 227, 176, 0.2)";
-          const center = project({ x: 0, y: 0, z: 15, color: "" });
-          ctx.beginPath();
-          ctx.moveTo(sx, sy);
-          ctx.lineTo(center.sx, center.sy);
-          ctx.stroke();
-        } else {
-          ctx.fillRect(sx, sy, size, size);
-        }
-      }
-    });
-
-    requestAnimationFrame(draw);
-  }
-  draw();
-}
-
-initCanvas();
-
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').then((reg) => {
-      console.log('Nexa PWA ready on network.', reg.scope);
-    }).catch((err) => {
-      console.log('Nexa PWA registration failed: ', err);
-    });
-  });
-}
 
 const logEl = byId("log");
 
