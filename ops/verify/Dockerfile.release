@@ -1,7 +1,15 @@
 FROM node:20-bookworm-slim
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends bash ca-certificates git make python3 zig \
+    && apt-get install -y --no-install-recommends \
+        bash \
+        ca-certificates \
+        curl \
+        git \
+        make \
+        python3 \
+        xz-utils \
+    && curl -L https://ziglang.org/download/0.13.0/zig-linux-x86_64-0.13.0.tar.xz | tar -xJ -C /usr/local/bin --strip-components=1 \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /workspace

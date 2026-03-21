@@ -26,14 +26,14 @@ This seed is the memory umbrella for:
 - `LICENSE.md`
 - `ARCHITECHTURE.md`
 
-## 2) Layer-0 Spec-RAG Contract
+## 2) Layer-0 Spec-RAG Contract (Monarch Engine)
 
-Layer-0 RAG in this repository follows hard rules:
-- retrieval starts from canonical markdown anchors and machine specs
-- planning is versioned as forge packets before execution
-- implementation must map to explicit packet acceptance criteria
-- all outcomes must write back to markdown working memory
-- diagrams and text memory must stay synchronized
+This project operates on **BMAD v6** loops protected by the **Ralph Wiggum Safeguard** and **HARD INTERDICTION** on external dependencies.
+- **Repository**: [https://github.com/mezianiai/nexa](https://github.com/mezianiai/nexa)
+- **Stack Constraints**: Strictly **Standard Zig (no external deps), TypeScript, HTML, CSS**.
+- **RAG RAM Integrity**: Retrieval is anchored in markdown anchors and machine specs; RAM must never steer towards external options.
+- **No Infinite Markdown**: Canonical memory is strictly limited to anchors in `docs/RAG_CORPUS_MANIFEST.md`.
+- **Daily Distill**: Memory plane is compressed daily in `docs/ARCHITECTURE_DISTILL.md`.
 
 Canonical retrieval anchors:
 - `README.md`
