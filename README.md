@@ -34,7 +34,21 @@ Model defaults:
 - [Security Policy](./SECURITY.md)
 - [Support](./SUPPORT.md)
 - [Governance](./GOVERNANCE.md)
+- [Agent Collaboration Center](./docs/AGENTS.md)
+- [Layer-0 Seed Memory](./docs/SEED.md)
+- [Electro Spatial RAG](./docs/ELECTRO_SPATIAL_RAG.md)
+- [Tasks Board](./TASKS.md)
+- [Stack Baseline](./STACK.md)
+- [Marketing](./MARKETING.md)
+- [ICP](./ICP.md)
+- [Legal](./LEGAL.md)
 - [Legacy Policy](./docs/LEGACY_POLICY.md)
+- [ULaval Onboarding Summary](./ULAVAL_ONBOARDING_SUMMARY.md)
+- [Transfer Docs Index](./docs/transfer/README.md)
+- [ULaval Transfer Protocol](./docs/transfer/ULAVAL_TRANSFER_PROTOCOL.md)
+- [OSS Source Register](./docs/transfer/OSS_SOURCE_REGISTER.md)
+- [Transfer Checklist](./docs/transfer/TRANSFER_CHECKLIST.md)
+- [Handover Package Index](./docs/transfer/HANDOVER_PACKAGE_INDEX.md)
 
 ---
 

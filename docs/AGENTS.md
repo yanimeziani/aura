@@ -1,186 +1,88 @@
-# AGENTS.md — Agent Coding Guidelines
+# AGENTS.md
 
-This file provides coding guidelines for agents working in this repository.
+Status: Multi-agent collaboration center for this repository.
 
-## 1. Project Overview
+## 1) Purpose
 
-This repository contains multiple projects:
-- **dragun-app**: Next.js 16/React 19/TypeScript application (main web app)
-- **cerberus**: Zig-based autonomous AI assistant runtime
-- **pegasus**: Kotlin/Android mission control for Cerberus agents
-- **openclaw-config**: [DEPRECATED] Docker/Python configurations (see cerberus/policies/)
-- **openclaw-tui**: [DEPRECATED] Terminal UI (replaced by Pegasus)
+This file coordinates human + agent collaboration for architecture exploration, implementation, review, and maintenance.
 
-## 2. Build, Lint, and Test Commands
+Key rule:
+- Use open repository standards only (`AGENTS.md`, `SEED.md`, `TASKS.md`).
+- Do not rely on proprietary agent-instruction markdown conventions as source-of-truth.
 
-### dragun-app (Next.js/TypeScript)
+## 2) Canonical Collaboration Files
 
-```bash
-# Development
-npm run dev                    # Start dev server
+- `docs/SEED.md` -> Layer-0 system prompt memory and RAG anchor
+- `docs/AGENTS.md` -> this collaboration protocol
+- `TASKS.md` -> active workboard and execution status
+- `PRD.md` -> product requirements and scope intent
+- `STACK.md` -> technical stack source-of-truth
+- `MARKETING.md` -> messaging source-of-truth
+- `ICP.md` -> ideal collaborator profile source-of-truth
+- `SECURITY.md` -> security policy source-of-truth
+- `LEGAL.md` -> legal policy source-of-truth
+- `docs/ELECTRO_SPATIAL_RAG.md` -> Electro Spatial RAG architecture distill
+- `LICENSE` -> legal baseline
+- `docs/transfer/OSS_SOURCE_REGISTER.md` -> open-source attribution registry
 
-# Build
-npm run build                  # Production build
-npm run start                 # Start production server
+## 3) Multi-Agent Roles
 
-# Linting
-npm run lint                   # Run ESLint
+- Architect Agent
+  - maintains architecture maps, interfaces, boundaries, and invariants
+- Builder Agent
+  - implements scoped changes with testable outcomes
+- Reviewer Agent
+  - checks regressions, trust/security impact, and docs drift
+- Research Agent
+  - expands evidence and source citations for design decisions
+- Release Agent
+  - verifies readiness gates and handover integrity
 
-# Testing
-npm run test:unit              # Run unit tests (tsx)
-npm run test:e2e              # Run Playwright e2e tests
-npm run test:e2e:ui           # Run e2e tests with UI
-npm run test                   # Run all tests (unit + e2e)
+## 4) Layer-0 RAG Workflow
 
-# Run a single test file
-npx playwright test tests/demo.spec.ts
-npx tsx tests/chunking.test.ts
+Every agent cycle should follow:
+1. retrieve from canonical anchors (`SEED.md`, `PRD.md`, core docs/specs)
+2. validate intent against active tasks in `TASKS.md`
+3. implement or propose bounded change
+4. refresh memory artifacts when structure changed
+5. cite repository paths and OSS sources
 
-# Database
-npm run db:check              # Run Supabase migrations and checks
-npm run audit                  # Security audit
-npm run i18n:check            # Check i18n parity
-```
+## 5) Mandatory Update Triggers
 
-### cerberus (Zig)
+When these files change, refresh `docs/SEED.md` in the same change set:
 
-```bash
-# Build
-zig build                      # Dev build
-zig build -Doptimize=ReleaseSmall  # Release build (<1MB target)
+- `PRD.md` -> update mission, goals, and phase memory
+- stack/runtime configs (`package.json`, build/runtime files) -> update stack baseline
+- `STACK.md` -> update SEED stack section and related architecture memory if boundaries changed
+- `MARKETING.md` and `ICP.md` -> update SEED product/audience memory
+- architecture files in `docs/` or `specs/` -> update ASCII + Mermaid memory
+- `docs/ELECTRO_SPATIAL_RAG.md` -> update when retrieval topology, subsystem graph, or context routing changes
+- `TASKS.md` -> update task synchronization status in SEED
+- `SECURITY.md` -> update SEED security/legal section
+- `LEGAL.md` -> update SEED security/legal section
+- `LICENSE` -> update license and attribution section in SEED
 
-# Testing
-zig build test --summary all   # Run all tests (3371+ tests)
-```
+If an edit changes architecture and SEED is not updated, the change is incomplete.
 
-## 3. Code Style Guidelines
+## 6) Neurodiverse-Friendly Engineering Rules
 
-### General Principles
+- Keep docs chunked with short, explicit sections.
+- Keep terms consistent across files.
+- Prefer deterministic names and avoid hidden abbreviations.
+- Include both text and diagram representations for architecture.
+- Avoid context switching by linking every task to exact file paths.
 
-- **KISS**: Keep code simple and readable. Avoid clever tricks.
-- **YAGNI**: Don't add code "just in case". Wait for concrete requirements.
-- **Fail Fast**: Prefer explicit errors over silent failures.
-- **Secure by Default**: Deny access first, grant explicitly.
+## 7) Minimum Quality Gate for Agent Changes
 
-### TypeScript/JavaScript (dragun-app)
+- scope is explicit
+- tests/checks are documented or executed
+- architecture memory is refreshed when needed
+- attribution is updated for external OSS influences
+- no secrets or private credentials included
 
-#### Imports
-```typescript
-// Absolute imports for project modules (preferred)
-import { getUser } from '@/lib/user';
-import { Button } from '@/components/ui';
+## 8) Conflict Resolution
 
-// Third-party imports first, then local
-import { useState, useEffect } from 'react';
-import { streamText } from 'ai';
-import { supabaseAdmin } from '@/lib/supabase-admin';
-```
-
-#### Naming Conventions
-- **Files**: `kebab-case.ts` or `PascalCase.tsx` (components)
-- **Components**: `PascalCase` (e.g., `Dashboard.tsx`)
-- **Functions/variables**: `camelCase` (e.g., `getUserById`)
-- **Types/Interfaces**: `PascalCase` (e.g., `DebtorRecord`)
-
-#### TypeScript Best Practices
-- Always use explicit types for function parameters and return values
-- Use `interface` for object shapes, `type` for unions/aliases
-- Avoid `any` — use `unknown` if type is truly unknown
-
-#### Error Handling
-- Throw descriptive errors with context
-- Use try/catch for async operations
-- Log errors with appropriate context (avoid logging secrets)
-
-```typescript
-const { data, error } = await supabase.from('debtors').select('*').eq('id', id).single();
-if (error || !data) {
-  throw new Error(`Failed to fetch debtor: ${error?.message}`);
-}
-```
-
-#### React/Next.js Patterns
-- Use Server Components by default, Client Components only when needed ('use client')
-- Use Next.js App Router conventions (server actions in `actions/`, routes in `app/api/`)
-
-#### Formatting
-- Use Prettier for code formatting
-- 2-space indentation
-- Single quotes for strings (except JSX attributes)
-
-### Zig (cerberus)
-
-See `/root/cerberus/runtime/cerberus-core/AGENTS.md` for detailed Zig conventions.
-
-Key points:
-- **Identifiers**: `snake_case` for functions/variables, `PascalCase` for types
-- **Constants**: `SCREAMING_SNAKE_CASE`
-- Use `std.testing.allocator` in tests (leak-detecting)
-- Target `<1MB` binary size for release builds
-
-### Python (cerberus/deploy/pegasus-compat)
-
-- Follow PEP 8
-- Use type hints
-- 4-space indentation
-- snake_case for functions/variables
-
-## 4. Testing Guidelines
-
-### Unit Tests (dragun-app)
-- Place tests in `tests/` directory
-- Name files as `*.test.ts`
-- Use descriptive test names: `shouldReturnDebtorById`
-
-### E2E Tests (dragun-app)
-- Use Playwright
-- Place specs in `tests/e2e/`
-
-### Running Specific Tests
-```bash
-npx playwright test tests/demo.spec.ts
-npx playwright test tests/demo.spec.ts -g "should login"
-npx tsx tests/chunking.test.ts
-```
-
-## 5. Common Patterns
-
-### Environment Variables (dragun-app)
-- Use `lib/env.ts` for validation
-- Prefix public vars with `NEXT_PUBLIC_`
-- Never log or expose secrets
-
-### Database (Supabase)
-- Use migrations in `supabase/migrations/`
-- RLS policies for row-level security
-- Service role key for admin operations only
-
-### API Routes
-- Place in `app/api/` (Next.js App Router)
-- Return proper status codes
-- Validate input with Zod or similar
-
-## 6. Anti-Patterns to Avoid
-
-- **Never** use `any` type in TypeScript
-- **Never** commit secrets or credentials
-- **Never** skip error handling
-- **Never** make unrelated changes in a PR
-- **Avoid** deep nesting (max 3-4 levels)
-- **Avoid** magic numbers — use named constants
-
-## 4. HITL (Human-in-the-Loop)
-
-- **Destructive or outside-mesh actions** (medium-to-critical, big repercussions) require operator confirmation. The gateway returns 403 until the client sends **`X-HITL-Confirm: <action_id>`**.
-- **Agents must never** send the confirm header without explicit operator approval (e.g. via operator UI). Agents may call the endpoint; if they get 403 with `hitl_required: true`, they must surface the request to the operator and only retry with the header after approval.
-- Gated actions: `delete_session`, `register_org`, `revoke_org`, `attest_org`. See **docs/HITL.md** and **GET /api/hitl/actions**.
-
-## 5. Document for public / NotebookLM (single URL)
-
-- **Always document updates in `docs/updates/`** so they appear in the realtime docs bundle.
-- The single URL **`GET /docs/nexa`** (e.g. `https://<gateway>/gw/docs/nexa`) is built on each request from curated docs + **all `docs/updates/*.md`**. Operators and public use it for NotebookLM, media summarisation, and audio/video assets.
-- Write only core Nexa docs (architecture, runbooks, product updates). **Never** put logs, PII, vault content, or deployment-specific data in `docs/updates/`.
-- Use clear filenames: `YYYY-MM-DD-topic.md` or `topic-update.md`.
-- Treat the docs bundle as a source corpus for NotebookLM and self-supervised review. Write in a technical, neutral style that improves retrieval and synthesis quality rather than pushing a persona.
-- Prefer architecture, interfaces, invariants, failure modes, and recovery procedures over slogans or promotional framing.
-- Follow **[docs/NOTEBOOKLM_SOURCE_GUIDE.md](/root/docs/NOTEBOOKLM_SOURCE_GUIDE.md)** for source-writing rules that keep generated assets well-rounded without biasing tone negatively.
+When agents disagree:
+1. defer to `PRD.md` for product intent
+2. defer to `docs/PROTOCOL.md`, `docs/TRUST_MODEL.md`, `docs/THREAT_MODEL.md` for safety/trust constraints
+3. log unresolved decision in `TASKS.md` with owner and due date
