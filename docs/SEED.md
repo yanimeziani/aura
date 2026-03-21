@@ -26,14 +26,13 @@ This seed is the memory umbrella for:
 - `LICENSE.md`
 - `ARCHITECHTURE.md`
 
-## 2) Layer-0 Spec-RAG Contract
+## 2) Layer-0 Spec-RAG Contract (Monarch Engine)
 
-Layer-0 RAG in this repository follows hard rules:
-- retrieval starts from canonical markdown anchors and machine specs
-- planning is versioned as forge packets before execution
-- implementation must map to explicit packet acceptance criteria
-- all outcomes must write back to markdown working memory
-- diagrams and text memory must stay synchronized
+This project operates on **BMAD v6** (Analysis, Plan, Solutioning, Implementation) loops protected by the **Ralph Wiggum Safeguard**.
+- **No Infinite Markdown**: Canonical memory is strictly limited to anchors in `docs/RAG_CORPUS_MANIFEST.md`.
+- **Opinionated RAG**: Retrieval is anchored in markdown specs and versioned forge packets.
+- **Daily Distill**: Lightness of the RAG RAM is maintained via daily architectural distillation in `docs/ARCHITECTURE_DISTILL.md`.
+- **HITL/Veto Control**: Significant actions require explicit forge packet verification and manual approval.
 
 Canonical retrieval anchors:
 - `README.md`

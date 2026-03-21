@@ -40,10 +40,19 @@ This maps cleanly onto the canonical memory framework:
 - duplicate architecture visual files not aligned with current world model
 - large export artifacts that are not maintainable as canonical memory
 
-## 4) Canonical Decision
+## 4) Daily Distill (2026-03-21)
+
+The architecture has been unified under the **Monarch Engine Protocol**:
+- **Consolidation**: Root and `docs/` anchors have been prioritized for all RAG retrieval.
+- **Protocol Adoption**: BMAD v6 (Analysis-Plan-Solution-Implementation) is now the required agent workflow.
+- **Loop Breaking**: The Ralph Wiggum Safeguard is enforced to prevent stagnant or infinite markdown generation.
+- **Lightness**: Memory plane is strictly limited to canonical anchors defined in `docs/RAG_CORPUS_MANIFEST.md`.
+- **Identity**: Centralized SSH (ED25519) for global GitHub ID and SanDisk "Smart Partitions" for tripartite key structure.
+
+## 5) Canonical Decision
 
 Canonical architecture memory now uses:
 - `docs/MESH_WORLD_MODEL.md` for exhaustive system map
-- `docs/ARCHITECTURE_DISTILL.md` for compatibility distillation
+- `docs/ARCHITECTURE_DISTILL.md` for daily compatibility distillation
 
 Non-canonical duplicates should be removed or archived outside the canonical docs set.

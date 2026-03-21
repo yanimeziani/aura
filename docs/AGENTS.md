@@ -40,16 +40,23 @@ Provider neutrality rule:
 - each task packet must declare inputs, outputs, constraints, and verification
 - packet format is invariant across Gemini, OSS, and any future provider
 
-## 4) Spec-RAG Forge Lifecycle
+## 4) Spec-RAG Forge Lifecycle (BMAD v6)
 
-Each forge cycle follows this exact order:
-1. ingest canonical memory (`SEED`, `AGENTS`, `FORGE_24H_PLAN`, relevant specs)
-2. select or create a versioned forge packet in `TASKS.md`
-3. execute bounded work against declared specs
-4. run verification checks and capture evidence
-5. write outcomes and drift notes back to markdown memory
+Each forge cycle follows the **BMAD v6** (Analysis, Plan, Solutioning, Implementation) order:
+1.  **Analysis**: Ingest canonical memory (`SEED`, `AGENTS`, `FORGE_24H_PLAN`, active specs) to codify context and gaps.
+2.  **Plan**: Select or create a versioned forge packet in `TASKS.md` with explicit acceptance checks.
+3.  **Solutioning**: Define the architecture/data path for the smallest shippable outcome per spec packet.
+4.  **Implementation**: Execute bounded work, run verification checks, and write outcomes/evidence back to markdown memory.
 
-Any cycle without memory writeback is incomplete.
+Any cycle without markdown memory writeback is considered out of protocol.
+
+## 5) Algorithmic Loop Safeguard (Ralph Wiggum)
+
+To prevent "everything is fine while the house is burning" loops, agents must apply the **Ralph Wiggum Safeguard**:
+- **Continuous State Detection**: At every BMAD step, verify that current progress remains aligned with the objective.
+- **Loop-Breaking Protocol**: If a state detection identifies a redundant or stagnant cycle (the "Ralph Wiggum" state), the agent must immediately report the drift and abort to the nearest stable HITL anchor.
+- **No Infinite Markdown**: Do not create new markdown files to resolve loops; refine existing canonical anchors only.
+- **Distill-by-Design**: Maintain a light memory plane via daily distillation in `docs/ARCHITECTURE_DISTILL.md`.
 
 ## 5) Task Packet Contract (Required)
 
