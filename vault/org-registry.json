@@ -2,10 +2,12 @@
   "version": "1.0",
   "sovereign_org": {
     "org_id": "meziani-labs",
-    "legal_name": "Meziani Labs",
+    "legal_name": "Meziani AI Digital Studio",
     "country_code": "CA",
     "jurisdiction": "QC",
     "org_type": "sole_trader",
+    "central_node": "Algeria",
+    "event_host": "Grid Safe Olympics",
     "domain": "meziani.org",
     "contact_email": "yani@meziani.ai",
     "trust_tier": "sovereign",

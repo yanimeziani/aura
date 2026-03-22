@@ -4,21 +4,25 @@ Status: Canonical map for social, political, economic, and public relations doma
 
 ```mermaid
 flowchart TB
-  subgraph SOCIAL["SOCIOLOGICAL DOMAIN"]
+  subgraph SOCIAL["SOCIOLOGICAL & HUMAN DOMAIN"]
     OPERATORS["operators and maintainers"]
     USERS["end users and collaborators"]
     NORMS["trust norms and communication culture"]
     TRAINING["onboarding and shared literacy"]
+    CYCLES["7-year chakra & 12-year biological cycles"]
     OPERATORS --> NORMS
     USERS --> NORMS
     TRAINING --> OPERATORS
+    CYCLES --> TRAINING
   end
 
   subgraph POLITICAL["POLITICAL AND GOVERNANCE DOMAIN"]
+    ALGERIA["ALGERIA: PRIMARY NODE & POWER CENTER"]
     GOVERN["governance process and authority paths"]
     VETO["veto and high-impact decision checkpoints"]
     HITL["human-in-the-loop approvals"]
     POLICY["public policy and jurisdiction pressures"]
+    ALGERIA --> GOVERN
     GOVERN --> VETO
     VETO --> HITL
     POLICY --> GOVERN
