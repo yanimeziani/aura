@@ -1,0 +1,3 @@
+[submodule "core/google-mcp"]
+	path = core/google-mcp
+	url = https://github.com/taylorwilsdon/google_workspace_mcp.git

@@ -66,11 +66,14 @@ def cmd_help() -> None:
     print("  docs-bundle   Build NotebookLM-safe doc bundle")
     print("  publish-notebooklm  Build + manifest + publish NotebookLM source bundle")
     print("  notebooklm-upload   Optional Playwright upload into NotebookLM UI")
+    print("  bridge        Sync bunker tasks and docs to ClickUp/NotebookLM")
+    print("  cinematic     Run the Zero-Friction Cinematic Forge")
     print("  smoke-test    Smoke-test deployed mesh")
     print("  demo          Instant demo: in-house Zig gateway locally")
     print("  autopilot     Run the unified automation control loop")
     print("  board         Consult the NEXO Board (Groq-powered advisory)")
     print("  qr            Generate Level -1 operator activation QR code")
+    print("  identity      Link digital identity (yani@meziani.ai, mezianiyani0@gmail.com)")
     print("")
     print("Commands:")
     print("  gateway     Start syncing gateway (port 8765)")
@@ -169,12 +172,37 @@ def cmd_notebooklm_upload(root: Path) -> int:
     return _run(["node", str(script)], cwd=root)
 
 
+def cmd_bridge(root: Path) -> int:
+    script = root / "tools" / "bunker_bridge.py"
+    if not script.exists():
+        print("bunker_bridge.py not found.", file=sys.stderr)
+        return 1
+    return _run([sys.executable, str(script)], cwd=root)
+
+
+def cmd_cinematic(root: Path) -> int:
+    script = root / "tools" / "cinematic_forge.py"
+    if not script.exists():
+        print("cinematic_forge.py not found.", file=sys.stderr)
+        return 1
+    # Use remaining arguments
+    args = sys.argv[2:]
+    if not args or len(args) < 2:
+        print("Usage: nexa cinematic --title <title> --concept <concept>", file=sys.stderr)
+        return 1
+    return _run([sys.executable, str(script)] + args, cwd=root)
+
+
 def cmd_deploy_mesh(root: Path) -> int:
     script = root / "ops" / "scripts" / "deploy-mesh.sh"
     if not script.exists():
         print("deploy-mesh.sh not found.", file=sys.stderr)
         return 1
-    return _run_bash(script, env_extra={"REPO_ROOT": str(root)})
+    return _run_bash(
+        script,
+        *sys.argv[2:],
+        env_extra={"REPO_ROOT": str(root), "NEXA_ROOT": str(root)},
+    )
 
 
 def cmd_smoke_test(root: Path) -> int:
@@ -246,6 +274,10 @@ def cmd_qr(root: Path) -> int:
     return subprocess.run([sys.executable, str(root / "tools" / "nexa_qr.py")], cwd=str(root)).returncode
 
 
+def cmd_identity(root: Path) -> int:
+    return _run([sys.executable, str(root / "tools" / "mcp_google_link.py")], cwd=str(root))
+
+
 def main() -> int:
     root = _root()
     os.environ["NEXA_ROOT"] = str(root)
@@ -259,6 +291,8 @@ def main() -> int:
         return cmd_board(root)
     if cmd == "qr":
         return cmd_qr(root)
+    if cmd == "identity":
+        return cmd_identity(root)
     if cmd == "deploy-mesh":
         return cmd_deploy_mesh(root)
     if cmd == "backup":
@@ -267,6 +301,10 @@ def main() -> int:
         return cmd_publish_notebooklm(root)
     if cmd == "notebooklm-upload":
         return cmd_notebooklm_upload(root)
+    if cmd == "bridge":
+        return cmd_bridge(root)
+    if cmd == "cinematic":
+        return cmd_cinematic(root)
     if cmd == "docs-bundle":
         return cmd_docs_bundle(root)
     if cmd == "smoke-test":

@@ -1,5 +1,12 @@
 {
   "version": "1.0",
+  "quebec_public_sector_identity": {
+    "spec_path": "specs/quebec_req_public_identity.json",
+    "registry_authority_fr": "Registraire des entreprises du Québec",
+    "public_lookup_url": "https://www.registreentreprises.gouv.qc.ca/",
+    "neq_rule": "Record Numéro d'entreprise du Québec (NEQ) only after REQ lookup under HITL; never invent or copy from unofficial sources.",
+    "purpose": "Bind major Québec public and para-public legal persons to mesh grid stewardship so the state-owned or mandated entity—not an unnamed vendor—owns mandate, work product, and team accountability for protecting its grid."
+  },
   "sovereign_org": {
     "org_id": "meziani-labs",
     "legal_name": "Meziani AI Digital Studio",

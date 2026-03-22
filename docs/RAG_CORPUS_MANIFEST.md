@@ -23,6 +23,10 @@ These are the only in-bounds markdown files in `docs/`:
 - `docs/RAG_CORPUS_MANIFEST.md`
 - `docs/ARCHITECTURE_DISTILL.md`
 - `docs/MEZIANI_AI_AUDIT_MEDIA_GEN_AI_FORGE.md`
+- `docs/UNIFIED_ACCESS.md`
+- `docs/MONTESSORI_FRONTEND_SKILLS.md`
+- `docs/CANONICAL_MEDIA_NEWS_AND_TRANSLATION.md`
+- `docs/UX_DISTILL_LAWS_OF_UX_AND_FRONTEND_CLOUD.md`
 
 ## 3) Retrieval Contract
 
@@ -30,8 +34,11 @@ For every non-trivial task:
 1. load `docs/SEED.md`, `docs/AGENTS.md`, and `docs/RAG_CORPUS_MANIFEST.md`
 2. load `docs/FORGE_24H_PLAN.md` for execution cadence
 3. load `docs/MESH_WORLD_MODEL.md` and `docs/ARCHITECTURE_DISTILL.md` for architecture context
-4. cite consulted paths in plan/output
-5. write back changes to canonical docs only
+4. for any user-facing UI, copy, or onboarding, load `docs/UNIFIED_ACCESS.md` and apply its checklist; for calm, self-directed, or instruction-adjacent flows, also load `docs/MONTESSORI_FRONTEND_SKILLS.md`
+5. for studio, news, radio, or cross-language distribution, load `docs/CANONICAL_MEDIA_NEWS_AND_TRANSLATION.md` and treat it as the linguistic and quantitative contract (core language first, translation second)
+6. for UX, layout, performance-perception tradeoffs, or frontend architecture patterns, load `docs/UX_DISTILL_LAWS_OF_UX_AND_FRONTEND_CLOUD.md` (Laws of UX + Frontend Cloud distill)
+7. cite consulted paths in plan/output
+8. write back changes to canonical docs only
 
 ## 4) Drift Control
 
@@ -63,6 +70,7 @@ To keep the repository root architecturally clean, only these root markdown file
 - `ULAVAL_ONBOARDING_SUMMARY.md`
 - `LICENSE.md`
 - `ARCHITECTURE.md`
+- `CHANGELOG.md`
 
 Any other root `.md` file is out-of-bounds and should be purged or relocated.
 

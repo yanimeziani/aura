@@ -7,10 +7,12 @@ const net = std.net;
 const sessions = @import("sessions.zig");
 const sse = @import("sse.zig");
 const world = @import("world.zig");
+const electro_spatial = @import("electro_spatial.zig");
 
 // ── State ─────────────────────────────────────────────────────────────────────
 
 var world_state: world.WorldState = undefined;
+var es_state: electro_spatial.ElectroSpatialState = undefined;
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
@@ -21,6 +23,8 @@ pub fn main() !void {
 
     world_state = world.WorldState.init(allocator);
     try world_state.seed();
+
+    es_state = electro_spatial.ElectroSpatialState.init(allocator, &world_state);
 
     const port_str = std.posix.getenv("AURA_API_PORT") orelse "9000";
     const port_num = std.fmt.parseInt(u16, port_str, 10) catch 9000;
@@ -63,6 +67,8 @@ fn handleConnection(allocator: std.mem.Allocator, conn: net.Server.Connection) v
         handleWorldUpdate(conn, request) catch return;
     } else if (std.mem.eql(u8, path, "/mesh")) {
         handleMesh(conn) catch return;
+    } else if (std.mem.eql(u8, path, "/rag/ground-truth")) {
+        handleRagGroundTruth(conn) catch return;
     } else if (std.mem.eql(u8, path, "/providers")) {
         handleProviders(conn) catch return;
     } else if (std.mem.startsWith(u8, path, "/sync/session")) {
@@ -84,7 +90,7 @@ fn handleWorldStream(conn: net.Server.Connection) !void {
     try world_state.subscribe(conn.stream);
 
     while (true) {
-        std.time.sleep(std.time.ns_per_s * 30);
+        std.Thread.sleep(std.time.ns_per_s * 30);
         sse.writeComment(conn.stream, "keep-alive") catch break;
     }
 }
@@ -97,7 +103,7 @@ fn handleWorldUpdate(conn: net.Server.Connection, request: []const u8) !void {
     if (try world_state.updateOwner(region_id, owner_id)) |delta| {
         world_state.broadcast(delta);
         var resp_buf: [256]u8 = undefined;
-        const resp = try std.fmt.bufPrint(&resp_buf, "{\"region_id\":\"{s}\",\"status\":\"updated\"}", .{region_id});
+        const resp = try std.fmt.bufPrint(&resp_buf, "{{\"region_id\":\"{s}\",\"status\":\"updated\"}}", .{region_id});
         return writeJson(conn, 200, resp);
     } else {
         return writePlain(conn, 404, "region not found");
@@ -116,6 +122,14 @@ fn handleMesh(conn: net.Server.Connection) !void {
         \\{{"state":"{s}","peers":{d},"protocol":"noise_ik","version":"0.1.0"}}
     , .{ state, peers });
     return writeJson(conn, 200, body);
+}
+
+fn handleRagGroundTruth(conn: net.Server.Connection) !void {
+    const context = try es_state.generateRagContext();
+    defer es_state.allocator.free(context);
+
+    try conn.stream.writeAll("HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nConnection: close\r\n\r\n");
+    try conn.stream.writeAll(context);
 }
 
 fn handleProviders(conn: net.Server.Connection) !void {

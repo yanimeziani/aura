@@ -11,6 +11,13 @@ from pathlib import Path
 VAULT_REGISTRY = {
     "GROQ_API_KEY": {"desc": "Groq Cloud API Key (for fast agent execution)", "required": True},
     "RESEND_API_KEY": {"desc": "Resend API Key (for outreach email dispatch)", "required": True},
+    "CLICKUP_API_KEY": {"desc": "ClickUp Personal API Token", "required": False},
+    "CLICKUP_LIST_ID": {"desc": "ClickUp List ID for task syncing", "required": False},
+    "HUBSPOT_API_KEY": {"desc": "HubSpot Private App Token for CRM sync", "required": False},
+    "LINKEDIN_SESSION_COOKIE": {"desc": "LinkedIn li_at cookie for B2B outreach", "required": False},
+    "CAL_API_KEY": {"desc": "Cal.com API key for booking sync", "required": False},
+    "N8N_WEBHOOK_URL": {"desc": "URL of your n8n MCP/Gateway webhook", "default": "http://localhost:5678/webhook/mcp-gateway"},
+    "GITHUB_TOKEN": {"desc": "GitHub Personal Access Token", "required": False},
     "STRIPE_SECRET_KEY": {"desc": "Stripe Live/Test Secret Key (for payments)", "required": True},
     "STRIPE_WEBHOOK_SECRET": {"desc": "Stripe Webhook Signing Secret (for fulfillment)", "required": True},
     "STRIPE_WEBHOOK_SECRET_THIN": {"desc": "Stripe Webhook Signing Secret (THIN payload destination)", "required": False},

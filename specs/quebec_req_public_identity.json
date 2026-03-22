@@ -1,0 +1,109 @@
+{
+  "$comment": "Public-sector and para-public legal identities anchored to the Registraire des entreprises du Québec (REQ). NEQ must be copied from an official REQ lookup under HITL — never fabricated.",
+  "version": "1.0.0",
+  "effective_from": "2026-03-22T00:00:00Z",
+  "authority": {
+    "registry_name_fr": "Registraire des entreprises du Québec",
+    "registry_name_en": "Quebec Enterprise Registrar",
+    "public_lookup_url": "https://www.registreentreprises.gouv.qc.ca/",
+    "neq_description_en": "Quebec Enterprise Number (NEQ) — mandatory 10-digit identifier assigned to registered enterprises in Québec; verify via official REQ search before binding to a mesh grid.",
+    "neq_format_hint": "10 numeric digits, operator-verified only"
+  },
+  "work_team_sovereignty": {
+    "summary": "Each listed legal person is the canonical owner of its mandate, deliverables, and delegated teams for grid-adjacent work. Private suppliers act under contract to that legal person; mesh vital locks and biological operator attribution name humans accountable within that structure, not vendors by default.",
+    "grid_link_rule": "Where grid_vital_lock.json references partner_organisation.legal_name, the matching entry here SHOULD use the same legal_name after REQ normalization."
+  },
+  "entities": [
+    {
+      "entity_id": "req-public-hydro-quebec",
+      "legal_name": "Hydro-Québec",
+      "entity_class": "crown_corporation",
+      "sector": "electricity_transmission_distribution",
+      "req": {
+        "neq": null,
+        "lookup_status": "pending_operator_verification"
+      },
+      "grid_binding": {
+        "grid_id": "grid-partner-hydro-quebec",
+        "notes": "Example mesh slice; production node IDs and NEQ must be attested."
+      }
+    },
+    {
+      "entity_id": "req-public-loto-quebec",
+      "legal_name": "Loto-Québec",
+      "entity_class": "crown_corporation",
+      "sector": "gaming_lottery",
+      "req": {
+        "neq": null,
+        "lookup_status": "pending_operator_verification"
+      },
+      "grid_binding": null
+    },
+    {
+      "entity_id": "req-public-saq",
+      "legal_name": "Société des alcools du Québec",
+      "entity_class": "crown_corporation",
+      "sector": "retail_monopoly_alcohol",
+      "req": {
+        "neq": null,
+        "lookup_status": "pending_operator_verification"
+      },
+      "grid_binding": null
+    },
+    {
+      "entity_id": "req-public-stq",
+      "legal_name": "Société des traversiers du Québec",
+      "entity_class": "crown_corporation",
+      "sector": "marine_ferry_transport",
+      "req": {
+        "neq": null,
+        "lookup_status": "pending_operator_verification"
+      },
+      "grid_binding": null
+    },
+    {
+      "entity_id": "req-public-investissement-quebec",
+      "legal_name": "Investissement Québec",
+      "entity_class": "crown_corporation",
+      "sector": "economic_development_finance",
+      "req": {
+        "neq": null,
+        "lookup_status": "pending_operator_verification"
+      },
+      "grid_binding": null
+    },
+    {
+      "entity_id": "req-public-cdpq",
+      "legal_name": "Caisse de dépôt et placement du Québec",
+      "entity_class": "statutory_corporation",
+      "sector": "pension_and_public_equity_investment",
+      "req": {
+        "neq": null,
+        "lookup_status": "pending_operator_verification"
+      },
+      "grid_binding": null
+    },
+    {
+      "entity_id": "req-public-sqi",
+      "legal_name": "Société québécoise des infrastructures",
+      "entity_class": "crown_corporation",
+      "sector": "public_infrastructure_delivery",
+      "req": {
+        "neq": null,
+        "lookup_status": "pending_operator_verification"
+      },
+      "grid_binding": null
+    },
+    {
+      "entity_id": "req-public-stm",
+      "legal_name": "Société de transport de Montréal",
+      "entity_class": "public_transit_corporation",
+      "sector": "urban_transit",
+      "req": {
+        "neq": null,
+        "lookup_status": "pending_operator_verification"
+      },
+      "grid_binding": null
+    }
+  ]
+}

@@ -1,10 +1,17 @@
 {
   "default_temperature": 0.3,
   "models": {
-    "providers": {
-      "claude-cli": {}
+  "providers": {
+    "claude-cli": {},
+    "ollama": {
+      "models": [
+        "RedHatAI/Llama-4-Scout-17B-16E-Instruct-quantized.w4a16",
+        "RedHatAI/Llama-4-Maverick-17B-128E-Instruct-quantized.w4a16"
+      ]
     }
+  }
   },
+
   "org": {
     "org_id": "meziani-labs",
     "trust_tier": "sovereign",
@@ -85,6 +92,15 @@
         "-y",
         "@modelcontextprotocol/server-sequential-thinking"
       ]
+    },
+    "n8n-bunker": {
+      "command": "python3",
+      "args": [
+        "/home/yani/Aura/tools/mcp_n8n_bridge.py"
+      ],
+      "env": {
+        "N8N_WEBHOOK_URL": "${N8N_WEBHOOK_URL}"
+      }
     }
   },
   "autonomy": {

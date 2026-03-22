@@ -36,6 +36,7 @@ Current digital platforms lack integrated trust checks and consistent metadata l
 - Implement Layer 0 content filtering in the platform architecture.
 - Scaffold a Zig backend for a distributed mesh runtime.
 - Scaffold a Kotlin frontend architecture for multi-platform distribution.
+- Deliver a **full portal experience** in **Kotlin (multiplatform / Compose)** as the **primary GUI** for **all mesh device classes**; until that milestone, other surfaces are **interim** and must remain semantically aligned with the same trust and policy model.
 - Restrict initial cluster access to validated identities.
 - Support isolated clusters per validated identity.
 - Require metadata headers for content attribution.

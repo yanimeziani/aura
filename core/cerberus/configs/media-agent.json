@@ -37,6 +37,28 @@
         "workspace_only": true,
         "max_actions_per_hour": 10
       }
+    },
+    "translation": {
+      "name": "Core Translation Agent",
+      "model": {
+        "primary": "openrouter/anthropic/claude-sonnet-4",
+        "fallback": "openrouter/meta-llama/llama-3.3-70b-instruct"
+      },
+      "system_prompt_file": "prompts/translation_agent_prompt.txt",
+      "max_tool_iterations": 12,
+      "max_history": 40,
+      "temperature": 0.3,
+      "tools": [],
+      "memory": {
+        "profile": "translation_core",
+        "auto_save": true,
+        "context_window": 4000
+      },
+      "autonomy": {
+        "level": "supervised",
+        "workspace_only": true,
+        "max_actions_per_hour": 30
+      }
     }
   },
 

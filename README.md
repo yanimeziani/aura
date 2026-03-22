@@ -14,7 +14,14 @@ The `docs/` folder is intentionally strict and contains only canonical memory:
 - [World Model (Mermaid)](./docs/MESH_WORLD_MODEL.md)
 - [Architecture Distill](./docs/ARCHITECTURE_DISTILL.md)
 - [RAG Corpus Manifest](./docs/RAG_CORPUS_MANIFEST.md)
+- [Unified access (a11y + neurodiversity + age-friendly)](./docs/UNIFIED_ACCESS.md)
+- [Montessori-friendly frontend skills](./docs/MONTESSORI_FRONTEND_SKILLS.md)
 - [License Memory](./LICENSE.md)
+
+## Releases
+
+- [CHANGELOG.md](./CHANGELOG.md) — version history and tagged milestones.
+- **Submodules:** after clone, run `git submodule update --init --recursive` so `core/google-mcp` is populated.
 
 ## Root Governance Anchors
 
@@ -25,6 +32,13 @@ The `docs/` folder is intentionally strict and contains only canonical memory:
 - [Tasks](./TASKS.md)
 - [Marketing](./MARKETING.md)
 - [ICP](./ICP.md)
+
+## Model Alignment
+
+All AI interactions are grounded via the **Zig Framework Plugin** (`core/aura-mcp`):
+- Forces context to align with the [RAG Manifest](./docs/RAG_CORPUS_MANIFEST.md)
+- Zero-external-runtime MCP server for high-fidelity grounding
+- Standardizes protocol adherence across Gemini, Claude, and Codex
 
 ## Repository Shape
 
@@ -38,6 +52,8 @@ The `docs/` folder is intentionally strict and contains only canonical memory:
 ├── vault/     # Operational state and generated artifacts
 └── docs/      # Canonical RAG memory only
 ```
+
+Business-side work (commercial narrative, campaign assets tied to Death to Stock projects, non-runtime business code) lives in the **Sovar** GitHub repo, not in this tree. See [MARKETING.md](./MARKETING.md).
 
 ## Release Gate
 

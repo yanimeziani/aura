@@ -33,6 +33,11 @@ __pycache__/
 # Vault secrets (NEVER commit)
 vault/aura-vault.json
 vault/nexa-vault.json
+vault/leads.db
+vault/media_staging/
+
+# Local scratch (not part of release tree)
+/test_list.zig
 
 # Android/Kotlin (Pegasus)
 .gradle/
@@ -63,6 +68,7 @@ Downloads/
 # Ignore root hidden files and folders
 /.*
 !/.gitignore
+!/.gitmodules
 !/.github/
 !/.env.example
 

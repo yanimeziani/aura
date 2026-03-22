@@ -31,6 +31,8 @@ DOC_ALLOWLIST = [
     "docs/FORGE_24H_PLAN.md",
     "docs/MESH_WORLD_MODEL.md",
     "docs/ARCHITECTURE_DISTILL.md",
+    "docs/UNIFIED_ACCESS.md",
+    "docs/MONTESSORI_FRONTEND_SKILLS.md",
     "LICENSE.md",
     "ops/gateway/README.md",
 ]

@@ -46,6 +46,7 @@ The architecture has been unified under the **Aura Mesh Protocol**:
 - **Consolidation**: Root and `docs/` anchors have been prioritized for all RAG retrieval.
 - **Protocol Adoption**: BMAD v6 (Analysis-Plan-Solution-Implementation) is now the required agent workflow.
 - **Loop Breaking**: The Ralph Wiggum Safeguard is enforced to prevent stagnant or infinite markdown generation.
+- **Mesh GUI north star**: Full-fleet **Kotlin multiplatform portal** is the canonical end-state GUI for all mesh device classes; until it ships, CLI/web/Pegasus-style surfaces are interim and must not fork trust or policy semantics (`docs/MESH_WORLD_MODEL.md` §2).
 - **Lightness**: Memory plane is strictly limited to canonical anchors defined in `docs/RAG_CORPUS_MANIFEST.md`.
 - **Identity**: Centralized SSH (ED25519) for global GitHub ID and SanDisk "Smart Partitions" for tripartite key structure.
 - **Stack Lockdown**: Hard interdiction on external deps. Stack locked to **Zig 0.13.0, TypeScript 5.5.4, and Node.js 22 LTS**.

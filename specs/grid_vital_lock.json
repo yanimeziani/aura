@@ -1,0 +1,80 @@
+{
+  "$schema_comment": "Canonical lock: each grid's vital infrastructure is bound to exactly one biological operator attribution. Changes require HITL and version bump.",
+  "version": "1.0.0",
+  "effective_from": "2026-03-22T00:00:00Z",
+  "policy": {
+    "summary": "Mesh nodes that participate in Level-0 vitals and static outbox MUST declare a grid_id that matches this manifest. Each grid lists allowed mesh_node ids and the biological operator who holds vital authority for that grid.",
+    "vitals_pipeline": ["core/cerberus/runtime/cerberus-core (cerberus vitals)", "tools/nexa_vitals.py", "vault/static/vitals.json", "vault/static/vitals.html"],
+    "enforcement": "tools/nexa_vitals.py validates mesh_status.json against this file; set NEXA_GRID_LOCK_STRICT=1 to fail non-zero on drift."
+  },
+  "biological_operators": {
+    "HITL-YANI-001": {
+      "display_name": "Yani Meziani",
+      "role": "primary_biological_operator",
+      "attestations": ["vault/leader_certification.json", "vault/org-registry.json"]
+    },
+    "HITL-YANI-EDGE-001": {
+      "display_name": "Yani Meziani",
+      "role": "edge_biological_operator",
+      "attestations": ["vault/leader_certification.json"]
+    },
+    "HITL-HQ-BOUCHARD-001": {
+      "display_name": "Claudine Bouchard",
+      "organisation_legal_name": "Hydro-Québec",
+      "req_public_identity_ref": "req-public-hydro-quebec",
+      "role": "partner_grid_biological_operator",
+      "notes": "Example of a partner utility grid: vital infrastructure for this slice is locked to this named biological operator until HITL updates this manifest. Add attestations (e.g. signed operator registry entry) when formally recorded.",
+      "attestations": []
+    }
+  },
+  "grids": [
+    {
+      "grid_id": "grid-primary-sovereignty",
+      "display_name": "Primary sovereignty and control plane",
+      "biological_operator_ref": "HITL-YANI-001",
+      "vital_infrastructure": {
+        "mesh_nodes": ["vps-primary", "z-fold-5"],
+        "static_outbox_artifacts": ["vault/static/vitals.json", "vault/static/vitals.html"],
+        "notes": "Operator phones and primary VPS carry authoritative mesh presence for vitals publication."
+      }
+    },
+    {
+      "grid_id": "grid-edge-sensing",
+      "display_name": "Edge sensing and local execution",
+      "biological_operator_ref": "HITL-YANI-EDGE-001",
+      "vital_infrastructure": {
+        "mesh_nodes": ["jetson-edge"],
+        "static_outbox_artifacts": [],
+        "notes": "Edge nodes report into mesh; vital publication remains under primary grid unless separately attested."
+      }
+    },
+    {
+      "grid_id": "grid-ml-compute",
+      "display_name": "ML and heavy compute host",
+      "biological_operator_ref": "HITL-YANI-001",
+      "vital_infrastructure": {
+        "mesh_nodes": ["rtx-server"],
+        "static_outbox_artifacts": [],
+        "notes": "Compute grid; same biological operator attribution as primary sovereignty unless HITL assigns a distinct operator_ref."
+      }
+    },
+    {
+      "grid_id": "grid-partner-hydro-quebec",
+      "display_name": "Partner grid — Hydro-Québec interop slice",
+      "req_public_identity_ref": "req-public-hydro-quebec",
+      "partner_organisation": {
+        "legal_name": "Hydro-Québec",
+        "country_code": "CA",
+        "jurisdiction": "QC",
+        "req_registry": "Registraire des entreprises du Québec",
+        "req_lookup_url": "https://www.registreentreprises.gouv.qc.ca/"
+      },
+      "biological_operator_ref": "HITL-HQ-BOUCHARD-001",
+      "vital_infrastructure": {
+        "mesh_nodes": ["hydro-quebec-interop"],
+        "static_outbox_artifacts": [],
+        "notes": "Illustrative binding: Level-0 vitals and mesh nodes listed here are attributed to Claudine Bouchard as the biological operator for this partner grid. Replace hydro-quebec-interop with production node IDs when provisioned; bump manifest version on any change."
+      }
+    }
+  ]
+}

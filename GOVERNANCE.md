@@ -19,6 +19,8 @@ Maintainers collectively set:
 - merge policy for protocol-sensitive changes
 - release and deployment criteria
 
+**Detailed Decision Framework:** Refer to `docs/GOVERNANCE_DECISION_LEVELS.md` for the 10-level hierarchy for CEO, CTO, and CMO roles.
+
 ## Decision Standard
 
 Changes should be evaluated against:

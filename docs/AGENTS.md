@@ -9,6 +9,8 @@ Nexa uses a documentation-first, spec-RAG, versioned forge workflow for multi-ag
 Canonical memory is markdown only and anchored in this set:
 - `docs/SEED.md`
 - `docs/AGENTS.md`
+- `docs/UNIFIED_ACCESS.md`
+- `docs/MONTESSORI_FRONTEND_SKILLS.md`
 - `docs/FORGE_24H_PLAN.md`
 - `docs/MESH_WORLD_MODEL.md`
 - `docs/RAG_CORPUS_MANIFEST.md`
@@ -84,6 +86,8 @@ Minimum gate for accepted agent output:
 - verification evidence is recorded
 - architecture memory reflects structural changes
 - legal and attribution obligations are preserved
+- user-facing output complies with `docs/UNIFIED_ACCESS.md` (accessibility, neurodiversity-friendly structure, age-friendly defaults, neutral copy)
+- user-facing UI and flows align with `docs/MONTESSORI_FRONTEND_SKILLS.md` where calm, self-directed, or long-horizon work applies
 
 ## 8) Conflict Resolution and Veto Awareness
 
@@ -92,4 +96,13 @@ When agents disagree:
 2. apply canonical protocol/trust/safety constraints from the remaining docs set
 3. escalate unresolved conflicts to HITL with options and risk deltas
 
-High-impact decisions should include explicit veto checkpoint references in `TASKS.md`.
+## 10) Framework Alignment Plugin (Zig)
+
+To ensure absolute alignment with the canonical docs, all sovereign agents (Gemini, Claude, Codex) must utilize the **Aura Framework Plugin** (`core/aura-mcp`).
+
+### Usage:
+- **As an MCP Server:** Register `aura-mcp` in your roster. Call the `get_canonical_framework` tool at the start of any session.
+- **As a Standalone Plugin:** Run `aura-mcp --framework` to receive a structured XML bundle of all canonical documentation.
+
+This plugin forces the model's context to ground exclusively in the validated `RAG_CORPUS_MANIFEST.md` set, preventing hallucinations and ensuring adherence to the latest architecture and governance invariants.
+

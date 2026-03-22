@@ -425,6 +425,8 @@ async def get_fiat_links(amount_cad: float):
 @app.post("/webhook/email")
 async def email_webhook(request: Request):
     """Receives inbound email webhooks from Resend and triggers AI response agent."""
+    import resend_handler
+    
     # Optional shared-secret guard (recommended if exposed publicly).
     expected = os.getenv("EMAIL_WEBHOOK_TOKEN")
     if expected:
@@ -432,9 +434,11 @@ async def email_webhook(request: Request):
         if got != expected:
             raise HTTPException(status_code=401, detail="Unauthorized")
     payload = await request.json()
-    print(f"📩 INBOUND EMAIL RECEIVED from {payload.get('from')}")
+    
+    # Implementation of Auto Close logic
+    resend_handler.handle_inbound(payload)
 
-    # Trigger Node.js Responder
+    # Trigger Node.js Responder for active leads
     try:
         async with httpx.AsyncClient() as client:
             await client.post("http://127.0.0.1:8081/process-email", json=payload)

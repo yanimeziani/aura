@@ -3,9 +3,10 @@
 //! Transport: stdio, newline-delimited JSON (MCP).
 
 const std = @import("std");
+const canonical = @import("canonical.zig");
 
 const ServerName = "aura-mcp";
-const ServerVersion = "0.1.0";
+const ServerVersion = "0.1.1";
 
 fn writeResponse(allocator: std.mem.Allocator, file: std.fs.File, id: std.json.Value, result: anytype) !void {
     const s = try std.json.Stringify.valueAlloc(allocator, .{
@@ -35,8 +36,7 @@ fn writeError(allocator: std.mem.Allocator, file: std.fs.File, id: std.json.Valu
 fn getAllowedRoot(allocator: std.mem.Allocator) []const u8 {
     const root_opt = std.process.getEnvVarOwned(allocator, "AURA_ROOT") catch null;
     if (root_opt) |root| {
-        defer allocator.free(root);
-        return allocator.dupe(u8, root) catch ".";
+        return root; // Caller must free
     }
     return allocator.dupe(u8, ".") catch ".";
 }
@@ -102,6 +102,11 @@ fn handleToolsList(allocator: std.mem.Allocator, file: std.fs.File, id: std.json
                 },
             },
             .{
+                .name = "get_canonical_framework",
+                .description = "FORCE ALIGNMENT: Returns the full content of all canonical documentation defined in the RAG manifest. Use this tool immediately to understand the project architecture, governance, and operating invariants.",
+                .inputSchema = .{ .type = "object", .properties = .{}, .required = .{} },
+            },
+            .{
                 .name = "ping",
                 .description = "Liveness check; returns pong.",
                 .inputSchema = .{ .type = "object", .properties = .{}, .required = .{} },
@@ -122,6 +127,26 @@ fn handleToolsCall(allocator: std.mem.Allocator, file: std.fs.File, id: std.json
 
     const root = getAllowedRoot(allocator);
     defer allocator.free(root);
+
+    if (std.mem.eql(u8, name, "get_canonical_framework")) {
+        var fw = canonical.Framework.init(allocator);
+        defer fw.deinit();
+        try fw.loadFromManifest(root);
+        
+        var out: std.ArrayListUnmanaged(u8) = .empty;
+        defer out.deinit(allocator);
+        try fw.formatForAI(out.writer(allocator));
+        
+        try writeResponse(allocator, file, id, .{
+            .content = .{
+                .{
+                    .type = "text",
+                    .text = out.items,
+                },
+            },
+        });
+        return;
+    }
 
     if (std.mem.eql(u8, name, "read_file")) {
         const path_val = (if (arguments == .object) arguments.object.get("path") else null) orelse {
@@ -144,7 +169,7 @@ fn handleToolsCall(allocator: std.mem.Allocator, file: std.fs.File, id: std.json
             return;
         };
         defer allocator.free(full);
-        const content = std.fs.cwd().readFileAlloc(allocator, full, 512 * 1024) catch |err| {
+        const content = std.fs.cwd().readFileAlloc(allocator, full, 1024 * 1024) catch |err| {
             try writeError(allocator, file, id, -32603, std.fmt.allocPrint(allocator, "Read failed: {s}", .{@errorName(err)}) catch "Read failed");
             return;
         };
@@ -187,12 +212,12 @@ fn handleToolsCall(allocator: std.mem.Allocator, file: std.fs.File, id: std.json
         };
         defer dir.close();
         var iter = dir.iterate();
-        var out = std.array_list.Managed(u8).init(allocator);
-        defer out.deinit();
-        try out.writer().print("{s}\n", .{full});
+        var out: std.ArrayListUnmanaged(u8) = .empty;
+        defer out.deinit(allocator);
+        try out.writer(allocator).print("{s}\n", .{full});
         while (iter.next() catch null) |entry| {
             const kind_char: []const u8 = if (entry.kind == .directory) "d" else " ";
-            try out.writer().print("  {s}  {s}\n", .{ kind_char, entry.name });
+            try out.writer(allocator).print("  {s}  {s}\n", .{ kind_char, entry.name });
         }
         try writeResponse(allocator, file, id, .{
             .content = .{
@@ -212,6 +237,22 @@ pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     defer _ = gpa.deinit();
     const allocator = gpa.allocator();
+
+    // Check for --framework flag to use as a standalone plugin/CLI
+    var args = try std.process.argsWithAllocator(allocator);
+    defer args.deinit();
+    _ = args.next(); // skip exe name
+    if (args.next()) |arg| {
+        if (std.mem.eql(u8, arg, "--framework")) {
+            const root = getAllowedRoot(allocator);
+            defer allocator.free(root);
+            var fw = canonical.Framework.init(allocator);
+            defer fw.deinit();
+            try fw.loadFromManifest(root);
+            try fw.formatForAI(std.fs.File.stdout().deprecatedWriter());
+            return;
+        }
+    }
 
     const stdin_file = std.fs.File.stdin();
     const stdout_file = std.fs.File.stdout();

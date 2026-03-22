@@ -7,11 +7,17 @@ flowchart TB
   subgraph L0["NEXA LAYER-0 SECURITY AND MEMORY PLANE"]
     SEED["docs/SEED.md"]
     AGENTS["docs/AGENTS.md"]
+    UAR["docs/UNIFIED_ACCESS.md"]
+    MONTE["docs/MONTESSORI_FRONTEND_SKILLS.md"]
     PLAN24["docs/FORGE_24H_PLAN.md"]
     LICENSEH["LICENSE.md"]
     TASKS["TASKS.md"]
     SPECS["specs/*.json"]
     SEED --> AGENTS
+    AGENTS --> UAR
+    SEED --> UAR
+    UAR --> MONTE
+    AGENTS --> MONTE
     AGENTS --> PLAN24
     PLAN24 --> TASKS
     AGENTS --> SPECS
@@ -20,6 +26,7 @@ flowchart TB
 
   subgraph TECH["TECHNICAL SYSTEM ARCHITECTURE"]
     APPS["apps/* user and operator interfaces"]
+    PORTAL["Kotlin portal: full mesh GUI target"]
     CORE["core/* runtime, protocol, and agents"]
     OPS["ops/* deployment and control scripts"]
     TOOLS["tools/* operational helpers"]
@@ -27,6 +34,7 @@ flowchart TB
     DOCS["docs/* governance and memory"]
     ESRAGC["Electro-Spatial RAG Logic"]
     APPS --> CORE
+    PORTAL -.->|"full GUI target; all device classes"| APPS
     CORE --> OPS
     OPS --> VAULT
     DOCS --> ESRAGC
@@ -84,6 +92,7 @@ flowchart TB
   end
 
   L0 --> TECH
+  UAR -.->|"inclusive UX contract"| APPS
   L0 --> SECURITY
   L0 --> EXEC
   TECH --> PHYSICAL
@@ -91,3 +100,11 @@ flowchart TB
   PHYSICAL --> RISK["systemic risk surface"]
   LEGAL --> SECURITY
 ```
+
+## 2) Full portal experience (Kotlin) — mesh-wide GUI north star
+
+**Target:** One **Kotlin multiplatform** client (e.g. **Compose Multiplatform**) that delivers the **full portal experience** for **every device class on the mesh** (mobile, desktop, web where applicable, and edge-attached operator surfaces), against the **same** trust, policy, and identity contracts as the Zig / gateway core.
+
+**Until that ships:** CLI, static operator pages (e.g. vitals), Pegasus-adjacent tooling, and other thin clients are **interim**. They may ship first, but they **must not** introduce divergent semantics for auth, policy, or content integrity. Features that imply a **complete** operator or member journey should be designed against the **portal contract** and backported to interim UIs only as projections of that contract.
+
+**Implication:** Backend and mesh APIs stay **client-neutral**; the Kotlin portal is the **reference consumer** for end-to-end UX completeness across the fleet.
