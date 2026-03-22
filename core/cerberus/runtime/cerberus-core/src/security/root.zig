@@ -19,6 +19,7 @@ pub const firejail = @import("firejail.zig");
 pub const bubblewrap = @import("bubblewrap.zig");
 pub const docker = @import("docker.zig");
 pub const detect = @import("detect.zig");
+pub const lockdown = @import("lockdown.zig");
 
 // Re-exports for convenience
 pub const AuditEvent = audit.AuditEvent;

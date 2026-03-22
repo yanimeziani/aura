@@ -196,7 +196,9 @@ pub fn run(allocator: std.mem.Allocator, args: []const [:0]const u8) !void {
         .max_actions_per_hour = cfg.autonomy.max_actions_per_hour,
         .require_approval_for_medium_risk = cfg.autonomy.require_approval_for_medium_risk,
         .block_high_risk_commands = cfg.autonomy.block_high_risk_commands,
-        .tracker = &tracker,
+        .lockdown_on_high_risk = cfg.autonomy.lockdown_on_high_risk,
+        .lockdown_usb_id = cfg.autonomy.lockdown_usb_id,
+        .tracker = tracker,
     };
 
     // Provider runtime bundle (primary provider + reliability wrapper).

@@ -553,6 +553,12 @@ pub fn parseJson(self: *Config, content: []const u8) !void {
             if (aut.object.get("block_high_risk_commands")) |v| {
                 if (v == .bool) self.autonomy.block_high_risk_commands = v.bool;
             }
+            if (aut.object.get("lockdown_on_high_risk")) |v| {
+                if (v == .bool) self.autonomy.lockdown_on_high_risk = v.bool;
+            }
+            if (aut.object.get("lockdown_usb_id")) |v| {
+                if (v == .string) self.autonomy.lockdown_usb_id = try self.allocator.dupe(u8, v.string);
+            }
             if (aut.object.get("level")) |v| {
                 if (v == .string) {
                     if (types.AutonomyLevel.fromString(v.string)) |lvl| {

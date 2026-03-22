@@ -25,6 +25,7 @@ const observability = @import("../observability.zig");
 const Observer = observability.Observer;
 const ObserverEvent = observability.ObserverEvent;
 const SecurityPolicy = @import("../security/policy.zig").SecurityPolicy;
+const lockdown = @import("../security/lockdown.zig");
 
 const cache = memory_mod.cache;
 pub const dispatcher = @import("dispatcher.zig");
@@ -1428,6 +1429,24 @@ pub const Agent = struct {
                             .output = msg,
                             .success = false,
                             .tool_call_id = call.tool_call_id,
+                        };
+                    }
+                }
+
+                // Policy gate: check for critical decisions requiring physical lockdown
+                if (self.policy) |pol| {
+                    if (pol.shouldLockdown(call.name, args)) {
+                        log.warn("CRITICAL DECISION DETECTED: tool={s}. Initiating physical HITL lockdown.", .{call.name});
+                        log.warn("PING PEGASUS: lockdown triggered for {s}", .{call.name});
+                        
+                        lockdown.performLockdown(self.allocator, pol.lockdown_usb_id) catch |err| {
+                            const err_msg = try std.fmt.allocPrint(self.allocator, "Lockdown failed: {}", .{err});
+                            return .{
+                                .name = call.name,
+                                .output = err_msg,
+                                .success = false,
+                                .tool_call_id = call.tool_call_id,
+                            };
                         };
                     }
                 }

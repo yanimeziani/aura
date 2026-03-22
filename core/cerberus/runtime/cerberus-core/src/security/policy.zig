@@ -1,4 +1,5 @@
 const std = @import("std");
+pub const JsonObjectMap = std.json.ObjectMap;
 pub const RateTracker = @import("tracker.zig").RateTracker;
 
 /// How much autonomy the agent has
@@ -68,7 +69,32 @@ pub const SecurityPolicy = struct {
     max_actions_per_hour: u32 = 20,
     require_approval_for_medium_risk: bool = true,
     block_high_risk_commands: bool = true,
+    lockdown_on_high_risk: bool = false,
+    lockdown_usb_id: []const u8 = "Yubico",
     tracker: ?*RateTracker = null,
+
+    /// Check if a tool call constitutes a critical decision requiring lockdown.
+    pub fn shouldLockdown(self: *const SecurityPolicy, tool_name: []const u8, args: JsonObjectMap) bool {
+        if (!self.lockdown_on_high_risk) return false;
+
+        // 1. Shell commands with high risk always trigger lockdown
+        if (std.mem.eql(u8, tool_name, "shell")) {
+            if (args.get("command")) |cmd_val| {
+                if (cmd_val == .string) {
+                    const risk = self.commandRiskLevel(cmd_val.string);
+                    if (risk == .high) return true;
+                }
+            }
+        }
+
+        // 2. Keyword-based heuristic for other critical tools (e.g. transfers, deletions)
+        const critical_keywords = [_][]const u8{ "transfer", "send_funds", "pay", "delete_production", "terminate_instance" };
+        for (critical_keywords) |keyword| {
+            if (std.mem.indexOf(u8, tool_name, keyword) != null) return true;
+        }
+
+        return false;
+    }
 
     /// Classify command risk level.
     pub fn commandRiskLevel(self: *const SecurityPolicy, command: []const u8) CommandRiskLevel {
@@ -1144,4 +1170,41 @@ test "full autonomy wildcard: arbitrary commands allowed" {
     try std.testing.expect(p.isCommandAllowed("cargo build --release"));
     try std.testing.expect(p.isCommandAllowed("make all"));
     try std.testing.expect(p.isCommandAllowed("zig build test"));
+}
+
+test "shouldLockdown triggers for high-risk shell commands" {
+    var p = SecurityPolicy{
+        .lockdown_on_high_risk = true,
+    };
+    
+    var args = JsonObjectMap.init(std.testing.allocator);
+    defer args.deinit();
+    try args.put("command", std.json.Value{ .string = "rm -rf /" });
+    
+    try std.testing.expect(p.shouldLockdown("shell", args));
+    
+    // Low risk doesn't trigger
+    try args.put("command", std.json.Value{ .string = "ls" });
+    try std.testing.expect(!p.shouldLockdown("shell", args));
+    
+    // Disabled doesn't trigger
+    p.lockdown_on_high_risk = false;
+    try args.put("command", std.json.Value{ .string = "rm -rf /" });
+    try std.testing.expect(!p.shouldLockdown("shell", args));
+}
+
+test "shouldLockdown triggers for critical keyword tools" {
+    var p = SecurityPolicy{
+        .lockdown_on_high_risk = true,
+    };
+    
+    const args = JsonObjectMap.init(std.testing.allocator);
+    // No arguments needed for keyword check in this implementation
+    
+    try std.testing.expect(p.shouldLockdown("asset_transfer", args));
+    try std.testing.expect(p.shouldLockdown("send_funds", args));
+    try std.testing.expect(p.shouldLockdown("delete_production_db", args));
+    
+    // Non-critical tool doesn't trigger
+    try std.testing.expect(!p.shouldLockdown("read_file", args));
 }
