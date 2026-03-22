@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VITAL STATUS - LEVEL 0</title>
+    <style>
+        :root {
+            --bg: #000000;
+            --fg: #ffffff;
+            --font-mono: "IBM Plex Mono", monospace, "Courier New", Courier;
+        }
+
+        /* HIGH CONTRAST MODE (1-BIT) */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #000000;
+                --fg: #ffffff;
+            }
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--fg);
+            font-family: var(--font-mono);
+            margin: 0;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            text-transform: uppercase;
+            overflow: hidden;
+        }
+
+        .container {
+            border: 10px solid var(--fg);
+            padding: 60px;
+            max-width: 90%;
+        }
+
+        h1 {
+            font-size: 4rem;
+            margin: 0 0 20px 0;
+            letter-spacing: 0.1em;
+            border-bottom: 5px solid var(--fg);
+            padding-bottom: 20px;
+        }
+
+        .status {
+            font-size: 6rem;
+            font-weight: 900;
+            margin: 40px 0;
+            padding: 20px;
+            background-color: var(--fg);
+            color: var(--bg);
+        }
+
+        .details {
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+            line-height: 1.5;
+        }
+
+        .heartbeat {
+            font-size: 3rem;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0; transform: scale(1.1); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .outbox {
+            margin-top: 60px;
+            border-top: 2px dashed var(--fg);
+            padding-top: 20px;
+            font-size: 0.8rem;
+            text-align: left;
+            width: 100%;
+            opacity: 0.8;
+        }
+
+        .outbox header {
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-decoration: underline;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            word-break: break-all;
+            margin: 0;
+        }
+
+        .emergency-link {
+            margin-top: 40px;
+            display: inline-block;
+            padding: 15px 30px;
+            border: 3px solid var(--fg);
+            color: var(--fg);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .emergency-link:hover {
+            background-color: var(--fg);
+            color: var(--bg);
+        }
+
+        /* Accessibility: Flashing reduction for certain users */
+        @media (prefers-reduced-motion: reduce) {
+            .heartbeat {
+                animation: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="details">SYSTEM ID: NEXA-MESH-PRIMARY</div>
+            <h1>VITAL STATUS</h1>
+        </header>
+
+        <main>
+            <div id="status-box" class="status">SAFE</div>
+            
+            <div class="details">
+                BIOLOGICAL CASUALTY PROBABILITY: <span id="prob">0.00%</span><br>
+                LAST UPDATE: <span id="timestamp">2026-03-22 14:00:00 UTC</span>
+            </div>
+
+            <div class="heartbeat" id="pulse-icon">●</div>
+        </main>
+
+        <section class="outbox">
+            <header>LEVEL 0 STATIC OUTBOX (EMERGENCY RETRIEVAL)</header>
+            <pre id="raw-data">
+{
+  "biological_casualty_probability": 0.0,
+  "status": "SAFE",
+  "timestamp": 1774180692,
+  "mesh": {
+    "last_update": "2026-03-19T22:45:28.402743",
+    "nodes": {
+      "vps-primary": {
+        "ip": "127.0.0.1",
+        "status": "offline",
+        "last_seen": "N/A"
+      },
+      "z-fold-5": {
+        "ip": "100.64.0.5",
+        "status": "offline",
+        "last_seen": "N/A"
+      },
+      "jetson-edge": {
+        "ip": "100.64.0.10",
+        "status": "offline",
+        "last_seen": "N/A"
+      },
+      "rtx-server": {
+        "ip": "100.64.0.20",
+        "status": "offline",
+        "last_seen": "N/A"
+      }
+    }
+  },
+  "pushed_at": "2026-03-22 11:58:12 UTC"
+}
+</pre>
+        </section>
+
+        <a href="vitals.json" class="emergency-link">DOWNLOAD RAW DATA (JSON)</a>
+    </div>
+
+    <script>
+        // Optional: Auto-refresh data if available
+        async function refreshVitals() {
+            try {
+                const response = await fetch('vitals.json');
+                const data = await response.json();
+                
+                document.getElementById('status-box').textContent = data.status;
+                document.getElementById('prob').textContent = (data.biological_casualty_probability * 100).toFixed(2) + '%';
+                
+                const date = new Date(data.timestamp * 1000);
+                document.getElementById('timestamp').textContent = date.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
+                
+                document.getElementById('raw-data').textContent = JSON.stringify(data, null, 2);
+
+                if (data.status !== 'SAFE') {
+                    document.body.style.backgroundColor = '#ffffff';
+                    document.body.style.color = '#000000';
+                    document.getElementById('status-box').style.backgroundColor = '#000000';
+                    document.getElementById('status-box').style.color = '#ffffff';
+                }
+            } catch (e) {
+                console.log("Static mode active.");
+            }
+        }
+        setInterval(refreshVitals, 5000);
+        refreshVitals();
+    </script>
+</body>
+</html>

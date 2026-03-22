@@ -4,27 +4,28 @@ Status: Canonical messaging and distribution narrative.
 
 ## Positioning
 
-Nexa is protocol-first, resilient infrastructure for operator-controlled and trust-aware distributed systems.
+Nexa is protocol-first infrastructure for distributed systems. It provides sovereign deployments, multi-client outreach automation, lead management, and revenue recovery powered by the Aura Mesh Protocol.
 
 ## Core Narrative
 
-- Protocol over hype
-- Recovery and reproducibility by design
-- Security and trust boundaries as first-class architecture
-- Open collaboration with transparent attribution
+- Protocol-first development
+- Deterministic recovery and reproducibility
+- Multi-client autonomous operations
+- Integrated security and trust boundaries
+- Post-quantum resilience (ML-KEM)
 
 ## Audience Segments
 
 - OSS developers and maintainers
-- infrastructure operators
-- research collaborators
-- institutional and governance partners (refer to `docs/WORLD_LEADER_EXECUTIVE_BRIEF_AURA.md`)
+- Distributed systems operators
+- SMBs and Enterprises requiring data sovereignty
+- Institutional and governance partners
 
 ## Message Guardrails
 
-- Use technical claims that are verifiable from repo artifacts
+- Use technical claims verifiable from repository artifacts
 - Avoid unsupported performance or security promises
-- Keep language neutral, clear, and evidence-driven
+- Maintain neutral, evidence-driven language
 
 ## Sync Rule
 

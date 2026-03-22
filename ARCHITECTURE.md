@@ -1,6 +1,6 @@
 # Project Architecture
 
-Status: Canonical real-time architecture map for Nexa.
+Status: Canonical architecture map for Nexa.
 
 ## System Overview (Mermaid)
 
@@ -23,10 +23,11 @@ graph TD
 
     subgraph Runtime ["Runtime & Delivery"]
         APPS["apps/ (Operator/Public)"]
-        CORE["core/ (Runtime & Native)"]
-        OPS["ops/ (Automation/Recovery)"]
-        TOOLS["tools/ (CLI/Support)"]
+        CORE["core/ (Runtime & Native - Zig)"]
+        OPS["ops/ (Automation/Recovery - Python)"]
+        TOOLS["tools/ (CLI/Support - Python)"]
         VAULT["vault/ (Encrypted Secrets)"]
+        IDENTITY["Identity (Google MCP)"]
     end
 
     subgraph Legal ["Legal & Public Interface"]
@@ -46,6 +47,8 @@ graph TD
     CORE --> APPS
     CORE --> OPS
     TOOLS --> CORE
+    TOOLS --> IDENTITY
+    IDENTITY --> VAULT
     VAULT --> CORE
     VAULT --> OPS
     LEGAL --> LICENSE
@@ -58,8 +61,9 @@ graph TD
 2.  **Transport and Routing**: Defined in `specs/protocol.json`.
 3.  **State and Recovery**: `specs/recovery.json` and `ops/`.
 4.  **Execution and Coordination**: `core/` runtime and forge packets.
-5.  **Applied Sovereignty Domains**: `docs/MESH_WORLD_MODEL.md`.
+5.  **Systems Relations**: `docs/MESH_WORLD_MODEL.md`.
 6.  **Operator Interfaces**: `apps/` and `tools/`.
+7.  **Digital Identity Integration**: Managed via `core/google-mcp` and `tools/mcp_google_link.py`.
 
 ## Agentic Operations
 

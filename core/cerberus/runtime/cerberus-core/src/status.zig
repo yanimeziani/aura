@@ -2,6 +2,7 @@ const std = @import("std");
 const Config = @import("config.zig").Config;
 const version = @import("version.zig");
 const channel_catalog = @import("channel_catalog.zig");
+const health = @import("health.zig");
 
 pub fn run(allocator: std.mem.Allocator) !void {
     var buf: [4096]u8 = undefined;
@@ -17,6 +18,14 @@ pub fn run(allocator: std.mem.Allocator) !void {
     defer cfg.deinit();
 
     try w.print("cerberus Status\n\n", .{});
+    
+    // Level 0 Invariant
+    const snapshot = health.snapshot();
+    const prob = snapshot.biological_casualty_probability;
+    const inv_status = if (prob == 0.0) "SAFE" else "INVARIANT BREACHED";
+    try w.print("Biological Invariant (L0): {s} (Casualty Probability: {d:.2}%)\n", .{ inv_status, prob * 100 });
+    try w.print("\n", .{});
+
     try w.print("Version:     {s}\n", .{version.string});
     try w.print("Workspace:   {s}\n", .{cfg.workspace_dir});
     try w.print("Config:      {s}\n", .{cfg.config_path});

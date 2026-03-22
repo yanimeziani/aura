@@ -20,6 +20,7 @@ const Command = enum {
     research,
     service,
     status,
+    vitals,
     version,
     onboard,
     doctor,
@@ -44,6 +45,7 @@ fn parseCommand(arg: []const u8) ?Command {
         .{ "research", .research },
         .{ "service", .service },
         .{ "status", .status },
+        .{ "vitals", .vitals },
         .{ "version", .version },
         .{ "--version", .version },
         .{ "-V", .version },
@@ -108,6 +110,7 @@ pub fn main() !void {
     switch (cmd) {
         .version => printVersion(),
         .status => try yc.status.run(allocator),
+        .vitals => try runVitals(allocator, sub_args),
         .agent => try yc.agent.run(allocator, sub_args),
         .onboard => try runOnboard(allocator, sub_args),
         .doctor => try yc.doctor.run(allocator),
@@ -1212,6 +1215,30 @@ fn printEnabledMemoryBackends(allocator: std.mem.Allocator) void {
     if (enabled) |names| {
         std.debug.print("Enabled memory backends in this build: {s}\n", .{names});
     }
+}
+
+fn runVitals(allocator: std.mem.Allocator, sub_args: []const []const u8) !void {
+    _ = sub_args;
+    const health = @import("cerberus").health;
+    const snapshot = health.snapshot();
+
+    var buf = std.ArrayListUnmanaged(u8){};
+    defer buf.deinit(allocator);
+    const w = buf.writer(allocator);
+
+    try w.print("{{\"biological_casualty_probability\":{d:.4},\"status\":\"", .{snapshot.biological_casualty_probability});
+    if (snapshot.biological_casualty_probability == 0.0) {
+        try w.writeAll("SAFE");
+    } else {
+        try w.writeAll("INVARIANT BREACHED");
+    }
+    try w.writeAll("\",\"timestamp\":");
+    try w.print("{d}}}", .{std.time.timestamp()});
+
+    var out_buf: [1024]u8 = undefined;
+    var bw = std.fs.File.stdout().writer(&out_buf);
+    try bw.interface.print("{s}\n", .{buf.items});
+    try bw.interface.flush();
 }
 
 fn runOnboard(allocator: std.mem.Allocator, sub_args: []const []const u8) !void {
@@ -2843,6 +2870,7 @@ fn printUsage() void {
         \\  gateway     Start the gateway server (HTTP/WebSocket)
         \\  service     Manage OS service lifecycle (install/start/stop/restart/status/uninstall)
         \\  status      Show system status
+        \\  vitals      Output Level 0 vital status (JSON)
         \\  version     Show CLI version
         \\  doctor      Run diagnostics
         \\  cron        Manage scheduled tasks

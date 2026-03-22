@@ -17,6 +17,7 @@ pub const ComponentHealth = struct {
 pub const HealthSnapshot = struct {
     pid: u32,
     uptime_seconds: u64,
+    biological_casualty_probability: f32, // LEVEL 0 INVARIANT
     components: *std.StringHashMapUnmanaged(ComponentHealth),
 };
 
@@ -25,6 +26,7 @@ var registry_mutex: std.Thread.Mutex = .{};
 var registry_components: std.StringHashMapUnmanaged(ComponentHealth) = .empty;
 var registry_started: bool = false;
 var registry_start_time: i64 = 0;
+var registry_casualty_probability: f32 = 0.0;
 var pending_error_msg: ?[]const u8 = null;
 
 fn ensureInit() void {
@@ -103,6 +105,32 @@ pub fn markComponentError(component: []const u8, err_msg: []const u8) void {
     gop.value_ptr.updated_at_len = ts_len;
 }
 
+/// Set the biological casualty probability (Level 0 Invariant).
+pub fn setCasualtyProbability(prob: f32) void {
+    registry_mutex.lock();
+    defer registry_mutex.unlock();
+    registry_casualty_probability = prob;
+    if (prob > 0.0) {
+        // If probability exceeds 0, mark the invariant as errored.
+        // This is caught by all downstream rendering/alerting.
+        pending_error_msg = "NON-ZERO CASUALTY PROBABILITY DETECTED";
+        var ts_buf: [32]u8 = undefined;
+        const ts_len = nowTimestamp(&ts_buf);
+        const gop = registry_components.getOrPut(std.heap.smp_allocator, "biological_ground_truth") catch return;
+        markErrorUpdate(gop.value_ptr, ts_buf, ts_len);
+        gop.value_ptr.updated_at = ts_buf;
+        gop.value_ptr.updated_at_len = ts_len;
+    } else {
+        // Clear error if prob is back to 0.0
+        const gop = registry_components.getOrPut(std.heap.smp_allocator, "biological_ground_truth") catch return;
+        var ts_buf: [32]u8 = undefined;
+        const ts_len = nowTimestamp(&ts_buf);
+        markOkUpdate(gop.value_ptr, ts_buf, ts_len);
+        gop.value_ptr.updated_at = ts_buf;
+        gop.value_ptr.updated_at_len = ts_len;
+    }
+}
+
 /// Bump the restart count for a component.
 pub fn bumpComponentRestart(component: []const u8) void {
     upsertComponent(component, &bumpRestartUpdate);
@@ -120,6 +148,7 @@ pub fn snapshot() HealthSnapshot {
     return .{
         .pid = if (builtin.os.tag == .linux) @intCast(std.os.linux.getpid()) else if (builtin.os.tag == .macos) @intCast(std.c.getpid()) else 0,
         .uptime_seconds = uptime,
+        .biological_casualty_probability = registry_casualty_probability,
         .components = &registry_components,
     };
 }
@@ -138,6 +167,7 @@ pub fn reset() void {
     registry_components = .empty;
     registry_started = false;
     registry_start_time = 0;
+    registry_casualty_probability = 0.0;
     pending_error_msg = null;
 }
 
