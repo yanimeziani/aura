@@ -19,8 +19,10 @@ These are the only in-bounds markdown files in `docs/`:
 - `docs/AGENTS.md`
 - `docs/FORGE_24H_PLAN.md`
 - `docs/MESH_WORLD_MODEL.md`
+- `docs/GOVERNANCE_MODEL.md`
 - `docs/RAG_CORPUS_MANIFEST.md`
 - `docs/ARCHITECTURE_DISTILL.md`
+- `docs/MEZIANI_AI_AUDIT_MEDIA_GEN_AI_FORGE.md`
 
 ## 3) Retrieval Contract
 
@@ -52,6 +54,7 @@ To keep the repository root architecturally clean, only these root markdown file
 - `LEGAL.md`
 - `SECURITY.md`
 - `GOVERNANCE.md`
+- `PHILOSOPHY.md`
 - `CONTRIBUTING.md`
 - `CODE_OF_CONDUCT.md`
 - `SUPPORT.md`
@@ -59,6 +62,12 @@ To keep the repository root architecturally clean, only these root markdown file
 - `COLLABORATORS.md`
 - `ULAVAL_ONBOARDING_SUMMARY.md`
 - `LICENSE.md`
-- `ARCHITECHTURE.md`
+- `ARCHITECTURE.md`
 
 Any other root `.md` file is out-of-bounds and should be purged or relocated.
+
+## 6) Visual Asset Boundary
+
+The following directories are reserved for non-markdown brand and media assets:
+- `media/logos/*`: Official brand identity images
+- `ops/media/*`: Technical outreach and distribution materials (markdown)
