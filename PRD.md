@@ -373,7 +373,7 @@ The scaffold should target a structure similar to:
 
 ## 21. Open Questions
 
-- What exact mechanism determines consensus-validated leader status in phase 1?
+- ~~What exact mechanism determines consensus-validated leader status in phase 1?~~ **Resolved:** Candidate leaders are chosen and validated by successfully passing the Universal Mesh Wargame (Operation De-Escalator) with a 0% casualty probability, after which they are issued their ML-KEM hardware keys.
 - Which Kotlin web target is preferred for the first scaffold: Kotlin/Wasm, Compose HTML, or a limited wrapper strategy?
 - What persistence stack will back the Zig services in the first deployable milestone?
 - Which board actions require multi-party approval versus operator execution?

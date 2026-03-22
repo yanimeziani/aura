@@ -82,8 +82,6 @@ pub const AutonomyConfig = struct {
     max_actions_per_hour: u32 = 20,
     require_approval_for_medium_risk: bool = true,
     block_high_risk_commands: bool = true,
-    lockdown_on_high_risk: bool = false,
-    lockdown_usb_id: []const u8 = "Yubico",
     allowed_commands: []const []const u8 = &.{},
     /// Additional directories (absolute paths) the agent may access beyond workspace_dir.
     /// Resolved via realpath at check time; system-critical paths are always blocked.

@@ -13,7 +13,6 @@ Status legend: `todo` | `in_progress` | `blocked` | `done`
 | NX-005 | Validate release and verify-release gate | todo | release | `README.md`, `Makefile` |
 | NX-006 | Maintain canonical business/context docs | in_progress | strategy | `STACK.md`, `MARKETING.md`, `ICP.md`, `LEGAL.md` |
 | NX-007 | Evolve architecture distill and world model | in_progress | architects | `docs/ARCHITECTURE_DISTILL.md`, `docs/MESH_WORLD_MODEL.md`, `docs/SEED.md` |
-| NX-008 | Implement Auto-lock on Monarch USB removal | in_progress | ops | `/etc/udev/rules.d/99-monarch-lock.rules` |
 
 ## Trigger Checklist (Per Significant Edit)
 

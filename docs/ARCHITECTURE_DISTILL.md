@@ -42,7 +42,7 @@ This maps cleanly onto the canonical memory framework:
 
 ## 4) Daily Distill (2026-03-21)
 
-The architecture has been unified under the **Monarch Engine Protocol**:
+The architecture has been unified under the **Aura Mesh Protocol**:
 - **Consolidation**: Root and `docs/` anchors have been prioritized for all RAG retrieval.
 - **Protocol Adoption**: BMAD v6 (Analysis-Plan-Solution-Implementation) is now the required agent workflow.
 - **Loop Breaking**: The Ralph Wiggum Safeguard is enforced to prevent stagnant or infinite markdown generation.

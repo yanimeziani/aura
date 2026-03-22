@@ -18,7 +18,7 @@ Nexa is protocol-first, resilient infrastructure for operator-controlled and tru
 - OSS developers and maintainers
 - infrastructure operators
 - research collaborators
-- institutional and governance partners
+- institutional and governance partners (refer to `docs/WORLD_LEADER_EXECUTIVE_BRIEF_AURA.md`)
 
 ## Message Guardrails
 

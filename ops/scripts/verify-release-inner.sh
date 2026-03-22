@@ -37,7 +37,7 @@ echo "[verify-release] frontend typechecks"
 (cd "$ROOT/apps/aura-dashboard" && npx tsc --noEmit)
 (cd "$ROOT/apps/aura-landing-next" && npx tsc --noEmit)
 
-echo "[verify-release] frontend lint (skipped for monarch unification)"
+echo "[verify-release] frontend lint (skipped for mesh unification)"
 # (cd "$ROOT/apps/aura-dashboard" && npm run lint)
 # (cd "$ROOT/apps/aura-landing-next" && npm run lint)
 
@@ -45,7 +45,7 @@ echo "[verify-release] frontend production builds"
 (cd "$ROOT/apps/aura-dashboard" && npm run build)
 (cd "$ROOT/apps/aura-landing-next" && npm run build)
 
-echo "[verify-release] production dependency audit (skipped for monarch unification)"
+echo "[verify-release] production dependency audit (skipped for mesh unification)"
 # npm audit --omit=dev
 
 echo "[verify-release] release gate passed"

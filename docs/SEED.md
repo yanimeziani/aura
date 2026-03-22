@@ -26,7 +26,7 @@ This seed is the memory umbrella for:
 - `LICENSE.md`
 - `ARCHITECHTURE.md`
 
-## 2) Layer-0 Spec-RAG Contract (Monarch Engine)
+## 2) Layer-0 Spec-RAG Contract (Aura Mesh)
 
 This project operates on **BMAD v6** loops protected by the **Ralph Wiggum Safeguard** and **HARD INTERDICTION** on external dependencies.
 - **Repository**: [https://github.com/mezianiai/nexa](https://github.com/mezianiai/nexa)
