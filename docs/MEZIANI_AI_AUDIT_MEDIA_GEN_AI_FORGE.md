@@ -16,7 +16,7 @@ The **Media Gen AI Forge** is the sovereign pipeline for generating, auditing, a
 - Any media copy generating high cognitive load, dark patterns, or anxiety-inducing clickbait is immediately blocked by the protocol.
 
 ### 2.3 HITL Gatekeeping (Operator Supremacy)
-- The forge cannot publish directly to public endpoints without a cryptographic sign-off or explicit terminal approval from the Commander (Yani Meziani).
+- The forge cannot publish directly to public endpoints without a cryptographic sign-off or explicit terminal approval from the **designated HITL operator** (see `vault/org-registry.json` / roster attestations, not hard-coded names in docs).
 - Output is staged in `vault/media_staging/` pending approval.
 
 ## 3. The Forge Pipeline (Zero-Friction Architecture)
@@ -25,18 +25,18 @@ To remove all friction from end-to-end creation (from raw thought to full movies
 
 1. **Intake (The Seed):** The operator or `media-agent` provides a raw concept, prompt, or target demographic.
 2. **Narrative Synthesis:** 
-   - Local LLM (Llama 3.3) expands the concept into a full storyboard, script, and visual prompt metadata.
-   - Claude Sonnet acts as the Director, polishing the narrative and ensuring protocol-over-hype messaging.
+   - A **local open-weight model** expands the concept into storyboard, script, and visual prompt metadata.
+   - A **director-tier LLM role** (config-defined) polishes narrative and enforces protocol-over-hype messaging.
 3. **Multimodal Generation (The Whole Arts):** 
    - *Text & Screenplay:* Automatically formatted for production.
-   - *Audio & Voice:* TTS / Audio generation models (e.g., ElevenLabs API or local models via n8n bridge) generate dialogue, Foley, and ambient scores.
-   - *Visuals & Video:* Image generation via **SDXL (Stable Diffusion XL)** and Video generation via **Wan2.1** (or local SVD) create the shot list.
+   - *Audio & Voice:* TTS via **contracted or self-hosted** speech APIs / local models (see automation bridge config, not hard-coded vendors here).
+   - *Visuals & Video:* **Open diffusion** image stack and **config-defined** video stack (or local small-video models) produce the shot list.
 4. **Audit Pass (The Shield):** 
    - Text, audio transcripts, and visual metadata are run through `tools/media_audit_filter.py` to ensure compliance with the Biological Safety Invariant.
 5. **Automated Assembly (The Cut):** 
-   - FFmpeg / local processing scripts autonomously stitch the approved audio, video, and text layers into a final cinematic asset.
+   - **FFmpeg** / local processing scripts stitch approved audio, video, and text layers into a final cinematic asset.
 6. **Staging & Review:** The compiled asset is staged in `vault/media_staging/`.
-7. **One-Tap Dispatch:** Operator approves via Pegasus or CLI. No manual editing or software jumping required.
+7. **One-Tap Dispatch:** Operator approves via **mesh CLI or operator UI** — no third-party product names required in this spec.
 
 ## 4. Operationalization
 This forge ensures that Meziani AI Digital Studio's external impressiveness matches its internal bunkerised security. By providing a **frictionless, end-to-end cinematic pipeline**, the studio can produce high-performance marketing, full movies, and complete artistic portfolios without compromising on ethical or sovereign invariants.

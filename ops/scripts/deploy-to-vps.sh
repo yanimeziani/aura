@@ -78,8 +78,10 @@ echo -e "${BLUE}[7/10] Deploying Cerberus to VPS${NC}"
 scp /root/cerberus/runtime/cerberus-core/zig-out/bin/cerberus ${VPS_USER}@${VPS_IP}:/opt/cerberus/
 scp /root/cerberus/configs/career-twin-agent.json ${VPS_USER}@${VPS_IP}:/opt/configs/
 scp /root/cerberus/configs/sdr-agent.json ${VPS_USER}@${VPS_IP}:/opt/configs/
+scp /root/cerberus/configs/devsecops-agent.json ${VPS_USER}@${VPS_IP}:/opt/configs/
 scp /root/cerberus/runtime/cerberus-core/prompts/career_twin_prompt.txt ${VPS_USER}@${VPS_IP}:/opt/configs/
 scp /root/cerberus/runtime/cerberus-core/prompts/sdr_agent_prompt.txt ${VPS_USER}@${VPS_IP}:/opt/configs/
+scp /root/cerberus/runtime/cerberus-core/prompts/devsecops_agent_prompt.txt ${VPS_USER}@${VPS_IP}:/opt/configs/
 echo -e "${GREEN}✓ Cerberus deployed${NC}"
 
 # Step 7: Copy memory structures to VPS
@@ -144,6 +146,27 @@ StandardError=append:/var/log/cerberus/sdr.error.log
 WantedBy=multi-user.target
 EOF
 
+# DevSecOps Agent service
+cat > /etc/systemd/system/cerberus-devsecops.service << 'EOF'
+[Unit]
+Description=Cerberus DevSecOps Agent
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/cerberus
+Environment="OPENROUTER_API_KEY=YOUR_KEY_HERE"
+ExecStart=/opt/cerberus/cerberus agent --config /opt/configs/devsecops-agent.json
+Restart=always
+RestartSec=10
+StandardOutput=append:/var/log/cerberus/devsecops.log
+StandardError=append:/var/log/cerberus/devsecops.error.log
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
 # Reload systemd
 systemctl daemon-reload
 EOFSERVICE
@@ -182,10 +205,13 @@ echo ""
 echo "2. Edit systemd service files to add your API keys:"
 echo "   nano /etc/systemd/system/cerberus-career-twin.service"
 echo "   nano /etc/systemd/system/cerberus-sdr.service"
+echo "   nano /etc/systemd/system/cerberus-devsecops.service"
 echo ""
 echo "3. Start the services:"
 echo "   systemctl enable cerberus-career-twin"
 echo "   systemctl start cerberus-career-twin"
+echo "   systemctl enable cerberus-sdr cerberus-devsecops"
+echo "   systemctl start cerberus-sdr cerberus-devsecops"
 echo "   systemctl status cerberus-career-twin"
 echo ""
 echo "4. View logs:"

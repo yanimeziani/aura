@@ -1,0 +1,18 @@
+[Unit]
+Description=Nexa TCP load balancer (nexa-lb)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# Adjust paths after: zig build -Doptimize=ReleaseSmall -p /opt/nexa/lb
+Environment=NEXA_LB_LISTEN=0.0.0.0:9650
+# Comma-separated host:port (Tailscale MagicDNS or 100.x addresses OK)
+Environment=NEXA_LB_UPSTREAMS=127.0.0.1:8765,fedora.tailafcdba.ts.net:8765
+Environment=NEXA_LB_POLICY=round_robin
+ExecStart=/opt/nexa/lb/bin/nexa-lb
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

@@ -1,5 +1,5 @@
 {
-  "default_temperature": 0.7,
+  "default_temperature": 0.3,
 
   "models": {
     "providers": {
@@ -10,37 +10,34 @@
   },
 
   "agents": {
-    "sdr": {
-      "name": "SDR Agent",
+    "devsecops": {
+      "name": "DevSecOps Agent",
       "model": {
-        "primary": "openrouter/anthropic/claude-sonnet-4",
+        "primary": "openrouter/meta-llama/llama-3.3-70b-instruct",
         "fallback": "openrouter/meta-llama/llama-3.3-70b-instruct"
       },
-      "system_prompt_file": "prompts/sdr_agent_prompt.txt",
-      "max_tool_iterations": 20,
+      "system_prompt_file": "prompts/devsecops_agent_prompt.txt",
+      "max_tool_iterations": 25,
       "max_history": 50,
-      "temperature": 0.7,
+      "temperature": 0.3,
       "tools": [
         "web_fetch",
-        "web_research",
-        "email_draft",
-        "email_send",
-        "calendar_link"
+        "web_research"
       ],
       "memory": {
-        "profile": "sdr_campaigns",
+        "profile": "devsecops_ops",
         "auto_save": true,
-        "context_window": 4000
+        "context_window": 8000
       },
       "autonomy": {
         "level": "supervised",
         "workspace_only": true,
-        "max_actions_per_hour": 20
+        "max_actions_per_hour": 40
       }
     },
     "defaults": {
       "model": {
-        "primary": "openrouter/anthropic/claude-sonnet-4"
+        "primary": "openrouter/meta-llama/llama-3.3-70b-instruct"
       }
     }
   },
@@ -49,7 +46,7 @@
     "cli": true,
     "web": {
       "enabled": true,
-      "port": 3002
+      "port": 3003
     }
   },
 
@@ -60,16 +57,16 @@
     "citations": "auto",
     "lifecycle": {
       "hygiene_enabled": true,
-      "archive_after_days": 7,
-      "purge_after_days": 30,
-      "conversation_retention_days": 30,
+      "archive_after_days": 14,
+      "purge_after_days": 60,
+      "conversation_retention_days": 60,
       "auto_hydrate": true
     }
   },
 
   "reliability": {
-    "provider_retries": 2,
-    "provider_backoff_ms": 500,
+    "provider_retries": 3,
+    "provider_backoff_ms": 800,
     "fallback_providers": [],
     "model_fallbacks": [
       "openrouter/meta-llama/llama-3.3-70b-instruct"
@@ -79,7 +76,7 @@
   "autonomy": {
     "level": "supervised",
     "workspace_only": true,
-    "max_actions_per_hour": 20
+    "max_actions_per_hour": 40
   },
 
   "gateway": {

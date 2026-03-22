@@ -40,7 +40,7 @@ Supported execution pattern:
 Provider neutrality rule:
 - tasks are expressed as capability contracts, not provider-specific prompts
 - each task packet must declare inputs, outputs, constraints, and verification
-- packet format is invariant across Gemini, OSS, and any future provider
+- packet format is invariant across LLM backends (commercial or OSS) and any future provider
 
 ## 4) Spec-RAG Forge Lifecycle
 
@@ -98,7 +98,7 @@ When agents disagree:
 
 ## 10) Framework Alignment Plugin (Zig)
 
-To ensure absolute alignment with the canonical docs, all sovereign agents (Gemini, Claude, Codex) must utilize the **Aura Framework Plugin** (`core/aura-mcp`).
+To ensure absolute alignment with the canonical docs, all sovereign agents must utilize the **Aura Framework Plugin** (`core/aura-mcp`).
 
 ### Usage:
 - **As an MCP Server:** Register `aura-mcp` in your roster. Call the `get_canonical_framework` tool at the start of any session.

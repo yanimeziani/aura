@@ -62,6 +62,7 @@ def cmd_help() -> None:
     print("")
     print("Automation (plug-and-play):")
     print("  deploy-mesh   Deploy in-house Zig gateway surface to VPS")
+    print("  mesh-full     Full Meziani mesh: Tailscale check + deploy-mesh + optional smoke")
     print("  backup        Backup dynamic logs/json/md")
     print("  docs-bundle   Build NotebookLM-safe doc bundle")
     print("  publish-notebooklm  Build + manifest + publish NotebookLM source bundle")
@@ -205,6 +206,14 @@ def cmd_deploy_mesh(root: Path) -> int:
     )
 
 
+def cmd_mesh_full(root: Path) -> int:
+    script = root / "ops" / "scripts" / "meziani-full-mesh.sh"
+    if not script.exists():
+        print("meziani-full-mesh.sh not found.", file=sys.stderr)
+        return 1
+    return _run_bash(script, env_extra={"REPO_ROOT": str(root), "NEXA_ROOT": str(root)})
+
+
 def cmd_smoke_test(root: Path) -> int:
     script = root / "ops" / "scripts" / "smoke-test-mesh.sh"
     if not script.exists():
@@ -295,6 +304,8 @@ def main() -> int:
         return cmd_identity(root)
     if cmd == "deploy-mesh":
         return cmd_deploy_mesh(root)
+    if cmd == "mesh-full":
+        return cmd_mesh_full(root)
     if cmd == "backup":
         return cmd_backup(root)
     if cmd == "publish-notebooklm":

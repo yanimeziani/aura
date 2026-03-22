@@ -27,7 +27,7 @@ graph TD
         OPS["ops/ (Automation/Recovery - Python)"]
         TOOLS["tools/ (CLI/Support - Python)"]
         VAULT["vault/ (Encrypted Secrets)"]
-        IDENTITY["Identity (Google MCP)"]
+        IDENTITY["Identity (workspace MCP bridge)"]
     end
 
     subgraph Legal ["Legal & Public Interface"]

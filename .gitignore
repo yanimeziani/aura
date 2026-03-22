@@ -69,6 +69,7 @@ Downloads/
 /.*
 !/.gitignore
 !/.gitmodules
+!/.zig-version
 !/.github/
 !/.env.example
 

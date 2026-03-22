@@ -22,19 +22,5 @@
     "verified_by": "operator_attestation",
     "agents": ["meziani-main", "dragun-devsecops", "dragun-growth"]
   },
-  "organisations": [
-    {
-      "org_id": "nvidia",
-      "legal_name": "NVIDIA Corporation",
-      "role": "hardware_board_member",
-      "monopoly_status": "non_monopoly",
-      "tags": ["french_tech"]
-    },
-    {
-      "org_id": "intel",
-      "legal_name": "Intel Corporation",
-      "role": "hardware_board_member",
-      "tags": ["french_tech"]
-    }
-  ]
+  "organisations": []
 }

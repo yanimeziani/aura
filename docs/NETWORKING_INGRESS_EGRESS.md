@@ -32,6 +32,16 @@ For high-resilience and privacy-first operations, the mesh supports decentralize
 *   **Tor Onion Services:** (Optional) Ingress via `.onion` addresses routed to local services.
 *   **IPFS Gateway:** `http://127.0.0.1:8080` for content-addressed data retrieval.
 
+### 3.1 NAT posture: full-cone (preferred)
+
+For **direct peer paths** (UDP hole punching, some real-time or P2P-adjacent flows), **symmetric or carrier-grade NAT** breaks predictable return routing. Where the operator controls the CPE, prefer **full-cone NAT** (endpoint-independent mapping) on the mesh-facing router, or rely on **controlled relays** (e.g. Tailscale coordination, explicit tunnel) so behavior does not depend on fragile punch-through.
+
+**Nexa default stance:** assume **not** full-cone on arbitrary mobile networks; design critical paths to work through **encrypted tunnels and explicit ingress** documented in §1–§2.
+
+### 3.2 Listen-space (l-space) per node
+
+**L-space** is the **non-conflicting listen inventory** on a node: loopback services, gateway ports, systemd socket units, and local reverse proxies. Before stacking **Tailscale + Nginx + Zig gateway + agent ports**, reconcile this matrix to avoid **double-bind** and silent failover. Extend the port table in §2 when adding services.
+
 ## 4. OUTBOUND EGRESS (Agent Activity)
 Egress is strictly monitored and gated to prevent data exfiltration and unauthorized activity.
 

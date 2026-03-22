@@ -60,7 +60,7 @@ ok "base URL $code"
 
 # 4. Base URL contains expected content
 body=$(curl "${CURL_ARGS[@]}" -L "$PUBLIC_BASE_URL/" || true)
-if ! echo "$body" | grep -Eqi "Nexa|HTTP|mesh|Dragun|debt recovery"; then
+if ! echo "$body" | grep -Eqi "Nexa|HTTP|mesh|debt recovery|operator"; then
   fail "base URL content check failed"
 fi
 ok "base URL content check"

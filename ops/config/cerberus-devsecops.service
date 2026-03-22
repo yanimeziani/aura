@@ -1,0 +1,17 @@
+[Unit]
+Description=Nexa Cerberus DevSecOps agent (always-on)
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/cerberus
+EnvironmentFile=-/opt/configs/env
+ExecStart=/opt/cerberus/cerberus agent --config /opt/configs/devsecops-agent.json
+Restart=always
+RestartSec=10
+StandardOutput=append:/var/log/cerberus/devsecops.log
+StandardError=append:/var/log/cerberus/devsecops-error.log
+
+[Install]
+WantedBy=multi-user.target

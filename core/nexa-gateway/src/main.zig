@@ -1,6 +1,5 @@
 const std = @import("std");
 const net = std.net;
-const http = std.http;
 
 const html =
     \\<!doctype html>
@@ -63,7 +62,7 @@ fn handleConnection(conn: net.Server.Connection) !void {
     }
     if (std.mem.eql(u8, method, "GET") and std.mem.eql(u8, path, "/api/health")) {
         return writeResponse(conn, 200, "application/json; charset=utf-8",
-            \\{"status":"ok","service":"nexa-gateway","zig":"0.15.2","surface":"minimal"}
+            \\{"status":"ok","service":"nexa-gateway","zig":"0.13.0","surface":"minimal"}
         );
     }
     if (std.mem.eql(u8, method, "GET") and std.mem.eql(u8, path, "/api/routes")) {

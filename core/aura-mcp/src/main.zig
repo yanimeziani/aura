@@ -9,7 +9,7 @@ const ServerName = "aura-mcp";
 const ServerVersion = "0.1.1";
 
 fn writeResponse(allocator: std.mem.Allocator, file: std.fs.File, id: std.json.Value, result: anytype) !void {
-    const s = try std.json.Stringify.valueAlloc(allocator, .{
+    const s = try std.json.stringifyAlloc(allocator, .{
         .jsonrpc = "2.0",
         .id = id,
         .result = result,
@@ -20,7 +20,7 @@ fn writeResponse(allocator: std.mem.Allocator, file: std.fs.File, id: std.json.V
 }
 
 fn writeError(allocator: std.mem.Allocator, file: std.fs.File, id: std.json.Value, code: i64, message: []const u8) !void {
-    const s = try std.json.Stringify.valueAlloc(allocator, .{
+    const s = try std.json.stringifyAlloc(allocator, .{
         .jsonrpc = "2.0",
         .id = id,
         .@"error" = .{
@@ -133,7 +133,7 @@ fn handleToolsCall(allocator: std.mem.Allocator, file: std.fs.File, id: std.json
         defer fw.deinit();
         try fw.loadFromManifest(root);
         
-        var out: std.ArrayListUnmanaged(u8) = .empty;
+        var out: std.ArrayListUnmanaged(u8) = .{};
         defer out.deinit(allocator);
         try fw.formatForAI(out.writer(allocator));
         
@@ -212,7 +212,7 @@ fn handleToolsCall(allocator: std.mem.Allocator, file: std.fs.File, id: std.json
         };
         defer dir.close();
         var iter = dir.iterate();
-        var out: std.ArrayListUnmanaged(u8) = .empty;
+        var out: std.ArrayListUnmanaged(u8) = .{};
         defer out.deinit(allocator);
         try out.writer(allocator).print("{s}\n", .{full});
         while (iter.next() catch null) |entry| {
@@ -249,17 +249,17 @@ pub fn main() !void {
             var fw = canonical.Framework.init(allocator);
             defer fw.deinit();
             try fw.loadFromManifest(root);
-            try fw.formatForAI(std.fs.File.stdout().deprecatedWriter());
+            try fw.formatForAI(std.io.getStdOut().writer());
             return;
         }
     }
 
-    const stdin_file = std.fs.File.stdin();
-    const stdout_file = std.fs.File.stdout();
+    const stdin_file = std.io.getStdIn();
+    const stdout_file = std.io.getStdOut();
     var line_buf: [1024 * 1024]u8 = undefined;
 
     while (true) {
-        const line = stdin_file.deprecatedReader().readUntilDelimiter(line_buf[0..], '\n') catch |e| {
+        const line = stdin_file.reader().readUntilDelimiter(line_buf[0..], '\n') catch |e| {
             if (e == error.EndOfStream) break;
             return e;
         };

@@ -79,7 +79,7 @@ flowchart TB
   end
 
   subgraph EXEC["MULTI-AGENT EXECUTION DOMAIN"]
-    PROVIDERS["Gemini, OSS, and future providers"]
+    PROVIDERS["LLM backends (config-defined)"]
     PACKETS["versioned forge packets"]
     ESRAG["Electro-Spatial RAG (Grounded Truth)"]
     VERIFY["tests, checks, and evidence"]

@@ -29,9 +29,9 @@ Nexa is protocol-first infrastructure for distributed systems. It provides sover
 
 ## Creative sourcing and business-side repository
 
-Business-facing visuals and commercial storytelling are sourced through **Death to Stock Photo** (project workspace: [https://app.deathtothestockphoto.com/projects](https://app.deathtothestockphoto.com/projects)). Use only according to the vendor’s current license and project terms; do not treat downloads as unrestricted raw stock for redistribution.
+Business-facing visuals use **contracted stock and original assets** only, under written license terms stored outside this tree. Do not commit third-party marks, logos, or unlicensed media into the hermetic protocol repository.
 
-Implementation, campaigns, and material that are **not** Nexa protocol runtime belong in the separate **Sovar** GitHub repository. This monorepo remains protocol, mesh, and operator infrastructure; Sovar carries the business-side surface and related assets.
+Commercial campaigns and non-runtime business code live in a **separate private business repository** (not versioned here). This monorepo stays protocol, mesh, and operator infrastructure.
 
 ## Sync Rule
 

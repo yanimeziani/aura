@@ -14,10 +14,10 @@ Status legend: `todo` | `in_progress` | `blocked` | `done`
 | NX-006 | Maintain canonical business/context docs | in_progress | strategy | `STACK.md`, `MARKETING.md`, `ICP.md`, `LEGAL.md` |
 | NX-007 | Evolve architecture distill and world model | in_progress | architects | `docs/ARCHITECTURE_DISTILL.md`, `docs/MESH_WORLD_MODEL.md`, `docs/SEED.md` |
 | NX-008 | Launch multi-client Digital Studio outreach (SDR) | in_progress | growth | `tools/lead_manager.py`, `tools/import_leads.py`, `apps/ai_agency_wealth/resend_handler.py` |
-| NX-009 | Establish Bunkerised External MCP Bridge (n8n/HubSpot/LinkedIn/Cal.com) | done | devsecops | `vault/vault_manager.py`, `tools/mcp_n8n_bridge.py`, `core/cerberus/deploy/meziani-dragun/config.roster.json` |
+| NX-009 | Establish Bunkerised External MCP Bridge (automation + CRM/scheduling integrations) | done | devsecops | `vault/vault_manager.py`, `tools/mcp_n8n_bridge.py`, `core/cerberus/deploy/meziani-dragun/config.roster.json` |
 | NX-010 | Operationalize compliant Media Gen AI Forge | done | growth | `docs/MEZIANI_AI_AUDIT_MEDIA_GEN_AI_FORGE.md`, `tools/media_audit_filter.py` |
 | NX-011 | Zero-Friction Cinematic & Arts Pipeline | in_progress | growth | `tools/cinematic_forge.py`, `docs/MEZIANI_AI_AUDIT_MEDIA_GEN_AI_FORGE.md` |
-| NX-012 | Link Digital Metaverse Identity (Google Workspace) | done | identity | `tools/mcp_google_link.py`, `docs/GOOGLE_IDENTITY.md` |
+| NX-012 | Link workspace identity (optional MCP bridge) | done | identity | `tools/mcp_google_link.py`, `docs/GOOGLE_IDENTITY.md` |
 
 ## Trigger Checklist (Per Significant Edit)
 

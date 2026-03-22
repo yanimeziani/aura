@@ -38,7 +38,7 @@ The `docs/` folder is intentionally strict and contains only canonical memory:
 All AI interactions are grounded via the **Zig Framework Plugin** (`core/aura-mcp`):
 - Forces context to align with the [RAG Manifest](./docs/RAG_CORPUS_MANIFEST.md)
 - Zero-external-runtime MCP server for high-fidelity grounding
-- Standardizes protocol adherence across Gemini, Claude, and Codex
+- Standardizes protocol adherence across configured LLM backends
 
 ## Repository Shape
 
@@ -53,7 +53,7 @@ All AI interactions are grounded via the **Zig Framework Plugin** (`core/aura-mc
 └── docs/      # Canonical RAG memory only
 ```
 
-Business-side work (commercial narrative, campaign assets tied to Death to Stock projects, non-runtime business code) lives in the **Sovar** GitHub repo, not in this tree. See [MARKETING.md](./MARKETING.md).
+Business-side work (commercial narrative, licensed media, non-runtime business code) lives in a **separate private repository**, not in this tree. See [MARKETING.md](./MARKETING.md).
 
 ## Release Gate
 

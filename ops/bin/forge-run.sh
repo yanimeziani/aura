@@ -48,7 +48,7 @@ owner_for() {
 task_summary() {
     case "$1" in
         F01) printf '%s\n' "Verify Zig version lock and docs are present." ;;
-        F02) printf '%s\n' "Verify all build.zig.zon files stay pinned to Zig 0.15.2." ;;
+        F02) printf '%s\n' "Verify first-party build.zig.zon files stay pinned to Zig 0.13.0 with empty dependencies." ;;
         F03) printf '%s\n' "Restore green builds for the four core Zig projects." ;;
         F04) printf '%s\n' "Restore ziggy-compiler build integrity." ;;
         F05) printf '%s\n' "Restore ziggy-compiler CLI contract (--version, no-input behavior, exit 0)." ;;
@@ -179,13 +179,13 @@ case "${1:-run}" in
 esac
 
 # F01
-run F01 bash -c 'test "$(cat .zig-version)" = "0.15.2" && test -f docs/ZIG_VERSION.md' || exit 1
+run F01 bash -c 'test "$(tr -d "\r\n" < .zig-version)" = "0.13.0" && test -f docs/ZIG_VERSION.md' || exit 1
 
 # F02
-run F02 bash -c 'bad="$(grep -r minimum_zig_version aura-edge aura-tailscale aura-mcp ziggy-compiler tui --include="*.zon" 2>/dev/null | grep -v 0.15.2 || true)"; test -z "$bad"' || exit 1
+run F02 bash -c 'for z in core/nexa-gateway/build.zig.zon core/aura-mcp/build.zig.zon; do grep -q "minimum_zig_version = \"0.13.0\"" "$z" || exit 1; grep -q ".dependencies = .{}" "$z" || exit 1; done' || exit 1
 
 # F03
-run F03 bash -c 'cd aura-edge && zig build && cd ../aura-tailscale && zig build && cd ../aura-mcp && zig build && cd ../tui && zig build' || exit 1
+run F03 bash -c 'cd core/nexa-gateway && zig build && cd ../aura-mcp && zig build' || exit 1
 
 # F04
 run F04 bash -c 'cd ziggy-compiler && zig build' || exit 1
@@ -206,10 +206,10 @@ run F08 bash -c 'cd ziggy-compiler && zig build' || exit 1
 run F09 bash -c 'cd ziggy-compiler && zig build test' || exit 1
 
 # F10
-run F10 bash -c 'cd aura-mcp && zig build && zig build test' || exit 1
+run F10 bash -c 'cd core/aura-mcp && zig build && zig build test' || exit 1
 
 # F11 (ping tool present)
-run F11 bash -c 'grep -q "ping" aura-mcp/src/main.zig && grep -q "pong" aura-mcp/src/main.zig' || exit 1
+run F11 bash -c 'grep -q "ping" core/aura-mcp/src/main.zig && grep -q "pong" core/aura-mcp/src/main.zig' || exit 1
 
 # F12
 run F12 bash -c 'grep -q ping docs/sovereign-mcp.md' || exit 1

@@ -12,7 +12,7 @@ pub const Framework = struct {
     pub fn init(allocator: std.mem.Allocator) Framework {
         return .{
             .allocator = allocator,
-            .files = .empty,
+            .files = .{},
         };
     }
 

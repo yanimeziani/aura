@@ -1,0 +1,38 @@
+# OCI image: distilled Zig binaries for the mesh edge (build with Docker).
+# Build context: repository root.
+# Zig 0.13.0 matches ops/verify/Dockerfile.release toolchain pin.
+
+FROM debian:bookworm-slim AS builder
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates curl xz-utils \
+    && curl -fsSL https://ziglang.org/download/0.13.0/zig-linux-x86_64-0.13.0.tar.xz \
+        | tar -xJ -C /usr/local --strip-components=1 \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /src
+COPY core/nexa-gateway /src/nexa-gateway
+COPY core/aura-mcp /src/aura-mcp
+
+RUN cd /src/nexa-gateway && zig build -Doptimize=ReleaseSafe \
+    && cd /src/aura-mcp && zig build -Doptimize=ReleaseSafe
+
+FROM debian:bookworm-slim
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /src/nexa-gateway/zig-out/bin/nexa-gateway /usr/local/bin/nexa-gateway
+COPY --from=builder /src/aura-mcp/zig-out/bin/aura-mcp /usr/local/bin/aura-mcp
+
+LABEL org.opencontainers.image.title="nexa-zig-distill" \
+      org.opencontainers.image.description="Nexa mesh: nexa-gateway + aura-mcp (ReleaseSafe)" \
+      org.opencontainers.image.source="https://github.com/MezianiAI/nexa"
+
+EXPOSE 9080
+ENV NEXA_GATEWAY_PORT=9080
+
+# Override at run time, e.g. docker run --rm -p 9080:9080 nexa-zig-distill:local nexa-gateway
+ENTRYPOINT []
+CMD ["nexa-gateway"]

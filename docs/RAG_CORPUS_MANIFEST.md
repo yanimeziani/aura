@@ -27,6 +27,7 @@ These are the only in-bounds markdown files in `docs/`:
 - `docs/MONTESSORI_FRONTEND_SKILLS.md`
 - `docs/CANONICAL_MEDIA_NEWS_AND_TRANSLATION.md`
 - `docs/UX_DISTILL_LAWS_OF_UX_AND_FRONTEND_CLOUD.md`
+- `docs/ZIG_VERSION.md`
 
 ## 3) Retrieval Contract
 
@@ -37,8 +38,9 @@ For every non-trivial task:
 4. for any user-facing UI, copy, or onboarding, load `docs/UNIFIED_ACCESS.md` and apply its checklist; for calm, self-directed, or instruction-adjacent flows, also load `docs/MONTESSORI_FRONTEND_SKILLS.md`
 5. for studio, news, radio, or cross-language distribution, load `docs/CANONICAL_MEDIA_NEWS_AND_TRANSLATION.md` and treat it as the linguistic and quantitative contract (core language first, translation second)
 6. for UX, layout, performance-perception tradeoffs, or frontend architecture patterns, load `docs/UX_DISTILL_LAWS_OF_UX_AND_FRONTEND_CLOUD.md` (Laws of UX + Frontend Cloud distill)
-7. cite consulted paths in plan/output
-8. write back changes to canonical docs only
+7. for first-party Zig (`core/nexa-gateway`, `core/aura-mcp`), load `docs/ZIG_VERSION.md` and enforce **0.13.0** + **no** `build.zig.zon` package dependencies
+8. cite consulted paths in plan/output
+9. write back changes to canonical docs only
 
 ## 4) Drift Control
 

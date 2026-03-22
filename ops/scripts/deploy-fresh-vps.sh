@@ -77,6 +77,7 @@ ufw allow 443/tcp
 ufw allow 3000/tcp  # Dragun App / Cerberus Gateway
 ufw allow 3001/tcp  # Career Twin
 ufw allow 3002/tcp  # SDR Agent
+ufw allow 3003/tcp  # DevSecOps Agent
 
 echo "VPS base setup complete"
 EOFSETUP
@@ -123,8 +124,10 @@ echo -e "${GREEN}✓ Binaries deployed${NC}"
 echo -e "${BLUE}[6/12] Deploying agent configs${NC}"
 scp /root/core/cerberus/configs/career-twin-agent.json ${VPS_USER}@${VPS_IP}:/opt/configs/
 scp /root/core/cerberus/configs/sdr-agent.json ${VPS_USER}@${VPS_IP}:/opt/configs/
+scp /root/core/cerberus/configs/devsecops-agent.json ${VPS_USER}@${VPS_IP}:/opt/configs/
 scp /root/core/cerberus/runtime/cerberus-core/prompts/career_twin_prompt.txt ${VPS_USER}@${VPS_IP}:/opt/configs/
 scp /root/core/cerberus/runtime/cerberus-core/prompts/sdr_agent_prompt.txt ${VPS_USER}@${VPS_IP}:/opt/configs/
+scp /root/core/cerberus/runtime/cerberus-core/prompts/devsecops_agent_prompt.txt ${VPS_USER}@${VPS_IP}:/opt/configs/
 echo -e "${GREEN}✓ Configs deployed${NC}"
 
 # Step 7: Deploy memory structures
@@ -239,6 +242,27 @@ StandardError=append:/var/log/cerberus/sdr-error.log
 WantedBy=multi-user.target
 EOF
 
+# DevSecOps Agent service
+cat > /etc/systemd/system/cerberus-devsecops.service << 'EOF'
+[Unit]
+Description=Cerberus DevSecOps Agent
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/cerberus
+EnvironmentFile=/opt/configs/env
+ExecStart=/opt/cerberus/cerberus agent --config /opt/configs/devsecops-agent.json
+Restart=always
+RestartSec=10
+StandardOutput=append:/var/log/cerberus/devsecops.log
+StandardError=append:/var/log/cerberus/devsecops-error.log
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
 # Dragun App service
 cat > /etc/systemd/system/dragun-app.service << 'EOF'
 [Unit]
@@ -271,6 +295,8 @@ echo "=== Cerberus Installation ==="
 echo ""
 echo "=== Services Status ==="
 systemctl is-active cerberus-career-twin || echo "career-twin inactive"
+systemctl is-active cerberus-sdr || echo "cerberus-sdr inactive"
+systemctl is-active cerberus-devsecops || echo "cerberus-devsecops inactive"
 systemctl is-active dragun-app || echo "dragun-app inactive"
 systemctl is-active caddy || echo "caddy inactive"
 

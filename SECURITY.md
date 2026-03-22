@@ -20,6 +20,11 @@ Include:
 - reproduction steps
 - proposed mitigation, if known
 
+## Public tree hygiene (hermetic baseline)
+
+- Do not commit **third-party logos**, **unlicensed marks**, or **scraped domain lists**. Register domains only through normal registrar flows; keep availability research outside git if it touches third-party sites’ terms of service.
+- Optional vendor integrations (e.g. under `core/google-mcp/`) may retain upstream-required names in **vendor-shipped manifests**; canonical **Nexa docs and marketing** should stay neutral unless a filing legally requires a proper noun.
+
 ## Priority Areas
 
 - auth and vault handling

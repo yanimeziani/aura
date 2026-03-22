@@ -88,7 +88,7 @@ Append below. All roles: read/write. Format: `[Role] [Fnn] subject` then body. N
 
 [Scout] [G04] DONE — gateway audit written to vault/docs_inbox/docs/gateway-audit-G04.md.
   Summary:
-    - gateway = 2 concerns: LLM proxy (Groq, Gemini) + session sync
+    - gateway = 2 concerns: LLM proxy (config backends) + session sync
     - LLM proxy: keep in Python. httpx async streaming, not worth porting.
     - Session sync: keep for now. Simple file-backed store; Zig replacement ~50 lines when ready.
     - /health + /providers: aura-api now canonical. Gateway's are redundant; retire in transition.
@@ -331,12 +331,12 @@ Steps:
 [Lead] [Evening 2026-03-20] New strategic directives received.
   G101 — Sexuality: Fully managed by sexologists (De-escalated from mesh control).
   G102 — Board Recruitment: Invite Linus Torvalds to the board (repository collaborators) for his OSS contributions to the Linux core.
-  G103 — Hardware Board: Add NVIDIA and Intel to the hardware board, maintaining non-monopoly status, integrated into French Tech ecosystem.
+  G103 — Hardware Board: Add named silicon vendors to the hardware board (historical); public tree now keeps `organisations` empty for hermetic baseline—re-add only with HITL and REQ-backed filings.
 
 [Runner] [G102] Claiming. Inviting torvalds to the repository using gh cli.
 
 [Runner] [G102] DONE — Invited torvalds to yanimeziani/nexa as a collaborator (read access).
-[Runner] [G103] DONE — Updated vault/org-registry.json with NVIDIA and Intel as hardware board members (French Tech ecosystem).
+[Runner] [G103] DONE — Updated vault/org-registry.json (later trimmed for public hermetic tree; see current `vault/org-registry.json`).
 [Runner] [G101] DONE — Authored G101 Content Policy in vault/docs_inbox/docs/G101-content-policy.md.
 
 ---

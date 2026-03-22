@@ -38,7 +38,7 @@ All human-facing surfaces must satisfy the unified contract in [UNIFIED_ACCESS.m
 This project operates on defined execution loops with strict dependency management.
 - **Repository**: [https://github.com/mezianiai/nexa](https://github.com/mezianiai/nexa)
 - **Environment Invariant**: The workspace must remain portable and replicable via standard configuration.
-- **Stack Constraints**: Standard Zig, TypeScript, Node.js, HTML, and CSS.
+- **Stack Constraints**: Standard Zig (**0.13.0** for first-party `nexa-gateway` / `aura-mcp`, std-only, no Zig package deps per `docs/ZIG_VERSION.md`), TypeScript, Node.js, HTML, and CSS.
 - **Retrieval Integrity**: Grounding is anchored in markdown and machine-readable specifications.
 - **Memory Management**: Canonical memory is limited to anchors defined in `docs/RAG_CORPUS_MANIFEST.md`.
 - **System Distillation**: The memory plane is periodically compressed in `docs/ARCHITECTURE_DISTILL.md`.
